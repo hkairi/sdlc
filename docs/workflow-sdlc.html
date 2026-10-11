@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workflow SDLC augmenté</title>
+<style>
+  :root {
+    --blue: #1c4fd8; --blue-band: #2563eb; --blue-tint: #b9cdf6;
+    --orange: #c2410c; --orange-band: #d1490e; --orange-tint: #f2c4a4;
+    --green: #15803d; --green-band: #1a7d3e; --green-tint: #b6dcc3;
+    --ink: #101418; --muted: #3f4750; --ann: #4a5568;
+    --sans: -apple-system, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+  body { background: #ffffff; color: var(--ink); font-family: var(--sans); margin: 0; }
+  .page { max-width: 2100px; margin: 0 auto; padding: 40px 44px 56px; }
+  h1 { font-size: clamp(28px, 3.4vw, 52px); font-weight: 800; letter-spacing: -0.02em; margin: 0 0 10px; text-wrap: balance; }
+  h2 { font-size: clamp(20px, 1.8vw, 28px); font-weight: 800; letter-spacing: -0.01em; margin: 44px 0 16px; }
+  .subtitle { font-size: clamp(16px, 1.4vw, 23px); color: #2b323b; margin: 0 0 30px; }
+  .diagram-wrap { overflow-x: auto; padding-bottom: 8px; }
+  .diagram-wrap svg { min-width: 1720px; width: 100%; height: auto; display: block; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px 34px; margin-top: 22px; font-size: 14.5px; color: var(--muted); align-items: center; }
+  .legend .item { display: flex; align-items: center; gap: 10px; }
+  .legend svg { display: block; }
+  .how { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+  .how .card { border: 2px solid #d7dbe2; border-radius: 12px; padding: 16px 18px; }
+  .how .card.b { border-color: var(--blue-tint); }
+  .how .card.o { border-color: var(--orange-tint); }
+  .how .card.g { border-color: var(--green-tint); }
+  .how h3 { font-size: 16px; font-weight: 800; margin: 0 0 8px; }
+  .how .card.b h3 { color: var(--blue); }
+  .how .card.o h3 { color: var(--orange); }
+  .how .card.g h3 { color: var(--green); }
+  .how p, .how li { font-size: 15px; line-height: 1.55; color: var(--muted); }
+  .how p { margin: 0; }
+  .how ul { margin: 0; padding-left: 20px; }
+  details { margin-top: 26px; border: 1px solid #d7dbe2; border-radius: 10px; padding: 14px 18px; max-width: 72ch; }
+  details summary { cursor: pointer; font-weight: 600; color: #23282f; }
+  details summary:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; border-radius: 4px; }
+  details p { line-height: 1.55; color: var(--muted); font-size: 15px; }
+  code { font-family: var(--mono); font-size: 0.92em; background: #f1f3f6; padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Workflow SDLC augmenté par les agents IA</h1>
+  <p class="subtitle">Un orchestrateur, des exécutants, un relecteur toujours distinct de l'auteur, et toi à chaque gate.</p>
+
+  <div class="diagram-wrap">
+    <svg id="d" viewBox="0 0 2040 1040" role="img"
+         aria-label="Diagramme du workflow SDLC en trois zones : Initialisation et socle commun (humain, sdlc-init, sdlc.config.yaml, AGENTS.md, skills, OpenSpec, suivi), Orchestrateur (étapes 1 à 4 puis 8 à 10, et répartition des tâches), Exécutants et relecteur (contestation de spec, implémentation, revue croisée, documentation, diff du dépôt). Une description textuelle complète figure sous le diagramme.">
+      <defs>
+        <marker id="mb" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1c4fd8"/></marker>
+        <marker id="mo" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c2410c"/></marker>
+        <marker id="mg" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#15803d"/></marker>
+        <marker id="ma" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4a5568"/></marker>
+      </defs>
+    </svg>
+  </div>
+
+  <div class="legend" aria-hidden="false">
+    <span class="item"><svg width="46" height="10" aria-hidden="true"><line x1="0" y1="5" x2="46" y2="5" stroke="#1c4fd8" stroke-width="3" stroke-dasharray="8 5"/></svg> Initialisation &amp; configuration des rôles</span>
+    <span class="item"><svg width="46" height="10" aria-hidden="true"><line x1="0" y1="5" x2="46" y2="5" stroke="#c2410c" stroke-width="4"/></svg> Enchaînement des étapes &amp; délégation</span>
+    <span class="item"><svg width="46" height="10" aria-hidden="true"><line x1="0" y1="5" x2="46" y2="5" stroke="#c2410c" stroke-width="3" stroke-dasharray="8 5"/></svg> Retour (corrections)</span>
+    <span class="item"><svg width="46" height="10" aria-hidden="true"><line x1="0" y1="5" x2="46" y2="5" stroke="#15803d" stroke-width="4"/></svg> Production de livrables</span>
+    <span class="item"><svg width="64" height="24" aria-hidden="true"><rect x="1" y="1" width="62" height="22" rx="11" fill="#101418"/><text x="32" y="16" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="11" font-weight="700" fill="#fff">✓ GATE</text></svg> Validation humaine obligatoire</span>
+  </div>
+
+  <h2>Fonctionnement</h2>
+  <div class="how">
+    <div class="card b">
+      <h3>0 · Premier lancement</h3>
+      <p>Si <code>sdlc.config.yaml</code> est absent, <code>AGENTS.md</code> impose la skill <code>sdlc-init</code>. Elle détecte les CLI installées, puis demande :</p>
+      <ul>
+        <li>quels agents utiliser (Claude Code, Codex, OpenCode) ;</li>
+        <li>si plusieurs : lequel est l'<strong>orchestrateur</strong>, lesquels sont les <strong>exécutants</strong>.</li>
+      </ul>
+      <p>Seuls les adaptateurs des outils retenus sont générés.</p>
+    </div>
+    <div class="card o">
+      <h3>Orchestrateur</h3>
+      <p>Dialogue avec toi et produit les documents de référence : cadrage, conception, specs OpenSpec, planification, procédure de déploiement, runbook, clôture. À l'étape 4, il découpe <code>tasks.md</code> et attribue à chaque tâche un exécutant et un relecteur.</p>
+    </div>
+    <div class="card g">
+      <h3>Exécutants &amp; relecteur</h3>
+      <p>Lancés en non interactif (<code>codex exec</code>, <code>opencode run</code>, <code>claude -p</code>), une tâche à la fois. Le relecteur n'est jamais l'auteur. Avec un seul agent : revue par un sous-agent en lecture seule, sur un autre modèle.</p>
+    </div>
+    <div class="card">
+      <h3>Garde-fous</h3>
+      <ul>
+        <li>Aucun agent n'écrit dans git : commit et push restent à toi.</li>
+        <li>Pas de code sans spec validée (spec freeze).</li>
+        <li>Modes imposés par agents et listes d'outils, pas par les skills.</li>
+      </ul>
+    </div>
+  </div>
+
+  <details>
+    <summary>Description textuelle du diagramme (accessibilité)</summary>
+    <p>Zone « Initialisation &amp; socle commun » : l'humain pilote le workflow, valide chaque gate et est le seul à faire les commits. Au premier lancement, la skill <code>sdlc-init</code> pose les questions de configuration puis écrit <code>sdlc.config.yaml</code>, qui définit l'orchestrateur et les exécutants. Le socle commun, lu par tous les agents, comprend <code>AGENTS.md</code> (règles), <code>.agents/skills/</code> (skills partagées), <code>openspec/</code> (specs) et <code>docs/suivi-sprints.html</code> (suivi).</p>
+    <p>Zone « Orchestrateur » : la configuration désigne l'orchestrateur qui enchaîne les étapes 1 Cadrage, 2 Conception, 3 Specs OpenSpec et 4 Planification, chacune soumise à une gate humaine. À l'étape 3, la spec est envoyée à l'exécutant <code>spec-challenger</code> pour contestation avant le spec freeze. L'étape 4 met à jour le suivi et alimente la répartition, qui lit la configuration et attribue un exécutant et un relecteur à chaque tâche.</p>
+    <p>Zone « Exécutants &amp; relecteur » : la répartition délègue l'étape 5 Implémentation ; le résultat passe à l'étape 6 Revue croisée (relecteur différent de l'auteur, gate humaine), qui peut renvoyer des corrections à l'implémentation, puis à l'étape 7 Documentation. Le tout produit le diff du dépôt, que seul l'humain commite. Une fois la feature terminée, le flux revient à l'orchestrateur pour l'étape 8 Déploiement, puis 9 Runbook et 10 Clôture, chacune soumise à une gate humaine.</p>
+  </details>
+</div>
+
+<script>
+(function () {
+  const S = [];
+  const C = {
+    blue:   { line: '#1c4fd8', band: '#2563eb', tint: '#b9cdf6' },
+    orange: { line: '#c2410c', band: '#d1490e', tint: '#f2c4a4' },
+    green:  { line: '#15803d', band: '#1a7d3e', tint: '#b6dcc3' }
+  };
+  const INK = '#101418', MUTED = '#3f4750', ANN = '#4a5568';
+  const MONO = 'ui-monospace,SF Mono,SFMono-Regular,Menlo,Consolas,monospace';
+  const SANS = '-apple-system,SF Pro Text,Segoe UI,Roboto,Helvetica,Arial,sans-serif';
+  const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+
+  /* ---------- primitives ---------- */
+
+  function panel(x, y, w, h, c, title) {
+    S.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="16" fill="#fff" stroke="${c.line}" stroke-width="3"/>`);
+    S.push(`<path d="M ${x} ${y + 54} V ${y + 16} Q ${x} ${y} ${x + 16} ${y} H ${x + w - 16} Q ${x + w} ${y} ${x + w} ${y + 16} V ${y + 54} Z" fill="${c.band}"/>`);
+    S.push(`<text x="${x + w / 2}" y="${y + 36}" text-anchor="middle" font-family="${SANS}" font-size="26" font-weight="800" fill="#fff">${esc(title)}</text>`);
+  }
+
+  function corners(x, y, w, h, tint) {
+    const o = 8, l = 16, p = [];
+    p.push(`M ${x - o} ${y + l} V ${y - o} H ${x + l}`);
+    p.push(`M ${x + w - l} ${y - o} H ${x + w + o} V ${y + l}`);
+    p.push(`M ${x + w + o} ${y + h - l} V ${y + h + o} H ${x + w - l}`);
+    p.push(`M ${x + l} ${y + h + o} H ${x - o} V ${y + h - l}`);
+    S.push(`<path d="${p.join(' ')}" fill="none" stroke="${tint}" stroke-width="2"/>`);
+  }
+
+  function box(x, y, w, h, c, icon, name, role, opt) {
+    opt = opt || {};
+    corners(x, y, w, h, c.tint);
+    S.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="12" fill="#fff" stroke="${c.line}" stroke-width="2.6"/>`);
+    const sc = opt.iconScale || 1;
+    if (opt.center) {
+      S.push(`<g transform="translate(${x + w / 2 - 24 * sc},${y + 42}) scale(${sc})">${icon(c.line)}</g>`);
+      S.push(`<text x="${x + w / 2}" y="${y + 62 + 48 * sc}" text-anchor="middle" font-family="${MONO}" font-size="${opt.nameSize || 26}" font-weight="700" fill="${INK}">${esc(name)}</text>`);
+      S.push(`<text x="${x + w / 2}" y="${y + 92 + 48 * sc}" text-anchor="middle" font-family="${MONO}" font-size="15" fill="${MUTED}">${esc(role)}</text>`);
+      if (opt.role2) S.push(`<text x="${x + w / 2}" y="${y + 114 + 48 * sc}" text-anchor="middle" font-family="${MONO}" font-size="15" fill="${MUTED}">${esc(opt.role2)}</text>`);
+    } else {
+      S.push(`<g transform="translate(${x + 20},${y + (h - 48 * sc) / 2}) scale(${sc})">${icon(c.line)}</g>`);
+      const tx = x + 36 + 48 * sc;
+      const fit = opt.fit ? ` textLength="${opt.fit}" lengthAdjust="spacingAndGlyphs"` : '';
+      S.push(`<text x="${tx}" y="${y + h / 2 - 5}" font-family="${MONO}" font-size="${opt.nameSize || 18.5}" font-weight="700" fill="${INK}"${fit}>${esc(name)}</text>`);
+      S.push(`<text x="${tx}" y="${y + h / 2 + 18}" font-family="${MONO}" font-size="${opt.roleSize || 14}" fill="${MUTED}">${esc(role)}</text>`);
+    }
+    if (opt.gate) gate(x + w - 100, y + h / 2 - 13);
+  }
+
+  function gate(x, y) {
+    S.push(`<rect x="${x}" y="${y}" width="84" height="26" rx="13" fill="${INK}"/>`);
+    S.push(`<text x="${x + 42}" y="${y + 17.5}" text-anchor="middle" font-family="${MONO}" font-size="12.5" font-weight="700" fill="#fff">✓ GATE</text>`);
+  }
+
+  function poly(pts, color, marker, opt) {
+    opt = opt || {};
+    S.push(`<polyline points="${pts.map(p => p.join(',')).join(' ')}" fill="none" stroke="${color}" stroke-width="${opt.w || 4}" ${opt.dash ? 'stroke-dasharray="9 6"' : ''} stroke-linejoin="round" stroke-linecap="round" marker-end="url(#${marker})"/>`);
+  }
+
+  function ann(x, y, text, color) {
+    const col = color || ANN;
+    S.push(`<line x1="${x}" y1="${y}" x2="${x + 22}" y2="${y}" stroke="${col}" stroke-width="1.8" stroke-dasharray="4 3" marker-end="url(#ma)"/>`);
+    S.push(`<text x="${x + 32}" y="${y + 4.5}" font-family="${SANS}" font-size="14" fill="${col}">${esc(text)}</text>`);
+  }
+
+  function label(x, y, text, color, opt) {
+    opt = opt || {};
+    S.push(`<text x="${x}" y="${y}" ${opt.anchor ? `text-anchor="${opt.anchor}"` : ''} ${opt.rotate ? `transform="rotate(${opt.rotate} ${x} ${y})"` : ''} font-family="${SANS}" font-size="${opt.size || 13.5}" font-weight="${opt.weight || 600}" ${opt.italic ? 'font-style="italic"' : ''} fill="${color}">${esc(text)}</text>`);
+  }
+
+  /* ---------- icônes (traits 48×48) ---------- */
+
+  const st = c => `fill="none" stroke="${c}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"`;
+
+  const iUser    = c => `<g ${st(c)}><circle cx="24" cy="15" r="9"/><path d="M7,44 c1,-12 33,-12 34,0"/></g>`;
+  const iGear    = c => { let t = ''; for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4, x1 = 24 + Math.cos(a) * 10.5, y1 = 24 + Math.sin(a) * 10.5, x2 = 24 + Math.cos(a) * 15, y2 = 24 + Math.sin(a) * 15; t += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`; } return `<g ${st(c)}><circle cx="24" cy="24" r="10"/><circle cx="24" cy="24" r="3.6"/>${t}</g>`; };
+  const iSliders = c => `<g ${st(c)}><line x1="6" y1="12" x2="42" y2="12"/><line x1="6" y1="24" x2="42" y2="24"/><line x1="6" y1="36" x2="42" y2="36"/><circle cx="16" cy="12" r="4" fill="#fff"/><circle cx="32" cy="24" r="4" fill="#fff"/><circle cx="20" cy="36" r="4" fill="#fff"/></g>`;
+  const iDoc     = c => `<g ${st(c)}><path d="M10,3 H30 L40,13 V45 H10 Z"/><polyline points="30,3 30,13 40,13"/><line x1="16" y1="22" x2="34" y2="22"/><line x1="16" y1="29" x2="34" y2="29"/><line x1="16" y1="36" x2="28" y2="36"/></g>`;
+  const iStack   = c => `<g ${st(c)}><path d="M24,4 L44,14 L24,24 L4,14 Z"/><polyline points="4,24 24,34 44,24"/><polyline points="4,34 24,44 44,34"/></g>`;
+  const iSpec    = c => `<g ${st(c)}><path d="M10,3 H30 L40,13 V45 H10 Z"/><polyline points="30,3 30,13 40,13"/><polyline points="16,24 19,27 24,21"/><line x1="27" y1="24" x2="34" y2="24"/><polyline points="16,35 19,38 24,32"/><line x1="27" y1="35" x2="34" y2="35"/></g>`;
+  const iCheck   = c => `<g ${st(c)}><rect x="4" y="4" width="40" height="40" rx="5"/><polyline points="11,15 14,18 19,12"/><line x1="24" y1="15" x2="37" y2="15"/><polyline points="11,27 14,30 19,24"/><line x1="24" y1="27" x2="37" y2="27"/><rect x="11" y="35" width="7" height="5"/><line x1="24" y1="38" x2="37" y2="38"/></g>`;
+  const iTarget  = c => `<g ${st(c)}><circle cx="24" cy="24" r="19"/><circle cx="24" cy="24" r="11"/><circle cx="24" cy="24" r="3.5" fill="${c}"/></g>`;
+  const iLayers  = c => `<g ${st(c)}><rect x="4" y="4" width="16" height="12" rx="2"/><rect x="28" y="4" width="16" height="12" rx="2"/><rect x="16" y="32" width="16" height="12" rx="2"/><polyline points="12,16 12,24 36,24 36,16"/><line x1="24" y1="24" x2="24" y2="32"/></g>`;
+  const iCal     = c => `<g ${st(c)}><rect x="4" y="8" width="40" height="36" rx="4"/><line x1="4" y1="18" x2="44" y2="18"/><line x1="15" y1="3" x2="15" y2="12"/><line x1="33" y1="3" x2="33" y2="12"/><rect x="11" y="25" width="7" height="6"/><rect x="21" y="25" width="7" height="6"/><rect x="31" y="25" width="7" height="6"/><rect x="11" y="34" width="7" height="6"/></g>`;
+  const iDeploy  = c => `<g ${st(c)}><path d="M12,36 H8 a7,7 0 0,1 0,-14 a10,10 0 0,1 19,-5 a8,8 0 0,1 13,9 a5,5 0 0,1 0,10 H36"/><line x1="24" y1="44" x2="24" y2="25"/><polyline points="18,31 24,25 30,31"/></g>`;
+  const iBook    = c => `<g ${st(c)}><path d="M24,10 C18,6 10,6 4,8 V40 C10,38 18,38 24,42 Z"/><path d="M24,10 C30,6 38,6 44,8 V40 C38,38 30,38 24,42"/></g>`;
+  const iFlag    = c => `<g ${st(c)}><line x1="9" y1="4" x2="9" y2="45"/><path d="M9,6 H38 L31,15 L38,24 H9"/></g>`;
+  const iHub     = c => `<g ${st(c)}><circle cx="24" cy="24" r="5.5"/><circle cx="24" cy="6.5" r="4.5"/><circle cx="6.5" cy="24" r="4.5"/><circle cx="41.5" cy="24" r="4.5"/><circle cx="24" cy="41.5" r="4.5"/><line x1="24" y1="11" x2="24" y2="18.5"/><line x1="11" y1="24" x2="18.5" y2="24"/><line x1="29.5" y1="24" x2="37" y2="24"/><line x1="24" y1="29.5" x2="24" y2="37"/></g>`;
+  const iSearch  = c => `<g ${st(c)}><circle cx="20" cy="20" r="13"/><line x1="30" y1="30" x2="44" y2="44"/><line x1="20" y1="13" x2="20" y2="21"/><circle cx="20" cy="26" r="1.2" fill="${c}"/></g>`;
+  const iCode    = c => `<g ${st(c)}><rect x="2" y="6" width="44" height="36" rx="5"/><polyline points="17,17 10,24 17,31"/><polyline points="31,17 38,24 31,31"/><line x1="26.5" y1="14" x2="21.5" y2="34"/></g>`;
+  const iEye     = c => `<g ${st(c)}><path d="M3,24 C10,12 38,12 45,24 C38,36 10,36 3,24 Z"/><circle cx="24" cy="24" r="6.5"/><circle cx="24" cy="24" r="2" fill="${c}"/></g>`;
+  const iPen     = c => `<g ${st(c)}><path d="M10,3 H30 L40,13 V22"/><path d="M10,3 V45 H24"/><line x1="16" y1="18" x2="30" y2="18"/><line x1="16" y1="26" x2="26" y2="26"/><path d="M28,44 L30,37 L42,25 L47,30 L35,42 Z"/></g>`;
+  const iRepo    = c => `<g ${st(c)}><circle cx="12" cy="8" r="5"/><circle cx="12" cy="40" r="5"/><circle cx="36" cy="16" r="5"/><line x1="12" y1="13" x2="12" y2="35"/><path d="M36,21 C36,30 12,26 12,35"/></g>`;
+
+  /* ---------- panneaux ---------- */
+
+  panel(20, 20, 520, 1000, C.blue, 'Initialisation & socle commun');
+  panel(580, 20, 760, 1000, C.orange, 'Orchestrateur');
+  panel(1380, 20, 640, 1000, C.green, 'Exécutants & relecteur');
+
+  /* ---------- zone bleue ---------- */
+
+  const bx = 52, bw = 456, bh = 88;
+  ann(bx, 100, 'Pilote · valide les gates · seul à commiter', C.blue.line);
+  box(bx, 114, bw, bh, C.blue, iUser, 'Toi', '(Humain dans la boucle)');
+  poly([[280, 202], [280, 240]], C.blue.line, 'mb', { dash: true, w: 3.5 });
+  label(296, 226, '1er lancement', C.blue.line);
+  box(bx, 244, bw, bh, C.blue, iGear, 'sdlc-init', '(Étape 0 · choix des agents)');
+  poly([[280, 332], [280, 370]], C.blue.line, 'mb', { dash: true, w: 3.5 });
+  label(296, 356, 'écrit', C.blue.line);
+  box(bx, 374, bw, bh, C.blue, iSliders, 'sdlc.config.yaml', '(Orchestrateur · exécutants)');
+
+  ann(bx, 520, "Socle lu par l'orchestrateur et les exécutants", C.blue.line);
+  box(bx, 536, bw, bh, C.blue, iDoc, 'AGENTS.md', '(Règles communes · git interdit)');
+  box(bx, 648, bw, bh, C.blue, iStack, '.agents/skills/', '(Skills partagées)');
+  box(bx, 760, bw, bh, C.blue, iSpec, 'openspec/', '(Specs · source de vérité)');
+  box(bx, 872, bw, bh, C.blue, iCheck, 'docs/suivi-sprints.html', '(Suivi features / sprints)');
+
+  /* config -> orchestrateur (étape 1) */
+  poly([[508, 418], [552, 418], [552, 150], [608, 150]], C.blue.line, 'mb', { dash: true, w: 3.5 });
+  label(568, 290, 'rôles', C.blue.line, { anchor: 'middle', rotate: 90, size: 13 });
+
+  /* ---------- zone orange ---------- */
+
+  const ox = 612, ow = 440, oh = 80, ocx = ox + ow / 2;
+  const os = { nameSize: 17, gate: true };
+  box(ox, 110, ow, oh, C.orange, iTarget, '1 · Cadrage', '(Brief · objectifs · risques)', os);
+  box(ox, 216, ow, oh, C.orange, iLayers, '2 · Conception', '(Archi · ADR · diagrammes)', os);
+  box(ox, 322, ow, oh, C.orange, iSpec, '3 · Specs OpenSpec', '(Exigences · scénarios)', os);
+  box(ox, 428, ow, oh, C.orange, iCal, '4 · Planification', '(Features · sprints · suivi)', os);
+  [[190, 212], [296, 318], [402, 424]].forEach(([a, b]) => poly([[ocx, a], [ocx, b]], C.orange.line, 'mo', { w: 4 }));
+
+  label(ocx, 553, '5 · 6 · 7 délégués aux exécutants  →', MUTED, { anchor: 'middle', size: 15, weight: 600, italic: true });
+
+  box(ox, 586, ow, oh, C.orange, iDeploy, '8 · Déploiement', '(Procédure · rollback)', os);
+  box(ox, 692, ow, oh, C.orange, iBook, '9 · Runbook', '(Symptôme → remédiation)', os);
+  box(ox, 798, ow, oh, C.orange, iFlag, '10 · Clôture', '(Rétro · archivage spec)', os);
+  [[666, 688], [772, 794]].forEach(([a, b]) => poly([[ocx, a], [ocx, b]], C.orange.line, 'mo', { w: 4 }));
+
+  /* répartition */
+  box(1084, 380, 226, 200, C.orange, iHub, 'Répartition', '(lit la config)', { center: true, nameSize: 21, iconScale: 1.2, role2: 'exécutant + relecteur' });
+  poly([[1052, 468], [1080, 468]], C.orange.line, 'mo', { w: 4 });
+
+  /* étape 4 -> suivi */
+  poly([[612, 480], [568, 480], [568, 916], [512, 916]], C.green.line, 'mg', { w: 4 });
+
+  S.push(`<text x="960" y="972" text-anchor="middle" font-family="${SANS}" font-size="17" font-weight="800" fill="${C.orange.line}">Claude Code · Codex · OpenCode : choisi à l'étape 0</text>`);
+
+  /* ---------- zone verte ---------- */
+
+  const gx = 1412, gw = 540, gh = 94;
+  ann(gx, 100, "Agents choisis à l'étape 0", C.green.line);
+  box(gx, 114, gw, gh, C.green, iSearch, 'spec-challenger', '(Étape 3 bis · lecture seule)', { nameSize: 18 });
+  ann(gx, 254, 'codex exec · opencode run · claude -p', C.green.line);
+  box(gx, 270, gw, gh, C.green, iCode, '5 · Implémentation', '(implementer · TDD · tâche par tâche)', { nameSize: 18 });
+  poly([[1682, 364], [1682, 400]], C.orange.line, 'mo', { w: 4 });
+  label(1698, 388, 'relecteur ≠ auteur', C.orange.line);
+  box(gx, 404, gw, gh, C.green, iEye, '6 · Revue croisée', '(reviewer · lecture seule)', { nameSize: 18, gate: true });
+  poly([[1682, 498], [1682, 534]], C.orange.line, 'mo', { w: 4 });
+  box(gx, 538, gw, gh, C.green, iPen, '7 · Documentation', '(doc-writer · README · CHANGELOG)', { nameSize: 18 });
+  poly([[1682, 632], [1682, 688]], C.green.line, 'mg', { w: 4.5 });
+  box(gx, 692, gw, 150, C.green, iRepo, 'Diff du dépôt', '(Code · tests · docs)', { iconScale: 1.5, nameSize: 23, roleSize: 15 });
+  ann(gx, 878, 'Commit & push : par toi uniquement', C.green.line);
+
+  /* revue -> implémentation (corrections) */
+  poly([[1952, 451], [1984, 451], [1984, 317], [1958, 317]], C.orange.line, 'mo', { dash: true, w: 3 });
+  label(2004, 384, 'corrections', C.orange.line, { anchor: 'middle', rotate: 90, size: 13 });
+
+  S.push(`<text x="1700" y="972" text-anchor="middle" font-family="${SANS}" font-size="17" font-weight="800" fill="${C.green.line}">1 à 3 agents · le relecteur n'est jamais l'auteur</text>`);
+
+  /* ---------- liaisons orange -> verte ---------- */
+
+  /* étape 3 -> contestation de la spec */
+  poly([[1052, 340], [1368, 340], [1368, 161], [1408, 161]], C.orange.line, 'mo', { w: 4 });
+  label(1090, 330, 'contestation avant spec freeze', C.orange.line);
+
+  /* répartition -> implémentation */
+  poly([[1310, 430], [1352, 430], [1352, 356], [1408, 356]], C.orange.line, 'mo', { w: 4 });
+
+  /* documentation -> déploiement */
+  poly([[1412, 620], [1056, 620]], C.orange.line, 'mo', { w: 4 });
+  label(1090, 644, 'feature validée → déploiement', C.orange.line);
+
+  document.getElementById('d').innerHTML += S.join('');
+})();
+</script>
+</body>
+</html>
