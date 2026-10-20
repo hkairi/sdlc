@@ -1,0 +1,8 @@
+{
+  "meta": { "format": 3, "version": "7.4.0" },
+  "totals": { "percent_covered": 91.3, "num_statements": 100, "covered_lines": 91 },
+  "files": {
+    "pkg/api.py": { "summary": { "percent_covered": 95.0 } },
+    "pkg/core.py": { "summary": { "percent_covered": 87.6 } }
+  }
+}

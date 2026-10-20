@@ -1,0 +1,2 @@
+{"date":"2026-09-15","coverage_pct":85.0,"vulns":{"critique":0,"haute":0,"moyenne":1,"basse":2},"tests":{"total":42,"failed":0}}
+{"date":"2026-09-20","coverage_pct":86.5,"vulns":{"critique":0,"haute":0,"moyenne":0,"basse":1},"tests":{"total":45,"failed":0}}

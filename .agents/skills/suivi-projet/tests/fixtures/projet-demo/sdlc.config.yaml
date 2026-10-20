@@ -1,0 +1,50 @@
+# Configuration de démonstration pour les tests de la skill suivi-projet.
+version: 1
+workflow_version: "0.1.0"
+
+project:
+  name: "Démo"
+  kind: new
+  stack: [python, html]
+
+agents:
+  claude:
+    enabled: true
+    cli: "claude -p"
+    models:
+      think: opus
+      build: sonnet
+      light: haiku
+
+orchestrator: claude
+executors: [claude]
+
+confidentiality: client
+providers_allowed: [anthropic]
+
+ci:
+  tool: gitlab-ci
+  coverage_min: 80
+  block_on: [critique, haute]
+
+deploy:
+  decided_at: conception
+  targets:
+    - { component: api, profile: vps-compose }
+
+organisation:
+  parallelism: sequential
+  commit_cadence: feature
+  max_review_iterations: 3
+  task_timeout_min: 30
+
+gates:
+  default: toi
+  spec_freeze: client-po
+
+dashboard:
+  file: docs/suivi-projet.html
+  reports_dir: reports/
+  embed_markdown: true
+  embed_max_kb: 512
+  publish: none

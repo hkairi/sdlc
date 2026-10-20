@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "État du suivi des tâches (docs/suivi/state.json)",
+  "description": "Source de vérité partagée par les skills suivi-taches (écriture) et suivi-projet (lecture). Un champ inconnu vaut null ; aucune valeur n'est inventée. La forme historique de features[].phases (six chaînes de statut) reste acceptée en lecture.",
+  "type": "object",
+  "required": ["schema", "features"],
+  "additionalProperties": true,
+  "properties": {
+    "schema": {
+      "type": "integer",
+      "const": 1,
+      "description": "Version du format."
+    },
+    "meta": {
+      "type": ["object", "null"],
+      "description": "Métadonnées d'affichage du fichier de suivi mono (titre, sous-titre, clé localStorage).",
+      "additionalProperties": true,
+      "properties": {
+        "title": {"type": ["string", "null"]},
+        "h1": {"type": ["string", "null"]},
+        "eyebrow": {"type": ["string", "null"]},
+        "subtitle": {"type": ["string", "null"]},
+        "storage_key": {"type": ["string", "null"]},
+        "lang": {"type": ["string", "null"]}
+      }
+    },
+    "file_updated": {
+      "type": ["string", "null"],
+      "description": "Date de dernière mise à jour du fichier de suivi (AAAA-MM-JJ)."
+    },
+    "features": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/feature"}
+    },
+    "actions": {
+      "type": "array",
+      "description": "Actions requises affichées par suivi-projet.",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "icon": {"type": ["string", "null"]},
+          "text": {"type": ["string", "null"]},
+          "who": {"type": ["string", "null"]},
+          "age": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "envs": {
+      "type": "array",
+      "description": "Environnements déployés, lus par suivi-projet.",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "name": {"type": ["string", "null"]},
+          "version": {"type": ["string", "null"]},
+          "health": {"type": ["string", "null"]},
+          "date": {"type": ["string", "null"]},
+          "by": {"type": ["string", "null"]}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "status": {
+      "type": "string",
+      "enum": ["todo", "doing", "blocked", "done"]
+    },
+    "feature": {
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": true,
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "name": {"type": ["string", "null"]},
+        "color": {"type": ["string", "null"]},
+        "change": {"type": ["string", "null"]},
+        "objective": {"type": ["string", "null"]},
+        "decisions": {
+          "type": ["array", "null"],
+          "description": "Décisions consignées du chantier (markdown inline), affichées en carte réductible.",
+          "items": {"type": "string"}
+        },
+        "tasks_file": {"type": ["string", "null"]},
+        "sources": {
+          "type": ["object", "null"],
+          "additionalProperties": {"type": ["string", "null"]}
+        },
+        "phases": {
+          "description": "Six phases (forme courante : objets) ou six chaînes de statut (forme historique acceptée en lecture par suivi-projet).",
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {"$ref": "#/$defs/phase"}
+            },
+            {
+              "type": "array",
+              "items": {"$ref": "#/$defs/status"}
+            }
+          ]
+        },
+        "lots": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id"],
+            "additionalProperties": true,
+            "properties": {
+              "id": {"type": "string"},
+              "name": {"type": ["string", "null"]}
+            }
+          }
+        },
+        "tasks": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/task"}
+        },
+        "recette": {
+          "type": ["array", "null"],
+          "items": {"type": "integer"},
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "version": {"type": ["string", "null"]},
+        "delivered": {"type": ["string", "null"]},
+        "blocked": {"type": ["integer", "null"]}
+      }
+    },
+    "phase": {
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": true,
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": ["cadrage", "plan", "impl", "validation", "deploy", "cloture"]
+        },
+        "name": {"type": ["string", "null"]},
+        "color": {"type": ["string", "null"]},
+        "order": {"type": ["integer", "null"]},
+        "status": {"$ref": "#/$defs/status"},
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id"],
+            "additionalProperties": true,
+            "properties": {
+              "id": {"type": "string"},
+              "label": {"type": ["string", "null"]},
+              "status": {"$ref": "#/$defs/status"},
+              "updated": {"type": ["string", "null"]},
+              "note": {"type": ["string", "null"]}
+            }
+          }
+        }
+      }
+    },
+    "task": {
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": true,
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "lot": {"type": ["string", "null"]},
+        "title": {"type": ["string", "null"]},
+        "text": {"type": ["string", "null"]},
+        "status": {"$ref": "#/$defs/status"},
+        "updated": {"type": ["string", "null"]},
+        "note": {"type": ["string", "null"]},
+        "history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "date": {"type": ["string", "null"]},
+              "status": {"type": ["string", "null"]},
+              "note": {"type": ["string", "null"]}
+            }
+          }
+        },
+        "executor": {"type": ["string", "null"]},
+        "reviewer": {"type": ["string", "null"]},
+        "review_iteration": {"type": ["integer", "null"]},
+        "escalated": {"type": ["boolean", "null"]},
+        "ready_to_commit": {"type": ["boolean", "null"]},
+        "commit_message": {"type": ["string", "null"]},
+        "files": {
+          "type": ["array", "null"],
+          "items": {"type": "string"}
+        },
+        "acceptance": {"type": ["string", "null"]},
+        "tests": {"type": ["string", "null"]}
+      }
+    }
+  }
+}

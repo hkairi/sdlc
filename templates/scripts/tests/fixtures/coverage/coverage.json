@@ -1,0 +1,13 @@
+{
+  "meta": {
+    "version": "7.5.0",
+    "format": 3
+  },
+  "totals": {
+    "covered_lines": 183,
+    "num_statements": 200,
+    "percent_covered": 91.5,
+    "missing_lines": 17,
+    "excluded_lines": 0
+  }
+}

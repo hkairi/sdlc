@@ -1,0 +1,84 @@
+# Pipeline GitLab CI — gabarit.
+#
+# Où copier : .gitlab-ci.yml (à la racine du projet).
+# Remplacez les marqueurs {{…}} par les valeurs du projet, puis supprimez ce
+# commentaire d'en-tête. Les contrôles sont définis une seule fois dans
+# scripts/ci.sh ; ce fichier ne fait que les appeler et publier les rapports.
+stages: [controles, build, preproduction, bout-en-bout, production]
+
+variables:
+  SDLC_REPORTS_DIR: reports
+
+default:
+  image: "{{image-de-base}}"
+
+# 1. Contrôles (lint, tests, couverture, analyse de code, dépendances, secrets).
+controles:
+  stage: controles
+  script:
+    # {{commandes-d-installation-des-dependances}}
+    - bash scripts/ci.sh
+  artifacts:
+    when: always
+    expire_in: 30 days
+    paths:
+      - reports/
+    reports:
+      junit: reports/junit/*.xml
+
+# 2. Build de l'artefact déployable.
+build:
+  stage: build
+  needs: [controles]
+  script:
+    # {{commande-de-build}}
+    - echo "build {{version}}"
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - "{{chemin-artefact}}"
+
+# 3. Déploiement en préproduction.
+preproduction:
+  stage: preproduction
+  needs: [build]
+  environment:
+    name: preproduction
+    url: "{{url-preproduction}}"
+  script:
+    # {{commande-de-deploiement-preproduction}}
+    - echo "déploiement préproduction"
+
+# 4. Tests de bout en bout en préproduction.
+bout-en-bout:
+  stage: bout-en-bout
+  needs: [preproduction]
+  variables:
+    BASE_URL: "{{url-preproduction}}"
+  script:
+    # {{commande-tests-bout-en-bout}}
+    - echo "tests de bout en bout"
+  artifacts:
+    when: always
+    expire_in: 30 days
+    paths:
+      - "{{chemin-rapports-recette}}"
+
+# 5. Déploiement en production : manuel et protégé.
+#    La protection vient de l'environnement GitLab « production »
+#    (Settings > CI/CD > Protected environments) et du `when: manual`.
+production:
+  stage: production
+  needs: [bout-en-bout]
+  environment:
+    name: production
+    url: "{{url-production}}"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "{{branche-principale}}"'
+      when: manual
+      allow_failure: false
+    - when: never
+  script:
+    # {{commande-de-deploiement-production}}
+    - echo "déploiement production"
+    # Journaliser ce déploiement dans docs/journal/deploys.jsonl (§ 12).

@@ -1,0 +1,20 @@
+{
+  "task_id": "4.1",
+  "status": "done",
+  "summary": "Ajout du gabarit d'adaptateur Claude Code : règles, permissions, quatre agents et trois commandes. Les permissions refusent git en écriture et la lecture des secrets, et autorisent le lancement des CLI des exécutants.",
+  "files_changed": [
+    ".sdlc/templates/adapters/claude/CLAUDE.md",
+    ".sdlc/templates/adapters/claude/settings.json"
+  ],
+  "tests": {
+    "command": "python3 -m json.tool .sdlc/templates/adapters/claude/settings.json",
+    "passed": 1,
+    "failed": 0
+  },
+  "checks": {
+    "ci_sh": "pass"
+  },
+  "commit_message": "feat(adapters): ajoute le gabarit Claude Code",
+  "notes": "Aucune réserve. Les contrôles locaux ont été relancés par l'orchestrateur avant de marquer la tâche terminée.",
+  "blockers": []
+}

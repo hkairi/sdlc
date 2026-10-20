@@ -1,0 +1,16 @@
+{
+  "name": "opencode-ai-sdlc-tracker",
+  "version": "0.2.1",
+  "private": true,
+  "type": "module",
+  "description": "Plugin OpenCode : applique la règle de suivi d'avancement (synchronisation docs/suivi-*.html ↔ openspec/changes/*/tasks.md) dans la session.",
+  "scripts": {
+    "test": "node --test",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@opencode/plugin": "2.0.32",
+    "@types/node": "^22.20.5",
+    "typescript": "5.6"
+  }
+}

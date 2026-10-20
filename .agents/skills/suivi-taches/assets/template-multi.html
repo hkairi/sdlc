@@ -1,0 +1,967 @@
+<!doctype html>
+<html lang="{{LANG}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<!--
+  Fichier de suivi multi-chantiers généré par la skill suivi-taches (gabarit template-multi.html).
+  Ne pas modifier : l'état de référence vit dans state.json, ce HTML en embarque une copie en
+  lecture seule (bloc JSON « state-data »). Rendu par render.py ; mise à jour par track*.py.
+  Lecteur Markdown embarqué (markdown-it, HTML brut désactivé) : proposal, design, tasks et
+  deltas de spec du change OpenSpec.
+-->
+<style>
+  :root{
+    --bg:#eef1f6; --panel:#fff; --ink:#1b2430; --muted:#5c6b7a; --line:#e2e8f0; --line2:#eef2f8;
+    --brand:#0f4c81; --brand2:#1379b0; --brandbg:#e8f1fb;
+    --todo:#5c6b7a; --doing:#2b6cb0; --blocked:#c0392b; --done:#1f9d55;
+    --shadow:0 1px 3px rgba(16,24,40,.08),0 8px 24px rgba(16,24,40,.05);
+    --rail-w:296px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.5}
+  .hidden{display:none!important}
+
+  /* ---------- En-tête ---------- */
+  header.top{background:linear-gradient(135deg,#0f4c81,#1379b0);color:#fff;padding:22px 22px 20px}
+  header.top .wrap{max-width:1480px;margin:0 auto}
+  .eyebrow{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;opacity:.85;font-weight:700}
+  header.top h1{margin:.15em 0 .15em;font-size:23px}
+  header.top .sub{margin:0;opacity:.9;font-size:13.5px}
+  header.top code{background:rgba(255,255,255,.14);padding:1px 5px;border-radius:5px;font-size:12px}
+  .global{margin-top:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .global .track{flex:1;min-width:220px;height:12px;background:rgba(255,255,255,.22);border-radius:999px;overflow:hidden}
+  .global .track>span{display:block;height:100%;width:0;background:linear-gradient(90deg,#9fe6b8,#eafff0);transition:width .3s}
+  .global .pct{font-weight:800;font-size:17px}
+  .global .gcount,.global .gscope{font-size:12.5px;opacity:.9}
+
+  /* ---------- Barre d'outils ---------- */
+  .toolbar{position:sticky;top:0;z-index:40;background:rgba(238,241,246,.94);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);padding:10px 22px}
+  .toolbar .inner{max-width:1480px;margin:0 auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  input[type=search],select.btnsel{font:inherit;font-size:13px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+  input[type=search]{min-width:190px;flex:1;max-width:320px}
+  .btn{font:inherit;font-size:13px;font-weight:600;padding:7px 11px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;color:var(--ink)}
+  .btn:hover{background:#f7f9fc}
+  .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
+  .seg button{font:inherit;font-size:12.5px;font-weight:600;padding:7px 11px;border:0;background:#fff;cursor:pointer;color:var(--muted)}
+  .seg button[aria-pressed=true]{background:var(--brand);color:#fff}
+  .sep{width:1px;height:24px;background:var(--line);margin:0 2px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{font:inherit;font-size:12.5px;font-weight:600;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:#fff;cursor:pointer;color:var(--ink)}
+  .chip:hover{border-color:var(--brand2)}
+  .chip.active{background:var(--brand);border-color:var(--brand);color:#fff}
+  .chip .n{font-weight:800;margin-left:6px;opacity:.75}
+  .chip.active .n{opacity:.95}
+
+  /* ---------- Grille générale ---------- */
+  .layout{max-width:1480px;margin:0 auto;padding:18px 22px 90px;display:grid;grid-template-columns:var(--rail-w) minmax(0,1fr);gap:18px;align-items:start}
+  @media(max-width:920px){.layout{grid-template-columns:1fr}.rail{position:static!important;top:auto!important}}
+
+  /* ---------- Rail des chantiers ---------- */
+  .rail{position:sticky;top:60px;background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--shadow);overflow:hidden}
+  .rail-head{padding:12px 14px 11px;border-bottom:1px solid var(--line)}
+  .rail-head h2{font-size:12px;margin:0;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:flex;justify-content:space-between}
+  .rail-head h2 span{font-weight:700;color:var(--brand)}
+  .rail-head .row{display:flex;gap:6px;margin-top:9px}
+  .rail-head .row .btn{flex:1;text-align:center;padding:6px 8px;font-size:12px}
+  .feat-item{display:flex;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line2);cursor:pointer;position:relative}
+  .feat-item:hover{background:#f8fbff}
+  .feat-item.sel{background:var(--brandbg)}
+  .feat-item.sel::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--brand)}
+  .feat-item .chk{width:17px;height:17px;border-radius:5px;border:1.5px solid #c3cedd;flex:none;margin-top:2px;
+    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff;background:#fff}
+  .feat-item.sel .chk{background:var(--brand);border-color:var(--brand)}
+  .feat-item .info{flex:1;min-width:0}
+  .feat-item .name{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}
+  .feat-item .name .dot{width:8px;height:8px;border-radius:50%;flex:none}
+  .feat-item .sub{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mini-bar{height:6px;background:var(--line2);border-radius:999px;overflow:hidden;margin:6px 0 4px}
+  .mini-bar>span{display:block;height:100%}
+  .feat-item .counts{font-size:10.5px;color:var(--muted);display:flex;gap:7px;align-items:center}
+  .feat-item .counts b{color:var(--ink);font-variant-numeric:tabular-nums}
+  .rail-synth{padding:12px 14px}
+  .rail-synth .k{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;font-weight:700}
+  .rail-synth .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .rail-synth .cell{background:#f7f9fc;border:1px solid var(--line2);border-radius:9px;padding:7px 9px}
+  .rail-synth .cell .n{font-size:18px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+  .rail-synth .cell .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+  .hint{font-size:11px;color:var(--muted);padding:0 14px 13px;line-height:1.45}
+  .hint b{color:var(--ink)}
+
+  /* ---------- Espace de travail ---------- */
+  .workspace{min-width:0}
+  .banner{background:#fff;border:1px solid var(--line);border-left:4px solid #b7791f;border-radius:10px;
+    padding:11px 15px;margin-bottom:16px;font-size:12.5px;color:var(--muted)}
+  .banner b{color:var(--ink)}
+  .banner code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;background:#f1f4f9;padding:1px 5px;border-radius:5px}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:0 0 14px;align-items:center}
+  .legend .lg{display:inline-flex;align-items:center;gap:6px}
+  .legend .sw{width:10px;height:10px;border-radius:50%}
+  .legend b{color:var(--ink)}
+
+  .overview{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+  .overview .ohead{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--line);cursor:pointer}
+  .overview .ohead:hover{background:#f8fbff}
+  .overview .ohead .chev{color:var(--muted);font-size:12px;transition:transform .15s;width:12px}
+  .overview.collapsed .ohead .chev{transform:rotate(-90deg)}
+  .overview.collapsed .obody{display:none}
+  .overview .ohead h2{font-size:13.5px;margin:0;flex:1}
+  table.ov{width:100%;border-collapse:collapse;font-size:12.5px}
+  table.ov th{text-align:left;padding:8px 12px;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-bottom:1px solid var(--line);font-weight:700}
+  table.ov td{padding:9px 12px;border-bottom:1px solid var(--line2);vertical-align:middle}
+  table.ov tr:last-child td{border-bottom:0}
+  table.ov tbody tr{cursor:pointer}
+  table.ov tbody tr:hover td{background:#f8fbff}
+  .ov-name{font-weight:700;display:flex;align-items:center;gap:7px}
+  .ov-name .dot{width:9px;height:9px;border-radius:50%;flex:none}
+  .ov-bar{height:7px;background:var(--line2);border-radius:999px;overflow:hidden;min-width:90px;margin-bottom:3px}
+  .ov-bar>span{display:block;height:100%}
+  .ov-num{font-variant-numeric:tabular-nums;font-weight:700}
+  .ov-num.todo{color:var(--todo)}.ov-num.doing{color:var(--doing)}.ov-num.blocked{color:var(--blocked)}.ov-num.done{color:var(--done)}
+
+  .feature{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+  .fhead{display:flex;align-items:center;gap:11px;padding:12px 16px;cursor:pointer}
+  .fhead:hover{background:#f8fbff}
+  .fhead .chev{color:var(--muted);font-size:12px;transition:transform .15s;width:12px}
+  .feature.collapsed .fhead .chev{transform:rotate(-90deg)}
+  .fhead .dot{width:11px;height:11px;border-radius:3px;flex:none}
+  .fhead h2{font-size:15px;margin:0;flex:1;min-width:0}
+  .fhead .fcounts{display:flex;gap:5px;flex-wrap:wrap}
+  .fhead .mini{font-size:12px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .fbar{height:7px;background:var(--line2)}
+  .fbar>span{display:block;height:100%;transition:width .3s}
+  .feature.collapsed .fbody{display:none}
+  .feat-tag{font-size:10.5px;font-weight:700;color:var(--brand);background:var(--brandbg);border:1px solid #c7dcf3;border-radius:999px;padding:1px 8px;white-space:nowrap}
+  .feat-tag.b{color:var(--blocked);background:#fdeaea;border-color:#f3c9c4}
+  /* Phases du chantier */
+  .ph-strip{display:flex;gap:3px;margin-top:6px}
+  .ph-strip>span{height:5px;flex:1;border-radius:999px;background:#dfe6ef}
+  .ph-strip>span.st-doing{background:#9ec6ea}
+  .ph-strip>span.st-blocked{background:#f0b4ad}
+  .ph-strip>span.st-done{background:#9fdcb9}
+  .phases{border-top:1px solid var(--line);background:#fbfcfe;padding:10px 16px 12px}
+  .ph-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+  .ph-head .ph-t{font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+  .ph-head .ph-cur{font-size:12px;color:var(--muted);margin-left:auto}
+  .ph-head .ph-cur b{color:var(--brand)}
+  .ph-steps{list-style:none;display:flex;gap:6px;margin:0;padding:0;flex-wrap:wrap}
+  .ph-step{flex:1;min-width:118px;display:flex;align-items:center;gap:8px;padding:6px 9px;border:1px solid var(--line);
+    border-radius:9px;background:#fff;cursor:pointer}
+  .ph-step:hover{border-color:var(--brand2)}
+  .ph-step.current{background:var(--brandbg)}
+  .ph-step.active{border-color:var(--brand);box-shadow:0 0 0 2px var(--brandbg) inset}
+  .ph-step .ph-dot{width:18px;height:18px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+    font-size:10px;font-weight:800;color:#fff;background:#b7c2d0}
+  .ph-step.st-done .ph-dot{background:var(--done)}
+  .ph-step.st-doing .ph-dot{background:var(--doing)}
+  .ph-step.st-blocked .ph-dot{background:var(--blocked)}
+  .ph-step .ph-nm{font-size:12px;font-weight:700;line-height:1.15;display:block}
+  .ph-step .ph-mt{font-size:10px;color:var(--muted);margin-top:1px}
+  .ph-panel{margin-top:9px;border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden}
+  .ph-item{display:flex;align-items:center;gap:10px;padding:7px 12px;border-bottom:1px solid var(--line2)}
+  .ph-item:last-child{border-bottom:0}
+  .ph-item.draft{background:#fff9e9}
+  .ph-item .ph-ico{width:16px;height:16px;border-radius:5px;flex:none;border:1.5px solid #c3cedd;display:flex;align-items:center;
+    justify-content:center;font-size:10px;font-weight:900;color:#fff;background:#fff}
+  .ph-item.st-done .ph-ico{background:var(--done);border-color:var(--done)}
+  .ph-item.st-doing .ph-ico{background:var(--doing);border-color:var(--doing)}
+  .ph-item.st-blocked .ph-ico{background:var(--blocked);border-color:var(--blocked)}
+  .ph-item .ph-lbl{font-size:12.5px;flex:1;min-width:0}
+  .ph-item.st-done .ph-lbl{color:var(--muted)}
+  .ph-item .ph-note{font-size:11px;color:#8a5200;font-style:italic;display:block;margin-top:1px}
+  .ph-item .ph-sel{font:inherit;font-size:11px;font-weight:700;border-radius:6px;padding:3px 6px;border:1px solid var(--line);cursor:pointer}
+  .ph-item .ph-sel.st-todo{background:#eef2f8;color:var(--todo)}
+  .ph-item .ph-sel.st-doing{background:#e8f1fb;color:var(--doing)}
+  .ph-item .ph-sel.st-blocked{background:#fdeaea;color:var(--blocked)}
+  .ph-item .ph-sel.st-done{background:#e3f6ec;color:var(--done)}
+  .ov-ph{font-size:11.5px;font-weight:700;white-space:nowrap}
+  .ov-ph.st-todo{color:var(--todo)}.ov-ph.st-doing{color:var(--doing)}.ov-ph.st-blocked{color:var(--blocked)}.ov-ph.st-done{color:var(--done)}
+
+  .lot-group{border-top:1px solid var(--line)}
+  .lhead{display:flex;align-items:center;gap:9px;padding:8px 16px;background:#f7f9fc;cursor:pointer}
+  .lhead:hover{background:#f1f6fc}
+  .lhead .chev{color:var(--muted);font-size:11px;width:11px;transition:transform .15s}
+  .lot-group.collapsed .lhead .chev{transform:rotate(-90deg)}
+  .lhead .lname{font-size:12.5px;font-weight:700;flex:1;min-width:0}
+  .lhead .lmini{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .lot-group.collapsed .lbody{display:none}
+
+  .task-row{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:12px;padding:11px 16px;
+    border-top:1px solid var(--line2);cursor:pointer;align-items:start}
+  .task-row:hover{background:#fafcff}
+  .task-row.sel{background:var(--brandbg);box-shadow:inset 3px 0 0 var(--brand)}
+  .task-row.draft{background:#fff9e9}
+  .tleft{display:flex;flex-direction:column;gap:5px;align-items:flex-start}
+  .tid{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;font-size:12.5px}
+  .status-pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:10px;font-weight:800;white-space:nowrap;text-transform:uppercase;letter-spacing:.04em}
+  .status-pill.st-todo{background:#eef2f8;color:var(--todo)}
+  .status-pill.st-doing{background:#e8f1fb;color:var(--doing)}
+  .status-pill.st-blocked{background:#fdeaea;color:var(--blocked)}
+  .status-pill.st-done{background:#e3f6ec;color:var(--done)}
+  .tmain{min-width:0}
+  .ttitle{font-size:13.5px;font-weight:650}
+  .task-row.done .ttitle{color:var(--muted)}
+  .dflag{font-size:10px;font-weight:800;color:#a96500;background:#fff3df;border:1px solid #f1d6b0;border-radius:999px;padding:0 7px;margin-left:4px}
+  .tnote{font-size:12px;color:#8a5200;font-style:italic;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .tnote:empty{display:none}
+  .tmeta{font-size:11px;color:var(--muted);margin-top:3px}
+  .tactions{display:flex;align-items:center;gap:7px}
+  .status-sel{font:inherit;font-size:11.5px;font-weight:700;border-radius:7px;padding:4px 7px;border:1px solid var(--line);cursor:pointer}
+  .status-sel.st-todo{background:#eef2f8;color:var(--todo)}
+  .status-sel.st-doing{background:#e8f1fb;color:var(--doing)}
+  .status-sel.st-blocked{background:#fdeaea;color:var(--blocked)}
+  .status-sel.st-done{background:#e3f6ec;color:var(--done)}
+  .detail-btn{font:inherit;font-size:11.5px;font-weight:600;padding:4px 9px;border:1px solid var(--line);border-radius:7px;background:#fff;cursor:pointer;color:var(--brand)}
+  .detail-btn:hover{border-color:var(--brand2)}
+  .task-row.compact{grid-template-columns:64px minmax(0,1fr) auto;padding:7px 16px;align-items:center}
+  .task-row.compact .tnote,.task-row.compact .tmeta{display:none}
+  .task-row.compact .tleft{flex-direction:row;align-items:center}
+  .task-row.compact .status-pill{display:none}
+
+  .sgroup{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+  .sgroup>.shead{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--line)}
+  .sgroup .sdot{width:10px;height:10px;border-radius:50%;flex:none}
+  .sgroup .shead h2{font-size:14px;margin:0;flex:1}
+  .sgroup .shead .mini{font-size:12px;color:var(--muted)}
+  .empty{padding:34px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:12px}
+
+  /* ---------- Panneau de détail (drawer) ---------- */
+  .backdrop{position:fixed;inset:0;background:rgba(15,24,40,.34);opacity:0;pointer-events:none;transition:opacity .2s;z-index:60}
+  .backdrop.open{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:min(560px,94vw);background:#fff;
+    box-shadow:-14px 0 44px rgba(16,24,40,.2);transform:translateX(102%);transition:transform .25s ease;z-index:61;overflow:auto}
+  .drawer.open{transform:none}
+  .dhead{position:sticky;top:0;background:linear-gradient(135deg,#0f4c81,#1379b0);color:#fff;padding:16px 20px;z-index:2}
+  .dhead .deyebrow{font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.85;font-weight:700}
+  .dhead h2{font-size:17px;margin:6px 34px 8px 0;line-height:1.25}
+  .dhead .dmeta{display:flex;gap:9px;align-items:center;flex-wrap:wrap;font-size:12px;opacity:.95}
+  .dclose{position:absolute;top:12px;right:12px;font:inherit;font-size:20px;line-height:1;color:#fff;
+    background:rgba(255,255,255,.16);border:0;border-radius:8px;width:30px;height:30px;cursor:pointer}
+  .dclose:hover{background:rgba(255,255,255,.3)}
+  .dbody{padding:18px 20px 70px}
+  .dbody h4{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:18px 0 6px;font-weight:700}
+  .dbody h4:first-child{margin-top:0}
+  .dbody p{margin:0;font-size:13.5px}
+  .dnote{background:#fff9e9;border:1px solid #f1d6b0;border-left:3px solid #d7a231;border-radius:8px;
+    padding:10px 12px;font-size:13px;color:#6b4a00;font-style:italic;margin-bottom:14px}
+  .dnote.warn{background:#fff3df;border-color:#f1d6b0;color:#a96500;font-style:normal}
+  .dbody code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;background:#f1f4f9;padding:1px 5px;border-radius:5px}
+  .filelist{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+  .timeline{border-left:2px solid var(--line);margin-left:5px;padding-left:16px}
+  .tl{position:relative;margin-bottom:14px}
+  .tl:last-child{margin-bottom:0}
+  .tl::before{content:"";position:absolute;left:-23px;top:4px;width:11px;height:11px;border-radius:50%;background:#fff;border:2.5px solid var(--muted)}
+  .tl.st-done::before{border-color:var(--done)}
+  .tl.st-doing::before{border-color:var(--doing)}
+  .tl.st-blocked::before{border-color:var(--blocked)}
+  .tl .tld{font-size:11.5px;color:var(--muted);font-weight:700}
+  .tl .tlt{font-size:13px;margin-top:1px}
+
+  footer{max-width:1480px;margin:0 auto;padding:4px 22px 60px;color:var(--muted);font-size:12px;text-align:center}
+
+  /* ---------- Lecteur Markdown ---------- */
+  .reader{max-width:1480px;margin:0 auto 18px;display:grid;grid-template-columns:290px minmax(0,1fr);background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;scroll-margin-top:60px}
+  @media(max-width:900px){.reader{grid-template-columns:1fr;margin-left:22px;margin-right:22px}.rnav{border-right:0!important;border-bottom:1px solid var(--line);max-height:300px!important}}
+  .rnav{border-right:1px solid var(--line);padding:14px;background:var(--line2);max-height:calc(100vh - 80px);overflow:auto;position:sticky;top:58px;align-self:start}
+  .rnav input{width:100%;font:inherit;font-size:13px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink)}
+  .ncat .nt{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:800;margin:14px 0 4px;display:flex;gap:6px}
+  .ni{display:block;padding:6px 9px;border-radius:7px;text-decoration:none;color:var(--ink);font-size:13px;line-height:1.35}
+  .ni small{display:block;color:var(--muted);font-size:11px}
+  .ni:hover{background:var(--brandbg)}
+  .ni.on{background:var(--brand);color:#fff}.ni.on small{color:#dbe8f5}
+  #rview{padding:18px 30px 30px;min-width:0}
+  .dhead{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-bottom:10px;border-bottom:1px solid var(--line2);font-size:12.5px}
+  .dhead .src-link{margin-left:auto;white-space:nowrap}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}
+  .toc button{font:inherit;font-size:12px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--ink);cursor:pointer}
+  .toc button:hover{border-color:var(--brand2)}
+  .empty{margin:22px 0;padding:18px;border:1px dashed var(--line);border-radius:10px;color:var(--muted);font-size:14px}
+  .md{max-width:880px;font-size:14.5px;line-height:1.65}
+  .md h1{font-size:25px;margin:.7em 0 .5em}.md h2{font-size:18.5px;margin:1.5em 0 .5em;padding-bottom:5px;border-bottom:1px solid var(--line2)}
+  .md h3{font-size:15.5px;margin:1.2em 0 .4em}.md h4{font-size:14px;margin:1em 0 .3em}
+  .md p{margin:.55em 0}.md ul,.md ol{padding-left:22px}
+  .md table{width:auto;min-width:50%;margin:.8em 0;font-size:13.5px;border-collapse:collapse}.md th,.md td{border:1px solid var(--line);padding:6px 9px;text-align:left}
+  .md pre{background:var(--line2);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow:auto;font-size:12.5px}.md pre code{background:none;border:0;padding:0}
+  .md blockquote{margin:.8em 0;padding:6px 14px;border-left:4px solid var(--brand2);background:var(--line2);color:var(--muted)}
+  .md li.task{list-style:none;margin-left:-22px;display:flex;gap:9px;align-items:baseline}
+  .md .cb{flex:none;width:16px;height:16px;border-radius:4px;border:1.5px solid var(--muted);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff;transform:translateY(2px)}
+  .md .cb.on{background:var(--done);border-color:var(--done)}
+  .md .os-delta{display:inline-block;font-size:11px;font-weight:800;padding:2px 9px;border-radius:999px;margin-right:10px}
+  .os-added{background:#e3f6ec;color:var(--done)}.os-modified{background:#e8f1fb;color:var(--doing)}.os-removed{background:#fdeaea;color:var(--blocked)}.os-renamed{background:var(--line2);color:var(--todo)}
+  .md .os-req{border:1px solid var(--line);border-left:4px solid var(--brand2);border-radius:10px;padding:4px 16px 8px;margin:14px 0;background:var(--panel)}
+  .md .os-scn{background:var(--line2);border-radius:8px;padding:2px 14px 6px;margin:10px 0}
+  .md .os-lbl{display:inline-block;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-right:8px}
+  .md strong.kw{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--brand2)}
+  .role-badges{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+  .rb{font-size:10px;font-weight:700;border-radius:999px;padding:1px 7px;white-space:nowrap}
+  .rb.exec{background:var(--line2);color:var(--todo)}.rb.rev{background:var(--brandbg);color:var(--brand)}
+  .rb.iter{background:#fdf3e0;color:#b7791f}.rb.esc{background:#fdeaea;color:var(--blocked)}.rb.ready{background:#e3f6ec;color:var(--done)}
+
+  @media print{
+    body{background:#fff}
+    .toolbar,.backdrop,.drawer,.hint,.detail-btn,.rail-head .row{display:none!important}
+    .layout{display:block;max-width:none;padding:0}
+    .rail{position:static;box-shadow:none;margin-bottom:16px}
+    .feature,.sgroup,.overview,.task-row,.rail{box-shadow:none;break-inside:avoid}
+    .feature.collapsed .fbody,.lot-group.collapsed .lbody,.overview.collapsed .obody{display:block!important}
+  }
+</style>
+</head>
+<body data-file-updated="{{FILE_UPDATED}}">
+
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">{{EYEBROW}}</div>
+    <h1>{{H1}}</h1>
+    {{SUBTITLE_HTML}}
+    <p class="sub" style="opacity:.82;margin-top:4px">Dernière mise à jour du fichier : <span id="fileUpdated">{{FILE_UPDATED}}</span></p>
+    <div class="global">
+      <span class="pct" id="globalPct">0%</span>
+      <div class="track"><span id="globalBar"></span></div>
+      <span class="gcount" id="globalCount">0 / 0 tâches terminées</span>
+      <span class="gscope" id="globalScope"></span>
+      <span class="gready" id="globalReady"></span>
+    </div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="inner">
+    <input type="search" id="q" placeholder="Rechercher une tâche, un fichier…">
+    <div class="chips" id="statusChips" role="group" aria-label="Filtrer par statut"></div>
+    <span class="sep"></span>
+    <span class="seg" id="groupSeg" role="group" aria-label="Grouper">
+      <button type="button" data-group="feature">Par chantier</button>
+      <button type="button" data-group="statut">Par statut</button>
+    </span>
+    <span class="seg" id="viewSeg" role="group" aria-label="Densité">
+      <button type="button" data-view="detail">Détaillée</button>
+      <button type="button" data-view="compact">Compacte</button>
+    </span>
+    <span class="sep"></span>
+    <button class="btn" id="expandAll">Tout déplier</button>
+    <button class="btn" id="collapseAll">Tout replier</button>
+    <button class="btn" id="export">Exporter</button>
+    <button class="btn" id="importBtn">Importer</button>
+    <input type="file" id="importFile" accept="application/json" class="hidden">
+    <button class="btn primary" id="print">Imprimer / PDF</button>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="rail" aria-label="Chantiers">
+    <div class="rail-head">
+      <h2>Chantiers suivis <span id="selCount">0 / 0</span></h2>
+      <div class="row">
+        <button class="btn" id="selectAll">Tout</button>
+        <button class="btn" id="selectNone">Aucun</button>
+      </div>
+    </div>
+    <div id="railList"></div>
+    <div class="rail-synth" id="railSynth"></div>
+    <p class="hint">Sélection, filtres, groupe, vue et tâche ouverte sont <b>mémorisés</b> (URL + navigateur) et restaurés au rechargement.</p>
+  </aside>
+
+  <main class="workspace">
+    <div class="banner hidden" id="draftBanner">
+      <b>Modifications locales (brouillon).</b> <span id="draftCount">0</span> tâche(s) modifiée(s) localement, non reportée(s) dans le fichier.
+      Le fichier HTML reste la source de vérité — reportez ces changements, ou annulez-les.
+      <button class="btn" id="resetDrafts" style="margin-left:8px">Revenir à l'état du fichier</button>
+    </div>
+
+    <div class="legend">
+      <span><b>Statut :</b></span>
+      <span class="lg"><span class="sw" style="background:var(--todo)"></span>À faire</span>
+      <span class="lg"><span class="sw" style="background:var(--doing)"></span>En cours</span>
+      <span class="lg"><span class="sw" style="background:var(--blocked)"></span>Bloqué</span>
+      <span class="lg"><span class="sw" style="background:var(--done)"></span>Terminé</span>
+      <span style="margin-left:auto">Cliquez une ligne pour le <b>détail</b> ; Échap pour fermer.</span>
+    </div>
+
+    <section class="overview" id="overview"></section>
+
+    <div id="lots"></div>
+  </main>
+</div>
+
+<section class="reader" id="reader" data-prefix="{{ROOT_PREFIX}}" aria-label="Lecteur Markdown">
+  <div class="rnav"><input type="search" id="rsearch" placeholder="Rechercher un document…" aria-label="Rechercher un document"><nav id="rnav" aria-label="Documents"></nav></div>
+  <article id="rview" aria-live="polite"></article>
+</section>
+
+<footer>
+{{FOOTER_HTML}}
+</footer>
+
+<aside class="backdrop" id="backdrop"></aside>
+<aside class="drawer" id="drawer" aria-label="Détail de la tâche" aria-live="polite"></aside>
+
+<script type="application/json" id="state-data">{{STATE_JSON}}</script>
+<script type="application/json" id="docs-data">{{DOCS_JSON}}</script>
+<script>{{MARKDOWN_IT}}</script>
+<script>{{READER_JS}}</script>
+<script>
+const STATE = JSON.parse(document.getElementById("state-data").textContent) || {};
+const FEATURES = STATE.features || [];
+
+/* ============================================================
+   État, persistance (URL + navigateur) et rétention de sélection
+   ============================================================ */
+const STATUS = {todo:"À faire", doing:"En cours", blocked:"Bloqué", done:"Terminé"};
+const STATUS_COLOR = {todo:"#5c6b7a", doing:"#2b6cb0", blocked:"#c0392b", done:"#1f9d55"};
+const CHIP_ORDER = ["todo","doing","blocked","done"];
+const KEY = "{{STORAGE_KEY}}";
+
+const ORIGIN = {};
+FEATURES.forEach(f => f.tasks.forEach(t => { ORIGIN[f.id+":"+t.id] = {status:t.status, updated:t.updated}; }));
+const ORIGIN_PHASE = {};
+FEATURES.forEach(f => (f.phases||[]).forEach(p => (p.items||[]).forEach(it => { ORIGIN_PHASE[f.id+":"+p.id+":"+it.id] = it.status || "todo"; })));
+
+function defaultState(){
+  return {features:FEATURES.map(f=>f.id), task:null, q:"", status:"", group:"feature", view:"detail", expanded:{}};
+}
+let state = defaultState();
+
+const getFeature = id => FEATURES.find(f => f.id === id);
+const getTask = (fid,tid) => { const f = getFeature(fid); return f ? f.tasks.find(t => t.id === tid) : null; };
+const taskKey = (fid,tid) => fid + ":" + tid;
+const today = () => new Date().toISOString().slice(0,10);
+const isDraft = (fid,tid) => { const t = getTask(fid,tid); const o = ORIGIN[taskKey(fid,tid)]; return !!(t && o && t.status !== o.status); };
+const isOpen = key => state.expanded[key] !== false;
+const esc = v => String(v == null ? "" : v).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function selFeatures(){ return FEATURES.filter(f => state.features.includes(f.id)); }
+function stats(f){
+  const c = {todo:0,doing:0,blocked:0,done:0};
+  f.tasks.forEach(t => { c[t.status] = (c[t.status]||0) + 1; });
+  const total = f.tasks.length, done = c.done;
+  return {c,total,done,pct: total ? Math.round(done*100/total) : 0};
+}
+function totalStats(feats){
+  const c = {todo:0,doing:0,blocked:0,done:0};
+  feats.forEach(f => f.tasks.forEach(t => { c[t.status] = (c[t.status]||0) + 1; }));
+  const total = c.todo + c.doing + c.blocked + c.done;
+  return {c,total,done:c.done,pct: total ? Math.round(c.done*100/total) : 0};
+}
+/* --- Phases du chantier --- */
+function implStats(f){
+  const c = {todo:0,doing:0,blocked:0,done:0};
+  f.tasks.forEach(t => { c[t.status] = (c[t.status]||0) + 1; });
+  return {total:f.tasks.length, done:c.done, doing:c.doing, blocked:c.blocked};
+}
+function phaseStatus(phase, f){
+  if(phase.id === "impl"){
+    const s = implStats(f);
+    if(!s.total) return "todo";
+    if(s.done >= s.total) return "done";
+    if(s.blocked > 0) return "blocked";
+    if(s.doing > 0 || s.done > 0) return "doing";
+    return "todo";
+  }
+  const st = (phase.items||[]).map(i => i.status || "todo");
+  if(!st.length) return "todo";
+  if(st.every(x => x === "done")) return "done";
+  if(st.some(x => x === "blocked")) return "blocked";
+  if(st.some(x => x === "doing" || x === "done")) return "doing";
+  return "todo";
+}
+function phaseProgress(phase, f){
+  if(phase.id === "impl"){ const s = implStats(f); return [s.done, s.total]; }
+  const it = phase.items||[];
+  return [it.filter(i => i.status === "done").length, it.length];
+}
+function currentPhase(f){
+  const ps = f.phases||[];
+  for(const p of ps){ if(phaseStatus(p, f) !== "done") return p; }
+  return ps[ps.length-1] || null;
+}
+function isPhaseOpen(fid, pid){
+  const key = "phase:" + fid + ":" + pid;
+  const v = state.expanded[key];
+  if(v === undefined){ const f = getFeature(fid); const cur = f ? currentPhase(f) : null; return !!(cur && cur.id === pid); }
+  return v;
+}
+function isPhaseDraft(fid, pid, iid){
+  const f = getFeature(fid); if(!f) return false;
+  const p = (f.phases||[]).find(x => x.id === pid); if(!p) return false;
+  const it = (p.items||[]).find(x => x.id === iid); if(!it) return false;
+  return (it.status || "todo") !== ORIGIN_PHASE[fid+":"+pid+":"+iid];
+}
+function phaseStripHTML(f){
+  const ps = f.phases||[];
+  if(!ps.length) return "";
+  return '<div class="ph-strip" aria-hidden="true">' + ps.map(p => '<span class="st-' + phaseStatus(p,f) + '"></span>').join("") + "</div>";
+}
+function phaseBandHTML(f){
+  const ps = f.phases||[];
+  if(!ps.length) return "";
+  const cur = currentPhase(f);
+  const steps = ps.map(function(p,i){
+    const st = phaseStatus(p,f), pr = phaseProgress(p,f), open = isPhaseOpen(f.id,p.id);
+    return '<li class="ph-step st-' + st + (open ? " active" : "") + (cur && cur.id === p.id ? " current" : "") + '" data-phtoggle="' + f.id + ":" + p.id + '" role="button" tabindex="0">'
+      + '<span class="ph-dot">' + (st === "done" ? "✓" : (i+1)) + "</span>"
+      + "<span><span class=\"ph-nm\">" + esc(p.name) + '</span><div class="ph-mt">' + pr[0] + "/" + pr[1] + (st === "blocked" ? " · bloqué" : "") + "</div></span></li>";
+  }).join("");
+  const openPhase = ps.find(p => isPhaseOpen(f.id,p.id));
+  return '<div class="phases"><div class="ph-head"><span class="ph-t">Phases du chantier</span>'
+    + '<span class="ph-cur">Phase en cours : <b>' + (cur ? esc(cur.name) : "—") + "</b></span></div>"
+    + '<ol class="ph-steps">' + steps + "</ol>"
+    + (openPhase ? phasePanelHTML(f,openPhase) : "") + "</div>";
+}
+function phasePanelHTML(f,p){
+  if(p.id === "impl"){
+    const s = implStats(f);
+    return '<div class="ph-panel"><div class="ph-item st-' + (s.blocked ? "blocked" : (s.done >= s.total ? "done" : "doing")) + '">'
+      + '<span class="ph-ico">' + (s.blocked ? "!" : "▸") + "</span>"
+      + '<span class="ph-lbl">' + s.done + "/" + s.total + " tâches terminées"
+      + (s.blocked ? " · " + s.blocked + " bloquée(s)" : "") + " — détail dans les lots ci-dessous.</span></div></div>";
+  }
+  const items = (p.items||[]).map(function(it){
+    const st = it.status || "todo", draft = isPhaseDraft(f.id,p.id,it.id);
+    return '<div class="ph-item st-' + st + (draft ? " draft" : "") + '">'
+      + '<span class="ph-ico">' + (st === "done" ? "✓" : "") + "</span>"
+      + '<span class="ph-lbl">' + esc(it.label) + (it.note ? '<span class="ph-note">' + it.note + "</span>" : "") + "</span>"
+      + '<select class="ph-sel st-' + st + '" data-phsel="' + f.id + ":" + p.id + ":" + it.id + '" aria-label="Statut de ' + esc(it.label) + '">'
+      + Object.keys(STATUS).map(k => '<option value="' + k + '"' + (k === st ? " selected" : "") + ">" + STATUS[k] + "</option>").join("")
+      + "</select></div>";
+  }).join("");
+  return '<div class="ph-panel">' + items + "</div>";
+}
+function matches(f,t){
+  if(state.status && t.status !== state.status) return false;
+  if(state.q){
+    const hay = [t.id,t.title,t.note,t.objective,(t.files||[]).join(" "),f.name,f.change,t.lot]
+      .join(" ").toLowerCase();
+    if(hay.indexOf(state.q.toLowerCase()) === -1) return false;
+  }
+  return true;
+}
+function draftCount(){
+  let n = FEATURES.reduce((m,f) => m + f.tasks.filter(t => isDraft(f.id,t.id)).length, 0);
+  FEATURES.forEach(f => (f.phases||[]).forEach(p => (p.items||[]).forEach(it => { if(isPhaseDraft(f.id,p.id,it.id)) n++; })));
+  return n;
+}
+
+function applyOverrides(ov){
+  Object.keys(ov || {}).forEach(k => {
+    if(k.indexOf("ph:") === 0){
+      const parts = k.split(":"); // ph : feature : phase : item
+      const f = getFeature(parts[1]); if(!f) return;
+      const p = (f.phases||[]).find(x => x.id === parts[2]); if(!p) return;
+      const it = (p.items||[]).find(x => x.id === parts[3]); if(!it) return;
+      if(ov[k].status) it.status = ov[k].status;
+      if(ov[k].updated) it.updated = ov[k].updated;
+      return;
+    }
+    const i = k.indexOf(":"), fid = k.slice(0,i), tid = k.slice(i+1);
+    const t = getTask(fid,tid); if(!t) return;
+    if(ov[k].status) t.status = ov[k].status;
+    if(ov[k].updated) t.updated = ov[k].updated;
+  });
+}
+function collectOverrides(){
+  const out = {};
+  FEATURES.forEach(f => f.tasks.forEach(t => {
+    const k = taskKey(f.id,t.id), o = ORIGIN[k];
+    if(t.status !== o.status) out[k] = {status:t.status, updated:t.updated};
+  }));
+  FEATURES.forEach(f => (f.phases||[]).forEach(p => (p.items||[]).forEach(it => {
+    const k = "ph:" + f.id + ":" + p.id + ":" + it.id;
+    if((it.status || "todo") !== ORIGIN_PHASE[f.id+":"+p.id+":"+it.id]) out[k] = {status:it.status, updated:it.updated || today()};
+  })));
+  return out;
+}
+function resetDrafts(){
+  FEATURES.forEach(f => f.tasks.forEach(t => {
+    const k = taskKey(f.id,t.id), o = ORIGIN[k];
+    t.status = o.status; t.updated = o.updated;
+  }));
+  FEATURES.forEach(f => (f.phases||[]).forEach(p => (p.items||[]).forEach(it => {
+    it.status = ORIGIN_PHASE[f.id+":"+p.id+":"+it.id];
+  })));
+}
+
+/* --- Sérialisation : URL (partageable) + navigateur (rétention) --- */
+function writeHash(){
+  const p = [];
+  if(state.features.length !== FEATURES.length) p.push("f=" + state.features.join(","));
+  if(state.task) p.push("task=" + state.task);
+  if(state.status) p.push("statut=" + state.status);
+  if(state.q) p.push("q=" + encodeURIComponent(state.q));
+  if(state.group !== "feature") p.push("g=" + state.group);
+  if(state.view !== "detail") p.push("v=" + state.view);
+  const next = p.length ? "#" + p.join("&") : "";
+  if(location.hash !== next) history.replaceState(null, "", next || location.pathname + location.search);
+}
+function readHash(){
+  const out = {};
+  location.hash.replace(/^#/,"").split("&").forEach(kv => {
+    const i = kv.indexOf("="); if(i < 1) return;
+    out[decodeURIComponent(kv.slice(0,i))] = decodeURIComponent(kv.slice(i+1));
+  });
+  if("f" in out) state.features = out.f ? out.f.split(",") : [];
+  if("task" in out) state.task = out.task || null;
+  if("statut" in out) state.status = out.statut;
+  if("q" in out) state.q = out.q;
+  if("g" in out) state.group = out.g;
+  if("v" in out) state.view = out.v;
+}
+function save(){
+  const payload = {features:state.features, task:state.task, q:state.q, status:state.status,
+    group:state.group, view:state.view, expanded:state.expanded, overrides:collectOverrides()};
+  try{ localStorage.setItem(KEY, JSON.stringify(payload)); }catch(e){}
+  writeHash();
+}
+function load(){
+  let s = null;
+  try{ s = JSON.parse(localStorage.getItem(KEY)); }catch(e){}
+  state = Object.assign(defaultState(), s || {});
+  if(!Array.isArray(state.features)) state.features = FEATURES.map(f => f.id);
+  if(!state.expanded || typeof state.expanded !== "object") state.expanded = {};
+  applyOverrides(s && s.overrides);
+  readHash();
+  state.features = FEATURES.map(f => f.id).filter(id => state.features.includes(id));
+  if(state.group !== "statut") state.group = "feature";
+  if(state.view !== "compact") state.view = "detail";
+  if(state.status && !STATUS[state.status]) state.status = "";
+}
+
+/* ============================================================
+   Rendu
+   ============================================================ */
+function renderHeader(){
+  const feats = selFeatures(), ts = totalStats(feats);
+  document.getElementById("globalPct").textContent = ts.pct + "%";
+  document.getElementById("globalBar").style.width = ts.pct + "%";
+  document.getElementById("globalCount").textContent = ts.done + " / " + ts.total + " tâches terminées";
+  document.getElementById("globalScope").textContent = feats.length + " chantier" + (feats.length > 1 ? "s" : "") + " suivi" + (feats.length > 1 ? "s" : "");
+  const ready = feats.reduce((n,f) => n + f.tasks.filter(t => t.ready_to_commit).length, 0);
+  document.getElementById("globalReady").textContent = ready + " prête" + (ready > 1 ? "s" : "") + " à commiter";
+}
+function renderToolbar(){
+  const feats = selFeatures(), ts = totalStats(feats);
+  document.getElementById("statusChips").innerHTML =
+    [["","Tout",ts.total]].concat(CHIP_ORDER.map(st => [st,STATUS[st],ts.c[st]])).map(function(row){
+      const active = state.status === row[0];
+      return '<button type="button" class="chip' + (active ? " active" : "") + '" data-chip="' + row[0] + '" aria-pressed="' + active + '">'
+        + row[1] + '<span class="n">' + row[2] + "</span></button>";
+    }).join("");
+  const qEl = document.getElementById("q");
+  if(qEl.value !== state.q) qEl.value = state.q;
+  document.getElementById("groupSeg").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.group === state.group)));
+  document.getElementById("viewSeg").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.view === state.view)));
+}
+function renderRail(){
+  document.getElementById("railList").innerHTML = FEATURES.map(function(f){
+    const s = stats(f), sel = state.features.includes(f.id);
+    return '<div class="feat-item' + (sel ? " sel" : "") + '" data-feature="' + f.id + '" role="button" tabindex="0" aria-pressed="' + sel + '">'
+      + '<span class="chk">' + (sel ? "✓" : "") + "</span>"
+      + '<div class="info">'
+      + '<div class="name"><span class="dot" style="background:' + f.color + '"></span>' + esc(f.name) + "</div>"
+      + '<div class="sub">' + esc(f.change) + " · maj " + f.updated + "</div>"
+      + '<div class="mini-bar"><span style="width:' + s.pct + "%;background:" + f.color + '"></span></div>'
+      + '<div class="counts"><b>' + s.done + "/" + s.total + "</b> · " + s.pct + "%"
+      + ' <span style="color:var(--doing)">●' + s.c.doing + "</span>"
+      + ' <span style="color:var(--blocked)">●' + s.c.blocked + "</span></div>"
+      + phaseStripHTML(f)
+      + "</div></div>";
+  }).join("");
+  const ts = totalStats(selFeatures());
+  document.getElementById("railSynth").innerHTML =
+    '<div class="k">Synthèse de la sélection</div><div class="grid">'
+    + '<div class="cell"><div class="n">' + ts.total + '</div><div class="l">Tâches</div></div>'
+    + '<div class="cell"><div class="n" style="color:var(--done)">' + ts.c.done + '</div><div class="l">Terminées</div></div>'
+    + '<div class="cell"><div class="n" style="color:var(--doing)">' + ts.c.doing + '</div><div class="l">En cours</div></div>'
+    + '<div class="cell"><div class="n" style="color:var(--blocked)">' + ts.c.blocked + '</div><div class="l">Bloquées</div></div>'
+    + "</div>";
+  document.getElementById("selCount").textContent = state.features.length + " / " + FEATURES.length;
+}
+function renderOverview(){
+  const wrap = document.getElementById("overview"), feats = selFeatures();
+  if(feats.length < 2 || state.group !== "feature"){ wrap.classList.add("hidden"); wrap.innerHTML = ""; return; }
+  wrap.classList.remove("hidden");
+  wrap.classList.toggle("collapsed", !isOpen("overview"));
+  wrap.innerHTML =
+    '<div class="ohead" data-toggle="overview"><span class="chev">▾</span><h2>Vue d\'ensemble — ' + feats.length + ' chantiers suivis</h2>'
+    + '<span class="feat-tag">Cliquez une ligne pour y accéder</span></div>'
+    + '<div class="obody"><table class="ov"><thead><tr>'
+    + "<th>Chantier</th><th>Phase</th><th>Progression</th><th>À faire</th><th>En cours</th><th>Bloqué</th><th>Terminé</th><th>Maj</th>"
+    + "</tr></thead><tbody>"
+    + feats.map(function(f){
+        const s = stats(f), cur = currentPhase(f), curSt = cur ? phaseStatus(cur, f) : "todo";
+        return '<tr data-scroll="' + f.id + '">'
+          + '<td><span class="ov-name"><span class="dot" style="background:' + f.color + '"></span>' + esc(f.name) + "</span></td>"
+          + '<td><span class="ov-ph st-' + curSt + '">' + (cur ? esc(cur.name) : "—") + "</span></td>"
+          + '<td><div class="ov-bar"><span style="width:' + s.pct + "%;background:" + f.color + '"></span></div>'
+          + '<span style="font-size:11px;color:var(--muted)">' + s.done + "/" + s.total + " · " + s.pct + "%</span></td>"
+          + '<td class="ov-num todo">' + s.c.todo + "</td>"
+          + '<td class="ov-num doing">' + s.c.doing + "</td>"
+          + '<td class="ov-num blocked">' + s.c.blocked + "</td>"
+          + '<td class="ov-num done">' + s.c.done + "</td>"
+          + '<td style="color:var(--muted);font-size:11.5px">' + f.updated + "</td>"
+          + "</tr>";
+      }).join("")
+    + "</tbody></table></div>";
+}
+function roleBadges(t){
+  const b = [];
+  if(t.executor) b.push('<span class="rb exec" title="Exécutant">exéc. ' + esc(t.executor) + '</span>');
+  if(t.reviewer) b.push('<span class="rb rev" title="Relecteur">relect. ' + esc(t.reviewer) + '</span>');
+  if(t.review_iteration != null) b.push('<span class="rb iter" title="Itération de revue">itér. ' + t.review_iteration + '</span>');
+  if(t.escalated) b.push('<span class="rb esc" title="Escalade au-delà du nombre d\'itérations">escalade</span>');
+  if(t.ready_to_commit) b.push('<span class="rb ready" title="Prêt à commiter">prêt à commiter</span>');
+  return b.length ? '<div class="role-badges">' + b.join('') + '</div>' : '';
+}
+function taskRowHTML(f,t,showFeature){
+  const st = t.status, draft = isDraft(f.id,t.id), key = taskKey(f.id,t.id);
+  const lot = (f.lots.find(l => l.id === t.lot) || {}).name || t.lot;
+  return '<div class="task-row' + (state.view === "compact" ? " compact" : "") + (state.task === key ? " sel" : "") + (draft ? " draft" : "")
+    + '" data-task="' + key + '" data-feature="' + f.id + '" role="button" tabindex="0">'
+    + '<div class="tleft"><span class="tid">' + esc(t.id) + '</span>'
+    + '<span class="status-pill st-' + st + '">' + STATUS[st] + "</span></div>"
+    + '<div class="tmain"><div class="ttitle">' + esc(t.title) + (draft ? '<span class="dflag">brouillon</span>' : "") + "</div>"
+    + '<div class="tnote">' + (t.note || "") + "</div>"
+    + '<div class="tmeta">' + (showFeature ? '<span class="feat-tag">' + esc(f.name) + "</span> " : "")
+    + esc(lot) + " · maj " + (t.updated || "—") + (t.deps && t.deps !== "—" ? " · dép. " + esc(t.deps) : "") + "</div>"
+    + roleBadges(t) + "</div>"
+    + '<div class="tactions">'
+    + '<select class="status-sel st-' + st + '" data-sel="' + key + '" aria-label="Statut de ' + esc(t.id) + '">'
+    + Object.keys(STATUS).map(k => '<option value="' + k + '"' + (k === st ? " selected" : "") + ">" + STATUS[k] + "</option>").join("")
+    + "</select>"
+    + '<button class="detail-btn" data-open="' + key + '">Détail</button>'
+    + "</div></div>";
+}
+function renderWorkspace(){
+  const feats = selFeatures(), box = document.getElementById("lots");
+  if(!feats.length){ box.innerHTML = '<div class="empty">Aucun chantier sélectionné. Cochez au moins un chantier dans la liste de gauche.</div>'; return; }
+
+  if(state.group === "statut"){
+    const groups = CHIP_ORDER.map(function(st){
+      const rows = [];
+      feats.forEach(f => f.tasks.forEach(t => { if(t.status === st && matches(f,t)) rows.push(taskRowHTML(f,t,true)); }));
+      if(!rows.length) return "";
+      return '<section class="sgroup"><div class="shead"><span class="sdot" style="background:' + STATUS_COLOR[st] + '"></span>'
+        + "<h2>" + STATUS[st] + '</h2><span class="mini">' + rows.length + " tâche" + (rows.length > 1 ? "s" : "") + "</span></div>"
+        + rows.join("") + "</section>";
+    }).join("");
+    box.innerHTML = groups || '<div class="empty">Aucune tâche ne correspond aux filtres.</div>';
+    return;
+  }
+
+  const secs = feats.map(function(f){
+    if(!f.tasks.some(t => matches(f,t))) return "";
+    const s = stats(f), fkey = "feat:" + f.id;
+    const lotsHTML = f.lots.map(function(lot){
+      const rows = f.tasks.filter(t => t.lot === lot.id && matches(f,t)).map(t => taskRowHTML(f,t,false));
+      if(!rows.length) return "";
+      const lt = f.tasks.filter(t => t.lot === lot.id).length;
+      const ld = f.tasks.filter(t => t.lot === lot.id && t.status === "done").length;
+      const lkey = "lot:" + f.id + ":" + lot.id;
+      return '<div class="lot-group' + (isOpen(lkey) ? "" : " collapsed") + '">'
+        + '<div class="lhead" data-toggle="' + lkey + '"><span class="chev">▾</span>'
+        + '<span class="lname">' + esc(lot.name) + '</span><span class="lmini">' + ld + "/" + lt + "</span></div>"
+        + '<div class="lbody">' + rows.join("") + "</div></div>";
+    }).join("");
+    return '<section class="feature' + (isOpen(fkey) ? "" : " collapsed") + '" data-featuresec="' + f.id + '">'
+      + '<div class="fhead" data-toggle="' + fkey + '"><span class="chev">▾</span>'
+      + '<span class="dot" style="background:' + f.color + '"></span>'
+      + "<h2>" + esc(f.name) + "</h2>"
+      + '<span class="fcounts">'
+      + '<span class="feat-tag">' + s.c.doing + " en cours</span>"
+      + (s.c.blocked ? '<span class="feat-tag b">' + s.c.blocked + " bloqué" + (s.c.blocked > 1 ? "s" : "") + "</span>" : "")
+      + "</span>"
+      + '<span class="mini">' + s.done + "/" + s.total + " · " + s.pct + "%</span></div>"
+      + '<div class="fbar"><span style="width:' + s.pct + "%;background:" + f.color + '"></span></div>'
+      + phaseBandHTML(f)
+      + '<div class="fbody">' + lotsHTML + "</div></section>";
+  }).join("");
+  box.innerHTML = secs || '<div class="empty">Aucune tâche ne correspond aux filtres.</div>';
+}
+function renderDrawer(){
+  const d = document.getElementById("drawer"), b = document.getElementById("backdrop");
+  if(!state.task){ d.classList.remove("open"); b.classList.remove("open"); return; }
+  const i = state.task.indexOf(":"), fid = state.task.slice(0,i), tid = state.task.slice(i+1);
+  const f = getFeature(fid), t = getTask(fid,tid);
+  if(!t){ state.task = null; d.classList.remove("open"); b.classList.remove("open"); return; }
+  const lot = (f.lots.find(l => l.id === t.lot) || {}).name || t.lot;
+  const o = ORIGIN[state.task], draft = isDraft(fid,tid);
+  d.innerHTML =
+    '<div class="dhead"><button class="dclose" data-close="1" aria-label="Fermer">×</button>'
+    + '<div class="deyebrow">' + esc(f.name) + " · " + esc(f.change) + "</div>"
+    + "<h2>" + esc(t.id) + " · " + esc(t.title) + "</h2>"
+    + '<div class="dmeta"><span class="status-pill st-' + t.status + '">' + STATUS[t.status] + "</span>"
+    + "<span>" + esc(lot) + "</span><span>maj " + (t.updated || "—") + "</span>"
+    + (t.prio ? "<span>priorité " + esc(t.prio) + "</span>" : "") + "</div></div>"
+    + '<div class="dbody">'
+    + (t.note ? '<div class="dnote">' + t.note + "</div>" : "")
+    + (draft ? '<div class="dnote warn">Statut modifié localement (brouillon), non reporté dans le fichier. État de référence : <b>' + STATUS[o.status] + "</b>.</div>" : "")
+    + "<h4>Objectif</h4><p>" + (t.objective || "—") + "</p>"
+    + ((t.files && t.files.length) ? "<h4>Fichiers</h4><div class=\"filelist\">" + t.files.map(x => "<code>" + esc(x) + "</code>").join("") + "</div>" : "")
+    + (t.acceptance ? "<h4>Critères d'acceptation</h4><p>" + t.acceptance + "</p>" : "")
+    + (t.tests ? "<h4>Validation / tests</h4><p>" + t.tests + "</p>" : "")
+    + "<h4>Dépendances</h4><p>" + esc(t.deps || "—") + "</p>"
+    + ((t.executor || t.reviewer || t.review_iteration != null) ? "<h4>Rôles</h4><p>"
+        + (t.executor ? "Exécutant : <b>" + esc(t.executor) + "</b>. " : "")
+        + (t.reviewer ? "Relecteur : <b>" + esc(t.reviewer) + "</b>. " : "")
+        + (t.review_iteration != null ? "Itération de revue : <b>" + t.review_iteration + "</b>." : "")
+        + (t.escalated ? ' <span class="rb esc">escalade</span>' : "") + "</p>" : "")
+    + (t.ready_to_commit ? "<h4>Prêt à commiter</h4><p>" + (t.commit_message ? "<code>" + esc(t.commit_message) + "</code>" : "oui") + "</p>"
+        : (t.commit_message ? "<h4>Message de commit proposé</h4><p><code>" + esc(t.commit_message) + "</code></p>" : ""))
+    + ((t.history && t.history.length) ? "<h4>Historique</h4><div class=\"timeline\">"
+        + t.history.map(h => '<div class="tl st-' + (h.status || "todo") + '">'
+            + '<div class="tld">' + esc(h.date) + " · " + (STATUS[h.status] || "") + "</div>"
+            + '<div class="tlt">' + (h.note || "") + "</div></div>").join("")
+        + "</div>" : "")
+    + "</div>";
+  d.classList.add("open"); b.classList.add("open");
+}
+function renderAll(){
+  renderHeader(); renderToolbar(); renderRail(); renderOverview(); renderWorkspace(); renderDrawer();
+  const nd = draftCount();
+  document.getElementById("draftCount").textContent = nd;
+  document.getElementById("draftBanner").classList.toggle("hidden", nd === 0);
+}
+
+/* ============================================================
+   Événements
+   ============================================================ */
+function toggleFeature(id){
+  const i = state.features.indexOf(id);
+  if(i >= 0) state.features.splice(i,1); else state.features.push(id);
+  state.features = FEATURES.map(f => f.id).filter(x => state.features.includes(x));
+  save(); renderAll();
+}
+document.getElementById("railList").addEventListener("click", function(e){
+  const it = e.target.closest(".feat-item"); if(!it) return;
+  toggleFeature(it.dataset.feature);
+});
+document.getElementById("railList").addEventListener("keydown", function(e){
+  if(e.key !== "Enter" && e.key !== " ") return;
+  const it = e.target.closest(".feat-item"); if(!it) return;
+  e.preventDefault(); toggleFeature(it.dataset.feature);
+});
+
+document.getElementById("lots").addEventListener("click", function(e){
+  if(e.target.closest("select.status-sel") || e.target.closest("select.ph-sel")) return;
+  const pht = e.target.closest("[data-phtoggle]");
+  if(pht){
+    const parts = pht.dataset.phtoggle.split(":"), key = "phase:" + parts[0] + ":" + parts[1];
+    state.expanded[key] = !isPhaseOpen(parts[0], parts[1]);
+    save(); renderAll(); return;
+  }
+  const tog = e.target.closest("[data-toggle]");
+  if(tog){ const k = tog.dataset.toggle; state.expanded[k] = (state.expanded[k] === false); save(); renderAll(); return; }
+  const open = e.target.closest("[data-open]") || e.target.closest(".task-row");
+  if(open){ state.task = open.dataset.open || open.dataset.task; save(); renderAll(); }
+});
+document.getElementById("lots").addEventListener("change", function(e){
+  const phsel = e.target.closest("select.ph-sel");
+  if(phsel){
+    const parts = phsel.dataset.phsel.split(":"); // feature : phase : item
+    const f = getFeature(parts[0]); if(!f) return;
+    const p = (f.phases||[]).find(x => x.id === parts[1]); if(!p) return;
+    const it = (p.items||[]).find(x => x.id === parts[2]); if(!it) return;
+    it.status = phsel.value; it.updated = today();
+    save(); renderAll(); return;
+  }
+  const sel = e.target.closest("select.status-sel"); if(!sel) return;
+  const key = sel.dataset.sel, i = key.indexOf(":"), fid = key.slice(0,i), tid = key.slice(i+1);
+  const t = getTask(fid,tid); if(!t) return;
+  t.status = sel.value; t.updated = today();
+  save(); renderAll();
+});
+
+document.getElementById("overview").addEventListener("click", function(e){
+  const tog = e.target.closest("[data-toggle]");
+  if(tog){ state.expanded.overview = !isOpen("overview"); save(); renderAll(); return; }
+  const tr = e.target.closest("tr[data-scroll]"); if(!tr) return;
+  const id = tr.dataset.scroll;
+  state.expanded["feat:" + id] = true; save(); renderAll();
+  const sec = document.querySelector('[data-featuresec="' + id + '"]');
+  if(sec) sec.scrollIntoView({behavior:"smooth", block:"start"});
+});
+
+document.getElementById("q").addEventListener("input", function(e){ state.q = e.target.value; save(); renderAll(); });
+document.getElementById("statusChips").addEventListener("click", function(e){
+  const b = e.target.closest("[data-chip]"); if(!b) return;
+  const v = b.dataset.chip;
+  state.status = (state.status === v) ? "" : v;
+  save(); renderAll();
+});
+document.getElementById("groupSeg").addEventListener("click", function(e){
+  const b = e.target.closest("button[data-group]"); if(!b) return;
+  state.group = b.dataset.group; save(); renderAll();
+});
+document.getElementById("viewSeg").addEventListener("click", function(e){
+  const b = e.target.closest("button[data-view]"); if(!b) return;
+  state.view = b.dataset.view; save(); renderAll();
+});
+document.getElementById("selectAll").onclick = function(){ state.features = FEATURES.map(f => f.id); save(); renderAll(); };
+document.getElementById("selectNone").onclick = function(){ state.features = []; save(); renderAll(); };
+document.getElementById("expandAll").onclick = function(){
+  state.expanded = {overview:true};
+  FEATURES.forEach(f => { state.expanded["feat:" + f.id] = true; f.lots.forEach(l => { state.expanded["lot:" + f.id + ":" + l.id] = true; }); });
+  save(); renderAll();
+};
+document.getElementById("collapseAll").onclick = function(){
+  state.expanded = {};
+  FEATURES.forEach(f => { state.expanded["feat:" + f.id] = false; f.lots.forEach(l => { state.expanded["lot:" + f.id + ":" + l.id] = false; }); });
+  save(); renderAll();
+};
+document.getElementById("resetDrafts").onclick = function(){
+  if(draftCount() === 0) return;
+  if(confirm("Revenir à l'état du fichier et effacer les modifications locales ?")){ resetDrafts(); save(); renderAll(); }
+};
+document.getElementById("print").onclick = function(){ window.print(); };
+document.getElementById("export").onclick = function(){
+  const payload = {exported_at:new Date().toISOString(), state:{
+    features:state.features, task:state.task, q:state.q, status:state.status,
+    group:state.group, view:state.view, expanded:state.expanded, overrides:collectOverrides()
+  }};
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "suivi-multi-etat.json";
+  a.click(); URL.revokeObjectURL(a.href);
+};
+document.getElementById("importBtn").onclick = function(){ document.getElementById("importFile").click(); };
+document.getElementById("importFile").addEventListener("change", function(e){
+  const file = e.target.files[0]; if(!file) return;
+  const r = new FileReader();
+  r.onload = function(){
+    try{
+      const d = JSON.parse(r.result), s = d.state || d;
+      applyOverrides(s.overrides);
+      if(Array.isArray(s.features)) state.features = FEATURES.map(f => f.id).filter(id => s.features.includes(id));
+      if(s.expanded) state.expanded = s.expanded;
+      if(typeof s.q === "string") state.q = s.q;
+      if(STATUS[s.status] || s.status === "") state.status = s.status || "";
+      save(); renderAll();
+    }catch(err){ alert("Fichier invalide"); }
+  };
+  r.readAsText(file);
+});
+
+document.getElementById("drawer").addEventListener("click", function(e){
+  if(e.target.closest("[data-close]")){ state.task = null; save(); renderAll(); }
+});
+document.getElementById("backdrop").addEventListener("click", function(){ state.task = null; save(); renderAll(); });
+document.addEventListener("keydown", function(e){
+  if(e.key !== "Escape") return;
+  if(e.target.matches("input,select,textarea")) return;
+  if(state.task){ state.task = null; save(); renderAll(); }
+});
+window.addEventListener("hashchange", function(){ readHash(); renderAll(); });
+
+const fuEl = document.getElementById("fileUpdated");
+if(fuEl) fuEl.textContent = document.body.getAttribute("data-file-updated") || "—";
+load();
+renderAll();
+</script>
+</body>
+</html>

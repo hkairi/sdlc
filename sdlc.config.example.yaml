@@ -1,0 +1,152 @@
+# Configuration du framework SDLC piloté par agents IA
+# Copier ce fichier en sdlc.config.yaml puis adapter les valeurs.
+# Spécification complète : .sdlc/workflow-sdlc.md
+
+# Version du schéma de configuration.
+version: 1
+
+# Version du framework installé.
+workflow_version: "0.1.0"
+
+project:
+  # Nom du projet.
+  name: "Atlas"
+
+  # Type de projet : new (nouveau) | existing (existant).
+  kind: new
+
+  # Stack technique. Liste libre ; détectée automatiquement si existing.
+  stack: [rails, angular]
+
+agents:
+  # Configuration de Claude Code.
+  # enabled : true | false
+  # cli : commande de lancement en mode non interactif
+  # models.think : modèle de réflexion
+  # models.build : modèle de construction
+  # models.light : modèle léger
+  claude:
+    enabled: true
+    cli: "claude -p"
+    models:
+      think: opus
+      build: sonnet
+      light: haiku
+
+  # Configuration de Codex.
+  codex:
+    enabled: true
+    cli: "codex exec"
+    models:
+      think: "<modèle>"
+      build: "<modèle>"
+
+  # Configuration d'OpenCode.
+  opencode:
+    enabled: false
+    cli: "opencode run"
+    models:
+      build: "<provider/modèle>"
+
+# Orchestrateur : un des agents activés.
+orchestrator: claude
+
+# Exécutants : un ou plusieurs agents activés ; l'orchestrateur peut en faire partie.
+executors: [codex, claude]
+
+# Confidentialité des données : public | client | restreint
+# restreint impose l'utilisation de modèles locaux uniquement.
+confidentiality: client
+
+# Fournisseurs de modèles autorisés.
+providers_allowed: [anthropic, openai]
+
+ci:
+  # Outil de CI : github-actions | gitlab-ci | forgejo-actions | jenkins | none
+  tool: gitlab-ci
+
+  # Mode d'installation de la CI (§ 13.4) :
+  #   integrate : ajoute un job/une étape qui appelle scripts/ci.sh dans la CI existante, sans rien retirer (défaut si une CI existe) ;
+  #   replace   : remplace la CI existante (sur décision explicite seulement) ;
+  #   none      : aucun pipeline ; contrôles exécutés en local.
+  mode: integrate
+
+  # Couverture de tests minimale, en pourcentage.
+  coverage_min: 80
+
+  # Sévérités qui bloquent la mise en production.
+  # Valeurs : critique | haute | moyenne | basse
+  block_on: [critique, haute]
+
+deploy:
+  # Moment où la cible de déploiement est décidée : init | conception
+  # conception doit être confirmé par un ADR à l'étape 2.
+  decided_at: conception
+
+  # Cibles de déploiement par composant.
+  # Profils autorisés : vps-compose | kubernetes | paas | static | serverless | mobile | package | on-prem
+  targets:
+    - component: api
+      profile: vps-compose
+    - component: web
+      profile: static
+
+organisation:
+  # Parallélisme : sequential (séquentiel) | isolated (copies du dépôt + patchs, sans git)
+  parallelism: sequential
+
+  # Rythme des commits : task (une tâche) | feature (une fonctionnalité)
+  commit_cadence: feature
+
+  # Nombre maximal d'itérations de relecture avant escalade.
+  max_review_iterations: 3
+
+  # Durée maximale d'une tâche, en minutes, avant escalade.
+  task_timeout_min: 30
+
+# Responsables des gates.
+# Valeurs possibles : toi | client-po | client-ops | ou tout identifiant défini avec l'humain.
+gates:
+  default: toi
+  spec_freeze: client-po
+  recette: client-po
+  go_no_go: toi
+
+dashboard:
+  # Fichier HTML généré du tableau de bord.
+  file: docs/suivi-projet.html
+
+  # Répertoire des rapports produits par les contrôles.
+  reports_dir: reports/
+
+  # Embarquer le contenu Markdown dans le tableau de bord.
+  embed_markdown: true
+
+  # Taille totale maximale des documents Markdown embarqués, en kilo-octets.
+  # Au-delà : les plus récents sont embarqués d'abord, les autres ne sont lisibles qu'en mode http.
+  embed_max_kb: 2048
+
+  # Publication : none | pages | artifact
+  publish: none
+
+# Chemins configurables (§ 13.3). Toutes les skills, tous les scripts et tous les
+# gabarits les lisent au lieu de coder des valeurs en dur. Les valeurs ci-dessous
+# sont les défauts du framework ; un projet existant peut les adapter à son
+# organisation documentaire (proposée par `etat-des-lieux`).
+paths:
+  templates: .sdlc/templates         # gabarits installés par bin/sdlc-install
+  spec: .sdlc/workflow-sdlc.md       # spécification de référence du framework
+  docs: docs                         # racine documentaire du projet
+  cadrage: docs/00-cadrage
+  architecture: docs/architecture
+  adr: docs/architecture/adr
+  ops: docs/ops
+  recette: docs/recette
+  incidents: docs/incidents
+  retro: docs/retro
+  client: docs/client
+  journal: docs/journal
+  suivi: docs/suivi
+  metrics: docs/metrics
+  reports: reports
+  ci_script: scripts/ci.sh

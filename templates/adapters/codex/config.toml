@@ -1,0 +1,46 @@
+# Configuration Codex du projet {{nom-du-projet}}
+#
+# Gabarit généré par `sdlc-init` depuis `.sdlc/templates/adapters/codex/config.toml`.
+# Copié vers `.codex/config.toml` dans le projet.
+# Remplacer les marqueurs {{…}} puis supprimer les commentaires de consigne.
+#
+# Rappel : la configuration et les règles de `.codex/` ne se chargent que si le projet
+# est marqué « trusted » par Codex (voir README.md).
+
+# Modèle et effort de raisonnement par défaut.
+model = "{{modèle-build}}"
+model_reasoning_effort = "medium"
+
+# Bac à sable : workspace-write pour un exécutant qui écrit dans le dépôt,
+# read-only pour un relecteur.
+sandbox_mode = "workspace-write"
+
+# Politique d'approbation : on-request laisse Codex demander avant une action sensible.
+approval_policy = "on-request"
+
+# Déclaration des agents. Le détail du rôle vit dans `.codex/agents/*.toml`.
+# Les clés ci-dessous reprennent les valeurs par défaut propres au projet.
+
+[agents.implementer]
+description = "Exécutant : écrit le code et les tests d'une seule tâche, git interdit."
+model = "{{modèle-build}}"
+model_reasoning_effort = "medium"
+sandbox_mode = "workspace-write"
+
+[agents.reviewer]
+description = "Relecteur en lecture seule, jamais auteur de la tâche relue."
+model = "{{modèle-think}}"
+model_reasoning_effort = "high"
+sandbox_mode = "read-only"
+
+[agents.doc-writer]
+description = "Rédacteur de documentation, écriture limitée à docs/, README* et CHANGELOG*."
+model = "{{modèle-build}}"
+model_reasoning_effort = "medium"
+sandbox_mode = "workspace-write"
+
+[agents.spec-challenger]
+description = "Contradicteur d'un change OpenSpec, en lecture seule."
+model = "{{modèle-think}}"
+model_reasoning_effort = "high"
+sandbox_mode = "read-only"

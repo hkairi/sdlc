@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Rapport de fin de tâche",
+  "description": "Rapport de sortie obligatoire d'un exécutant du workflow SDLC. L'orchestrateur rejette tout rapport non conforme à ce schéma et ne marque jamais une tâche « done » sans relancer lui-même les vérifications.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "task_id",
+    "status",
+    "summary",
+    "files_changed",
+    "tests",
+    "checks",
+    "commit_message",
+    "notes",
+    "blockers"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identifiant de la tâche (par exemple 4.1)."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["done", "blocked", "failed"],
+      "description": "Statut de la tâche : done (terminée), blocked (bloquée), failed (échouée)."
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Synthèse du travail réalisé, sans chiffre inventé."
+    },
+    "files_changed": {
+      "type": "array",
+      "uniqueItems": true,
+      "description": "Fichiers créés, modifiés ou supprimés, chemins relatifs à la racine du projet.",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "tests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["command", "passed", "failed"],
+      "description": "Résultat des tests exécutés (null si non mesuré).",
+      "properties": {
+        "command": {
+          "type": ["string", "null"],
+          "description": "Commande de test exécutée."
+        },
+        "passed": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Nombre de tests passés."
+        },
+        "failed": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Nombre de tests échoués."
+        }
+      }
+    },
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ci_sh"],
+      "description": "Résultat des contrôles locaux.",
+      "properties": {
+        "ci_sh": {
+          "type": "string",
+          "enum": ["pass", "fail", "not_run"],
+          "description": "Résultat de scripts/ci.sh : pass, fail ou not_run."
+        }
+      }
+    },
+    "commit_message": {
+      "type": ["string", "null"],
+      "description": "Message de commit proposé, au format Conventional Commits. null si aucun commit n'est proposé (tâche bloquée ou échouée)."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Observations, points de vigilance, écarts à la spec."
+    },
+    "blockers": {
+      "type": "array",
+      "description": "Obstacles rencontrés (vide si aucun).",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}

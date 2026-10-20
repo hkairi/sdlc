@@ -1,0 +1,140 @@
+# Pipeline GitHub Actions — gabarit.
+#
+# Où copier : .github/workflows/ci.yml
+# Remplacez les marqueurs {{…}} par les valeurs du projet, puis supprimez ce
+# commentaire d'en-tête. Les contrôles sont définis une seule fois dans
+# scripts/ci.sh ; ce fichier ne fait que les appeler et publier les rapports.
+name: CI
+
+on:
+  push:
+    branches: ["{{branche-principale}}"]
+  pull_request:
+  workflow_dispatch:
+
+# Une seule exécution par référence ; les exécutions obsolètes sont annulées.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SDLC_REPORTS_DIR: reports
+
+jobs:
+  # 1. Contrôles (lint, tests, couverture, analyse de code, dépendances, secrets).
+  controles:
+    name: Contrôles
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "{{version-python}}"
+
+      # {{étapes-d-installation-des-dépendances}}
+      # Exemples : setup-node + npm ci, ruby/setup-ruby + bundle install,
+      # setup-go, actions/setup-java + ./mvnw -B -DskipTests.
+
+      - name: Installer les outils de sécurité
+        # Outils capables de produire du SARIF. Décommenter ceux retenus (ADR CI).
+        run: |
+          # pipx install semgrep      # analyse de code -> reports/security/semgrep.sarif
+          # Installer Trivy ou OSV-Scanner pour les dépendances.
+          # Installer Gitleaks pour les secrets.
+          true
+
+      - name: Contrôles
+        run: bash scripts/ci.sh
+        env:
+          # Surchargez les seuils si nécessaire ; par défaut ils viennent de sdlc.config.yaml.
+          SDLC_COVERAGE_MIN: "{{coverage_min}}"
+
+      - name: Publier les rapports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: reports/
+          if-no-files-found: warn
+          retention-days: 30
+
+  # 2. Build de l'artefact déployable.
+  build:
+    name: Build
+    needs: controles
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # {{étapes-d-installation-des-dépendances}}
+      - name: Construire l'artefact
+        run: |
+          # {{commande-de-build}}
+          true
+      - name: Publier l'artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: "{{chemin-artefact}}"
+
+  # 3. Déploiement en préproduction.
+  preproduction:
+    name: Déploiement préproduction
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: preproduction
+      url: "{{url-preproduction}}"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Déployer en préproduction
+        env:
+          # Déclarer ces secrets dans Settings > Secrets and variables > Actions.
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          # {{commande-de-deploiement-preproduction}}
+          true
+
+  # 4. Tests de bout en bout en préproduction.
+  tests-bout-en-bout:
+    name: Tests de bout en bout
+    needs: preproduction
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # {{étapes-d-installation-des-dépendances}}
+      - name: Lancer les tests de bout en bout
+        env:
+          BASE_URL: "{{url-preproduction}}"
+        run: |
+          # {{commande-tests-bout-en-bout}}
+          true
+      - name: Publier les rapports de recette
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: recette
+          path: "{{chemin-rapports-recette}}"
+          if-no-files-found: warn
+
+  # 5. Déploiement en production : manuel et protégé.
+  #    La protection vient de l'environnement GitHub « production »
+  #    (Settings > Environments > production > Required reviewers).
+  production:
+    name: Déploiement production
+    needs: tests-bout-en-bout
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/{{branche-principale}}'
+    environment:
+      name: production
+      url: "{{url-production}}"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Déployer en production
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          # {{commande-de-deploiement-production}}
+          true
+          # Journaliser ce déploiement dans docs/journal/deploys.jsonl (§ 12).

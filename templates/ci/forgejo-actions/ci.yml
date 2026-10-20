@@ -1,0 +1,114 @@
+# Pipeline Forgejo Actions — gabarit.
+#
+# Où copier : .forgejo/workflows/ci.yml
+# Forgejo Actions reprend la syntaxe de GitHub Actions. Remplacez les marqueurs
+# {{…}} puis supprimez ce commentaire d'en-tête.
+name: CI
+
+on:
+  push:
+    branches: ["{{branche-principale}}"]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  SDLC_REPORTS_DIR: reports
+
+jobs:
+  # 1. Contrôles (lint, tests, couverture, analyse de code, dépendances, secrets).
+  controles:
+    name: Contrôles
+    runs-on: "{{runner-label}}"
+    steps:
+      - uses: actions/checkout@v4
+      # {{étapes-d-installation-des-dépendances}}
+      - name: Installer les outils de sécurité
+        # Décommenter ceux retenus (ADR CI) ; installer Python pour check_thresholds.py.
+        run: |
+          # pipx install semgrep
+          # (Trivy / OSV-Scanner / Gitleaks selon la cible)
+          true
+      - name: Contrôles
+        run: bash scripts/ci.sh
+        env:
+          SDLC_COVERAGE_MIN: "{{coverage_min}}"
+      - name: Publier les rapports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: reports/
+          if-no-files-found: warn
+
+  # 2. Build de l'artefact déployable.
+  build:
+    name: Build
+    needs: controles
+    runs-on: "{{runner-label}}"
+    steps:
+      - uses: actions/checkout@v4
+      # {{étapes-d-installation-des-dépendances}}
+      - name: Construire l'artefact
+        run: |
+          # {{commande-de-build}}
+          true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: "{{chemin-artefact}}"
+
+  # 3. Déploiement en préproduction.
+  preproduction:
+    name: Déploiement préproduction
+    needs: build
+    runs-on: "{{runner-label}}"
+    environment: preproduction
+    steps:
+      - uses: actions/checkout@v4
+      - name: Déployer en préproduction
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          # {{commande-de-deploiement-preproduction}}
+          true
+
+  # 4. Tests de bout en bout en préproduction.
+  tests-bout-en-bout:
+    name: Tests de bout en bout
+    needs: preproduction
+    runs-on: "{{runner-label}}"
+    steps:
+      - uses: actions/checkout@v4
+      # {{étapes-d-installation-des-dépendances}}
+      - name: Lancer les tests de bout en bout
+        env:
+          BASE_URL: "{{url-preproduction}}"
+        run: |
+          # {{commande-tests-bout-en-bout}}
+          true
+      - name: Publier les rapports de recette
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: recette
+          path: "{{chemin-rapports-recette}}"
+          if-no-files-found: warn
+
+  # 5. Déploiement en production : manuel et protégé.
+  #    Voir README pour la protection (déclenchement manuel obligatoire, car
+  #    les approbations d'environnement varient selon la version de Forgejo).
+  production:
+    name: Déploiement production
+    needs: tests-bout-en-bout
+    runs-on: "{{runner-label}}"
+    if: github.ref == 'refs/heads/{{branche-principale}}'
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Déployer en production
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          # {{commande-de-deploiement-production}}
+          true
+          # Journaliser ce déploiement dans docs/journal/deploys.jsonl (§ 12).

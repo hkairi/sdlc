@@ -1,0 +1,5 @@
+version: 1
+project:
+  name: "Démo"
+organisation:
+  max_review_iterations: 2

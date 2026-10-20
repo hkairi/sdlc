@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<coverage line-rate="0.85" branch-rate="0.7" version="7.0" timestamp="1786000000">
+  <sources>
+    <source>/home/demo/src</source>
+  </sources>
+  <packages>
+    <package name="api" line-rate="0.92" branch-rate="0.8">
+      <classes>
+        <class name="handler" filename="api/handler.py" line-rate="0.92"/>
+      </classes>
+    </package>
+    <package name="web" line-rate="0.74" branch-rate="0.6">
+      <classes>
+        <class name="views" filename="web/views.py" line-rate="0.74"/>
+      </classes>
+    </package>
+  </packages>
+</coverage>

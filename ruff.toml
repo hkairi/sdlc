@@ -1,0 +1,4 @@
+# Lint des scripts Python du framework : ruff check .
+target-version = "py39"
+line-length = 120
+extend-exclude = ["**/tmp/**", "**/fixtures/**"]

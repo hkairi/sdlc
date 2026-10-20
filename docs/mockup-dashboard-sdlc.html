@@ -1,0 +1,1833 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My AI powered SDLC — Console</title>
+<!--
+  MAQUETTE de la console produit « My AI powered SDLC » (future interface web du framework).
+  TOUTES LES DONNÉES SONT FICTIVES : elles servent à valider la structure et la hiérarchie
+  de l'information, pas à mesurer quoi que ce soit.
+  Fichier autonome : aucun appel réseau, aucune dépendance externe (SVG inline + CSS + JS vanilla).
+  Charte reprise de docs/mockup-suivi-projet.html : bleu #0f4c81, cartes blanches, thème clair/sombre auto.
+  Vue « Vue d'ensemble » = écran principal ; les trois autres entrées de la barre latérale montrent le motif de liste.
+-->
+<meta name="color-scheme" content="light dark">
+<style>
+  :root{
+    color-scheme: light;
+    --bg:#eef1f6; --panel:#fff; --ink:#1b2430; --muted:#5c6b7a; --line:#e2e8f0; --line2:#eef2f8; --soft:#f7f9fc;
+    --brand:#0f4c81; --brand2:#1379b0; --brandbg:#e8f1fb; --brandline:#c7dcf3;
+    --done:#1f9d55; --donebg:#e6f6ec; --doing:#2b6cb0; --doingbg:#e6effa;
+    --warn:#b7791f; --warnbg:#fdf3e0; --blocked:#c0392b; --blockedbg:#fdecea;
+    --s-good:#0ca30c; --s-warn:#fab219; --s-serious:#ec835a; --s-crit:#d03b3b; --s-low:#94a3b3;
+    --nav:#0f4c81; --nav2:#0a2c4d;
+    --grid:#e9edf3;
+    --shadow:0 1px 3px rgba(16,24,40,.08),0 8px 24px rgba(16,24,40,.05);
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --bg:#121417; --panel:#1a1d21; --ink:#e8ebef; --muted:#a3adb8; --line:#2c3138; --line2:#24282e; --soft:#20242a;
+      --brand:#3b82c4; --brand2:#4b9ad6; --brandbg:#1d2a38; --brandline:#2f4a63;
+      --done:#3cc479; --donebg:#16281e; --doing:#5b9be0; --doingbg:#182636;
+      --warn:#e0b25c; --warnbg:#2b2414; --blocked:#e66767; --blockedbg:#2e1b19;
+      --s-low:#6b7684;
+      --nav:#12293f; --nav2:#0d1a26;
+      --grid:#2a2f36;
+      --shadow:0 1px 3px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#121417; --panel:#1a1d21; --ink:#e8ebef; --muted:#a3adb8; --line:#2c3138; --line2:#24282e; --soft:#20242a;
+    --brand:#3b82c4; --brand2:#4b9ad6; --brandbg:#1d2a38; --brandline:#2f4a63;
+    --done:#3cc479; --donebg:#16281e; --doing:#5b9be0; --doingbg:#182636;
+    --warn:#e0b25c; --warnbg:#2b2414; --blocked:#e66767; --blockedbg:#2e1b19;
+    --s-low:#6b7684;
+    --nav:#12293f; --nav2:#0d1a26;
+    --grid:#2a2f36;
+    --shadow:0 1px 3px rgba(0,0,0,.4);
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  a{color:var(--brand2)}
+  code,.mono{font-family:var(--mono)}
+  code{font-size:.88em;background:var(--soft);border:1px solid var(--line2);padding:0 5px;border-radius:5px}
+  :focus-visible{outline:3px solid var(--brand2);outline-offset:2px;border-radius:6px}
+  /* le titre de vue reçoit le focus au changement d'onglet : il n'est pas atteignable au clavier,
+     on garde le déplacement de focus pour les lecteurs d'écran sans afficher d'anneau disgracieux */
+  .phead h1:focus,.phead h1:focus-visible{outline:none}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+  /* ================= Ossature ================= */
+  .app{display:grid;grid-template-columns:252px minmax(0,1fr);min-height:100vh}
+  @media (max-width:980px){.app{grid-template-columns:1fr}}
+
+  /* ================= Barre latérale ================= */
+  .side{background:linear-gradient(180deg,var(--nav),var(--nav2));color:#dce9f7;
+    display:flex;flex-direction:column;gap:4px;padding:16px 13px 18px;
+    position:sticky;top:0;height:100vh;overflow:auto}
+  @media (max-width:980px){
+    .app{grid-template-columns:1fr}
+    .side{position:static;height:auto;padding:12px 12px 14px}
+  }
+  .brand{display:flex;align-items:center;gap:11px;padding:4px 6px 16px;margin-bottom:4px;
+    border-bottom:1px solid rgba(255,255,255,.14)}
+  .brand .mark{flex:none;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
+    background:linear-gradient(140deg,#7fc4ee,#ffffff1a);color:#0a2c4d;font-weight:900;font-size:15px;letter-spacing:-.02em;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+  .brand .nm{font-weight:800;font-size:14.5px;color:#fff;line-height:1.15}
+  .brand .pl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#9dc2e4;font-weight:700}
+  .sect-t{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#8bb0d4;
+    font-weight:800;margin:15px 8px 5px}
+  .nav{display:flex;flex-direction:column;gap:2px}
+  .nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;font:inherit;
+    font-size:13px;font-weight:600;color:#c6dbf0;background:none;border:0;
+    padding:7px 10px;border-radius:9px;cursor:pointer}
+  .nav button:hover{background:rgba(255,255,255,.08);color:#fff}
+  .nav button[aria-selected="true"]{background:rgba(255,255,255,.17);color:#fff;
+    box-shadow:inset 3px 0 0 #7fc4ee}
+  .nav svg{width:17px;height:17px;flex:none}
+  .nav .tag{margin-left:auto;font-size:10.5px;font-weight:800;padding:1px 7px;border-radius:999px;
+    background:rgba(255,255,255,.16);color:#fff}
+  .nav .tag.live{background:#1f9d55;color:#fff}
+  .side .foot{margin-top:auto;padding:12px 10px 0;border-top:1px solid rgba(255,255,255,.14)}
+  .side .foot .lbl{font-size:11.5px;color:#9dc2e4;font-weight:700;display:flex;justify-content:space-between}
+  .side .foot .q{height:7px;border-radius:999px;background:rgba(255,255,255,.16);overflow:hidden;margin:7px 0 6px}
+  .side .foot .q>span{display:block;height:100%;background:linear-gradient(90deg,#7fc4ee,#c9ecff)}
+  .side .foot small{font-size:11px;color:#8bb0d4}
+
+  /* --- Sélecteur d'entreprise --- */
+  .org{display:flex;align-items:center;gap:10px;width:100%;text-align:left;font:inherit;cursor:pointer;
+    background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.17);border-radius:11px;
+    padding:8px 10px;color:#fff}
+  .org:hover{background:rgba(255,255,255,.15)}
+  .org .mk{width:28px;height:28px;border-radius:8px;flex:none;display:grid;place-items:center;
+    background:rgba(255,255,255,.2);font-size:11px;font-weight:800;letter-spacing:.02em}
+  .org .t1{display:block;font-size:13px;font-weight:700;line-height:1.2}
+  .org .t2{display:block;font-size:10.5px;color:#9dc2e4;font-weight:600}
+  .org svg{width:15px;height:15px;color:#9dc2e4;margin-left:auto;flex:none}
+
+  /* --- Arborescence équipes → projets --- */
+  .tree{list-style:none;margin:1px 0 0;padding:0;display:flex;flex-direction:column;gap:1px}
+  .tree ul{list-style:none;margin:1px 0 3px;padding:0 0 0 20px;display:flex;flex-direction:column;gap:1px}
+  .tree li{min-width:0}
+  .tree .row{display:flex;align-items:center;gap:8px;width:100%;text-align:left;font:inherit;
+    font-size:12.5px;font-weight:600;color:#c6dbf0;background:none;border:0;padding:6px 9px;
+    border-radius:8px;cursor:pointer}
+  .tree .row:hover{background:rgba(255,255,255,.08);color:#fff}
+  .tree .row[aria-current="true"]{background:rgba(255,255,255,.17);color:#fff;box-shadow:inset 3px 0 0 #7fc4ee}
+  .tree .caret{width:13px;height:13px;flex:none;color:#a8c8e6;transition:transform .15s}
+  .tree .row:hover .caret{color:#fff}
+  .tree .row[aria-expanded="true"] .caret{transform:rotate(90deg)}
+  .tree .ic{width:15px;height:15px;flex:none;color:#9dc2e4}
+  .tree .ds{width:6px;height:6px;border-radius:50%;flex:none;background:#5f88ad}
+  .tree .row[aria-current="true"] .ds{background:#7fc4ee}
+  .tree .n{margin-left:auto;font-size:10.5px;font-weight:800;padding:1px 6px;border-radius:999px;
+    background:rgba(255,255,255,.14);color:#dbe9f7}
+
+  /* ================= En-tête ================= */
+  main{min-width:0;display:flex;flex-direction:column}
+  .topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;
+    padding:11px 20px;background:color-mix(in srgb,var(--bg) 86%,transparent);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .crumb{display:flex;align-items:center;gap:8px;font:inherit;font-size:13px;
+    color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:7px 11px;cursor:pointer;max-width:560px;min-width:0;overflow:hidden}
+  .crumb:hover{border-color:var(--brand2)}
+  .crumb .dot{width:9px;height:9px;border-radius:50%;background:var(--done);flex:none;
+    box-shadow:0 0 0 3px color-mix(in srgb,var(--done) 22%,transparent)}
+  .crumb .lv{font-weight:600;color:var(--muted);white-space:nowrap}
+  .crumb .cur{font-weight:800;color:var(--ink);white-space:nowrap}
+  .crumb .sep{color:var(--s-low);flex:none}
+  .crumb small{color:var(--muted);font-weight:600;white-space:nowrap}
+  .crumb svg{width:15px;height:15px;color:var(--muted);flex:none;margin-left:2px}
+  .search{display:flex;align-items:center;gap:8px;flex:1;max-width:380px;background:var(--panel);
+    border:1px solid var(--line);border-radius:10px;padding:6px 11px;color:var(--muted)}
+  .search svg{width:16px;height:16px;flex:none}
+  .search input{font:inherit;font-size:13.5px;border:0;background:none;color:var(--ink);width:100%;outline:none}
+  .search kbd{font:inherit;font-family:var(--mono);font-size:11px;border:1px solid var(--line);
+    background:var(--soft);border-radius:6px;padding:1px 6px;color:var(--muted)}
+  .top-r{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .iconbtn{position:relative;display:grid;place-items:center;width:36px;height:36px;cursor:pointer;
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--ink)}
+  .iconbtn:hover{border-color:var(--brand2);color:var(--brand2)}
+  .iconbtn svg{width:17px;height:17px}
+  .iconbtn .badge{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;border-radius:999px;
+    background:var(--blocked);color:#fff;font-size:10.5px;font-weight:800;display:grid;place-items:center;padding:0 4px}
+  .avatar{width:36px;height:36px;border-radius:10px;background:linear-gradient(140deg,#1379b0,#0f4c81);
+    color:#fff;font-weight:800;font-size:12.5px;display:grid;place-items:center;cursor:pointer;border:0}
+  .themebtn[aria-pressed="true"] .i-sun,
+  .themebtn[aria-pressed="false"] .i-moon{display:none}
+
+  /* ================= Contenu ================= */
+  .content{padding:18px 20px 48px;max-width:1420px;width:100%}
+  .demo{display:flex;align-items:flex-start;gap:10px;background:var(--warnbg);border:1px solid #f3d38a;
+    border-left:5px solid var(--warn);border-radius:11px;padding:10px 14px;font-size:12.5px;color:var(--warn);
+    margin-bottom:18px}
+  :root[data-theme="dark"] .demo{border-color:#5c4a1f}
+  @media (prefers-color-scheme: dark){:root:where(:not([data-theme="light"])) .demo{border-color:#5c4a1f}}
+  .demo b{color:inherit}
+
+  .phead{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin:2px 0 16px}
+  .eyebrow{font-size:11px;letter-spacing:.15em;text-transform:uppercase;font-weight:800;color:var(--brand2)}
+  .phead h1{font-size:23px;margin:4px 0 2px;letter-spacing:-.01em}
+  .phead p{margin:0;color:var(--muted);font-size:13.5px}
+  .phead .right{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  .seg{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px}
+  .seg button{font:inherit;font-size:12.5px;font-weight:700;color:var(--muted);background:none;border:0;
+    padding:5px 11px;border-radius:7px;cursor:pointer}
+  .seg button[aria-pressed="true"]{background:var(--brandbg);color:var(--brand)}
+  .btn{font:inherit;font-size:12.5px;font-weight:700;background:var(--brand);color:#fff;border:0;
+    border-radius:10px;padding:8px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+  .btn:hover{background:var(--brand2)}
+  .btn svg{width:15px;height:15px}
+  .btn.ghost{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+  .btn.ghost:hover{border-color:var(--brand2);color:var(--brand2)}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .card>.ch{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--line2)}
+  .card>.ch h2{font-size:14.5px;margin:0}
+  .card>.ch .sub{font-size:12px;color:var(--muted)}
+  .card>.ch .r{margin-left:auto;font-size:12px;color:var(--muted);white-space:nowrap}
+  .card .body{padding:16px}
+
+  /* --- Indicateurs --- */
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:13px;margin-bottom:16px}
+  .kpi{padding:14px 15px 15px}
+  .kpi .kt{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--muted);
+    letter-spacing:.02em}
+  .kpi .kt svg{width:15px;height:15px;color:var(--brand2)}
+  .kpi .kv{font-size:27px;font-weight:800;letter-spacing:-.02em;margin:7px 0 2px;line-height:1}
+  .kpi .kv small{font-size:14px;font-weight:700;color:var(--muted);margin-left:3px}
+  .kpi .kd{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .delta{font-weight:800;font-size:11.5px;padding:1px 7px;border-radius:999px;white-space:nowrap}
+  .delta.up{background:var(--donebg);color:var(--done)}
+  .delta.down{background:var(--blockedbg);color:var(--blocked)}
+  .delta.flat{background:var(--line2);color:var(--muted)}
+  .kpi .kbar{height:6px;border-radius:999px;background:var(--line2);overflow:hidden;margin-top:11px}
+  .kpi .kbar>span{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand2))}
+  .kpi.good .kbar>span{background:linear-gradient(90deg,#1f9d55,#41c47c)}
+
+  /* --- Grille --- */
+  .grid{display:grid;gap:16px;margin-bottom:16px}
+  .grid>*{min-width:0}
+  .kpis>*{min-width:0}
+  .g-2{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+  .g-2e{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .g-3{grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr))}
+  @media (max-width:1100px){.g-2,.g-2e{grid-template-columns:minmax(0,1fr)}}
+
+  /* --- Pipeline de phases --- */
+  .pipe{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0;margin:0;list-style:none}
+  .pipe li{min-width:0}
+  .pipe button{width:100%;height:100%;display:flex;flex-direction:column;text-align:left;font:inherit;cursor:pointer;
+    background:var(--soft);border:1px solid var(--line);border-radius:11px;padding:10px 11px;color:var(--ink)}
+  .pipe button:hover{border-color:var(--brand2)}
+  .pipe .st{display:flex;align-items:flex-start;gap:9px}
+  .pipe .st>span:last-child{min-width:0}
+  .pipe .n{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;flex:none;
+    font-size:10.5px;font-weight:800;color:#fff;background:#b7c2d0}
+  .pipe .st-done .n{background:var(--done)} .pipe .st-doing .n{background:var(--doing)}
+  .pipe .st-blocked .n{background:var(--blocked)} .pipe .st-todo .n{background:var(--s-low)}
+  .pipe .nm{display:block;font-size:12.5px;font-weight:700;line-height:1.2}
+  .pipe .mt{display:block;font-size:11px;color:var(--muted);margin:2px 0 8px}
+  .pipe .pb{height:6px;border-radius:999px;background:var(--line2);overflow:hidden;margin-top:auto}
+  .pipe .pb>span{display:block;height:100%;background:var(--doing)}
+  .pipe .st-done .pb>span{background:var(--done)}
+
+  /* --- Gates --- */
+  .gate{display:flex;gap:11px;align-items:flex-start;padding:12px 16px;border-bottom:1px solid var(--line2)}
+  .gate:last-child{border-bottom:0}
+  .gate .gi{width:30px;height:30px;border-radius:9px;flex:none;display:grid;place-items:center;
+    background:var(--brandbg);color:var(--brand)}
+  .gate .gi svg{width:16px;height:16px}
+  .gate.ok .gi{background:var(--donebg);color:var(--done)}
+  .gate.wait .gi{background:var(--warnbg);color:var(--warn)}
+  .gate .gt{font-size:13.5px;font-weight:700}
+  .gate .gd{font-size:12px;color:var(--muted)}
+  .gate .gs{margin-left:auto;flex:none}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:800;
+    padding:3px 9px;border-radius:999px;white-space:nowrap}
+  .chip.ok{background:var(--donebg);color:var(--done)}
+  .chip.go{background:var(--doingbg);color:var(--doing)}
+  .chip.wait{background:var(--warnbg);color:var(--warn)}
+  .chip.no{background:var(--blockedbg);color:var(--blocked)}
+  .chip.mute{background:var(--line2);color:var(--muted)}
+  .chip .pulse{width:7px;height:7px;border-radius:50%;background:currentColor;animation:pulse 1.6s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.8)}}
+
+  /* --- Graphique --- */
+  .chart{margin:0}.chart svg{display:block;width:100%;height:248px}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}
+  .legend span{display:flex;align-items:center;gap:7px}
+  .legend i{width:11px;height:11px;border-radius:3px;display:block}
+  .legend i.line{height:3px;border-radius:2px;width:16px}
+
+  /* --- Flux des runs --- */
+  .run{display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:12px;align-items:center;
+    padding:11px 16px;border-bottom:1px solid var(--line2)}
+  .run:last-child{border-bottom:0}
+  .run .who{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;flex:none;
+    font-size:11px;font-weight:800;color:#fff;background:var(--brand)}
+  .run .who.exec{background:linear-gradient(140deg,#1379b0,#0f4c81)}
+  .run .who.rev{background:linear-gradient(140deg,#1f9d55,#157a41)}
+  .run .who.orch{background:linear-gradient(140deg,#7a5cc4,#4c3a80)}
+  .run .t1{font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .run .t2{font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .run .t2 code{background:none;border:0;padding:0;font-size:11.5px;color:var(--brand2)}
+  .run .r{text-align:right;font-size:11.5px;color:var(--muted);white-space:nowrap}
+  .run .r b{display:block;font-size:12.5px;color:var(--ink)}
+
+  /* --- Qualité --- */
+  .meter{margin:0 0 14px}
+  .meter .mh{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:6px}
+  .meter .mh b{font-weight:800}
+  .meter .track{position:relative;height:9px;border-radius:999px;background:var(--line2);overflow:hidden}
+  .meter .track>span{display:block;height:100%;background:linear-gradient(90deg,#0f4c81,#4b9ad6)}
+  .meter .track>i{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.55}
+  .meter .mf{font-size:11.5px;color:var(--muted);margin-top:5px}
+  .qstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center}
+  .qstat{background:var(--soft);border:1px solid var(--line2);border-radius:11px;padding:11px 8px}
+  .qstat b{display:block;font-size:19px;letter-spacing:-.01em}
+  .qstat small{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+  .qstat.ok b{color:var(--done)} .qstat.warn b{color:var(--warn)} .qstat.no b{color:var(--blocked)}
+
+  /* --- Coûts --- */
+  .cost{display:grid;grid-template-columns:132px minmax(0,1fr) 78px;gap:12px;align-items:center;margin:10px 0}
+  .cost .cl{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cost .cb{height:10px;border-radius:999px;background:var(--line2);overflow:hidden}
+  .cost .cb>span{display:block;height:100%;background:linear-gradient(90deg,var(--brand),#4b9ad6);border-radius:999px}
+  .cost .cv{font-size:12.5px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+  .cost .cv b{color:var(--ink)}
+
+  /* --- Tableaux --- */
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line2)}
+  thead th{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);
+    background:var(--soft);position:sticky;top:0}
+  tbody tr:hover{background:var(--soft)}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  td.nowrap,th.nowrap{white-space:nowrap}
+  .ib{display:inline-block;vertical-align:middle;width:70px;height:8px;border-radius:999px;
+    background:var(--line2);overflow:hidden;margin-right:8px}
+  .ib>span{display:block;height:100%;background:linear-gradient(90deg,var(--brand),#4b9ad6)}
+  .ib.w>span{background:linear-gradient(90deg,#b7791f,#ec835a)}
+  .ib.g>span{background:linear-gradient(90deg,#1f9d55,#41c47c)}
+  .tbl{overflow:auto;border-radius:14px}
+
+  /* --- Filtres --- */
+  .filters{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 16px;
+    border-bottom:1px solid var(--line2)}
+  .filters .fc{font:inherit;font-size:12.5px;font-weight:700;background:var(--panel);color:var(--muted);
+    border:1px solid var(--line);border-radius:999px;padding:4px 11px;cursor:pointer}
+  .filters .fc:hover{border-color:var(--brand2);color:var(--brand2)}
+  .filters .fc[aria-pressed="true"]{background:var(--brandbg);border-color:var(--brandline);color:var(--brand)}
+  .filters .sp{margin-left:auto;font-size:12px;color:var(--muted)}
+
+  /* --- Incidents --- */
+  .inc{display:grid;grid-template-columns:8px minmax(0,1fr) auto;gap:14px;align-items:center;
+    padding:13px 16px;border-bottom:1px solid var(--line2)}
+  .inc:last-child{border-bottom:0}
+  .inc .sev{width:8px;align-self:stretch;border-radius:999px;background:var(--s-low)}
+  .inc.s1 .sev{background:var(--s-crit)} .inc.s2 .sev{background:var(--s-serious)}
+  .inc.s3 .sev{background:var(--s-warn)} .inc.s4 .sev{background:var(--s-low)}
+  .inc .it{font-size:13.5px;font-weight:700}
+  .inc .id{font-size:11.5px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;margin-top:2px}
+  .inc .id code{background:none;border:0;padding:0}
+
+  /* --- Listes notes --- */
+  .notes{margin:0;padding-left:18px;color:var(--muted);font-size:12.5px}
+  .notes li{margin:5px 0}
+  .notes b{color:var(--ink)}
+
+  /* --- Équipes --- */
+  .teams{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(290px,100%),1fr));gap:14px;margin-bottom:16px}
+  .teams>*{min-width:0}
+  .team .th{display:flex;align-items:center;gap:11px;padding:13px 15px;border-bottom:1px solid var(--line2)}
+  .team .av{width:36px;height:36px;border-radius:11px;flex:none;display:grid;place-items:center;
+    font-size:12px;font-weight:800;color:#fff;background:linear-gradient(140deg,#1379b0,#0f4c81)}
+  .team .h1{display:block;font-size:14px;font-weight:800;line-height:1.2}
+  .team .h2{display:block;font-size:11.5px;color:var(--muted)}
+  .team .th>.right{margin-left:auto;flex:none}
+  .team .bd{padding:12px 15px 14px}
+  .team .kv{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:4px 0}
+  .team .kv+.kv{border-top:1px dashed var(--line2)}
+  .team .kv span{color:var(--muted)}
+  .team .kv b{font-weight:700}
+  .team .mt{margin:10px 0 0}
+  .team .mt .mh{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-bottom:5px}
+  .team .mt .mh b{color:var(--ink)}
+  .team .track{height:7px;border-radius:999px;background:var(--line2);overflow:hidden}
+  .team .track>span{display:block;height:100%;background:linear-gradient(90deg,var(--brand),#4b9ad6)}
+  .team .chips{margin-top:12px;display:flex;gap:6px;flex-wrap:wrap}
+
+  /* --- Tableau de tickets --- */
+  .board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+  .board>*{min-width:0}
+  .col{background:var(--soft);border:1px solid var(--line2);border-radius:12px;padding:10px}
+  .col>h3{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);
+    margin:2px 4px 9px;display:flex;align-items:center;gap:8px;font-weight:800}
+  .col>h3 .n{margin-left:auto;background:var(--panel);border:1px solid var(--line);border-radius:999px;
+    padding:0 7px;font-size:11px;color:var(--ink)}
+  .tk{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;
+    margin-bottom:8px;box-shadow:var(--shadow)}
+  .tk:last-child{margin-bottom:0}
+  .tk .tr{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+  .tk .tref{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .tk .tt{font-size:13px;font-weight:600;line-height:1.35}
+  .tk .tm{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:9px;font-size:11.5px;color:var(--muted)}
+  .tk .who{width:22px;height:22px;border-radius:7px;flex:none;display:grid;place-items:center;
+    font-size:9.5px;font-weight:800;color:#fff;background:linear-gradient(140deg,#1379b0,#0f4c81)}
+  .type{font-size:10px;font-weight:800;padding:1px 6px;border-radius:6px;text-transform:uppercase;
+    letter-spacing:.04em;background:var(--line2);color:var(--muted)}
+  .type.bug{background:var(--blockedbg);color:var(--blocked)}
+  .type.feat{background:var(--brandbg);color:var(--brand)}
+  .type.tech{background:var(--warnbg);color:var(--warn)}
+  .prio{font-size:10.5px;font-weight:800;color:var(--muted)}
+  .prio.p1{color:var(--blocked)} .prio.p2{color:var(--warn)}
+  @media (max-width:1200px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+  .sep{margin:22px 0 14px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    font-weight:800;color:var(--muted);display:flex;align-items:center;gap:12px}
+  .sep::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  [hidden]{display:none!important}
+  @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+  /* --- Petits écrans : barre latérale en bandes horizontales --- */
+  @media (max-width:980px){
+    .brand{padding:2px 4px 12px;margin-bottom:2px}
+    .sect-t{margin:12px 6px 5px}
+    .nav{flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:3px}
+    .nav button{width:auto;white-space:nowrap}
+    .org{margin-bottom:8px}
+    .tree{max-height:158px;overflow:auto;padding-bottom:4px}
+    .side .foot{margin-top:14px}
+  }
+  @media (max-width:620px){
+    .content{padding:14px 13px 40px}
+    .qstats{grid-template-columns:1fr}
+    .pipe{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+    .cost{grid-template-columns:96px minmax(0,1fr) 66px}
+    .topbar{flex-wrap:wrap}
+    .board{grid-template-columns:minmax(0,1fr)}
+    .teams{grid-template-columns:minmax(0,1fr)}
+    .crumb .mid,.crumb small{display:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= Icônes ================= -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <g id="i-grid" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="7.5" height="7.5" rx="1.8"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.8"/>
+      <rect x="3" y="13.5" width="7.5" height="7.5" rx="1.8"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.8"/>
+    </g>
+    <g id="i-play" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"/><path d="M10 8.6l5.2 3.4L10 15.4z"/>
+    </g>
+    <g id="i-shield" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3l7 2.6v5.6c0 4.2-2.8 7.6-7 9.2-4.2-1.6-7-5-7-9.2V5.6z"/><path d="M9 12l2.2 2.2L15.5 10"/>
+    </g>
+    <g id="i-coins" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <ellipse cx="12" cy="6.6" rx="7" ry="3.1"/><path d="M5 6.6v5c0 1.7 3.1 3.1 7 3.1s7-1.4 7-3.1v-5"/>
+      <path d="M5 11.6v5.8c0 1.7 3.1 3.1 7 3.1s7-1.4 7-3.1v-5.8"/>
+    </g>
+    <g id="i-alert" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10.3 4.3L2.9 17.2a1.9 1.9 0 001.7 2.9h14.8a1.9 1.9 0 001.7-2.9L13.7 4.3a1.9 1.9 0 00-3.4 0z"/>
+      <path d="M12 9.5v4.2M12 17.2h.01"/>
+    </g>
+    <g id="i-book" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 4.8A2 2 0 016 3h12a2 2 0 012 2v13a2 2 0 00-2-2H4z"/><path d="M4 4.8V18a3 3 0 003 3h11"/>
+    </g>
+    <g id="i-cog" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="2.9"/>
+      <path d="M12 3.2v2.3M12 18.5v2.3M5.8 5.8l1.6 1.6M16.6 16.6l1.6 1.6M3.2 12h2.3M18.5 12h2.3M5.8 18.2l1.6-1.6M16.6 7.4l1.6-1.6"/>
+    </g>
+    <g id="i-search" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <circle cx="10.8" cy="10.8" r="6.3"/><path d="M15.5 15.5L20 20"/>
+    </g>
+    <g id="i-bell" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6.2 9.4a5.8 5.8 0 1111.6 0c0 4.4 1.7 5.6 1.7 5.6H4.5s1.7-1.2 1.7-5.6z"/>
+      <path d="M10.2 18.6a2 2 0 003.6 0"/>
+    </g>
+    <g id="i-sun" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+      <circle cx="12" cy="12" r="4"/><path d="M12 2.6v2M12 19.4v2M4.4 4.4l1.4 1.4M18.2 18.2l1.4 1.4M2.6 12h2M19.4 12h2M4.4 19.6l1.4-1.4M18.2 5.8l1.4-1.4"/>
+    </g>
+    <g id="i-moon" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 14.6A8.6 8.6 0 019.4 4a8.6 8.6 0 1010.6 10.6z"/>
+    </g>
+    <g id="i-down" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 9.5l6 6 6-6"/>
+    </g>
+    <g id="i-gate" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 21V4.5A1.5 1.5 0 016.5 3h11A1.5 1.5 0 0119 4.5V21l-7-3.2z"/>
+    </g>
+    <g id="i-check" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4.5 12.5l5 5L19.5 7"/>
+    </g>
+    <g id="i-clock" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="8.6"/><path d="M12 7.5V12l3.4 2"/>
+    </g>
+    <g id="i-branch" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="6.5" cy="5.5" r="2.5"/><circle cx="6.5" cy="18.5" r="2.5"/><circle cx="17.5" cy="9" r="2.5"/>
+      <path d="M6.5 8v8M17.5 11.5c0 3-3 3.5-6 4.5"/>
+    </g>
+    <g id="i-export" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3.5v11M8 10.5l4 4 4-4"/><path d="M4.5 19.5h15"/>
+    </g>
+    <g id="i-doc" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 3h7.5L19 8.5V21H6z"/><path d="M13 3v6h6M9 13h6M9 16.5h6"/>
+    </g>
+    <g id="i-bolt" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M13.5 2.5L5 13.5h5.5L10 21.5l8.5-11H13z"/>
+    </g>
+    <g id="i-users" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="9.4" cy="8.4" r="3.2"/>
+      <path d="M3.5 19.6c0-3.3 2.6-5.3 5.9-5.3s5.9 2 5.9 5.3"/>
+      <path d="M16.3 5.9a3 3 0 010 5.5M17.3 14.6c2 .5 3.3 2 3.3 4.1"/>
+    </g>
+    <g id="i-id" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2.8" y="4.6" width="18.4" height="14.8" rx="2.4"/>
+      <circle cx="8.7" cy="10.8" r="2.3"/>
+      <path d="M5.3 16.5c.5-1.6 1.9-2.5 3.4-2.5s2.9.9 3.4 2.5M14.8 10h4.1M14.8 13.6h4.1"/>
+    </g>
+    <g id="i-layers" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3.2l8.5 4.6L12 12.4 3.5 7.8z"/>
+      <path d="M3.5 12.1l8.5 4.6 8.5-4.6M3.5 16.2l8.5 4.6 8.5-4.6"/>
+    </g>
+    <g id="i-star" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3.4l2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.8l6.1-.9z"/>
+    </g>
+    <g id="i-ticket" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 8.6V6.4A2.4 2.4 0 0017.6 4H6.4A2.4 2.4 0 004 6.4v2.2a3.2 3.2 0 010 6.8v2.2A2.4 2.4 0 006.4 20h11.2a2.4 2.4 0 002.4-2.4v-2.2a3.2 3.2 0 010-6.8z"/>
+      <path d="M13.6 8v1.7M13.6 11.8v1.6M13.6 15.6v1.7" stroke-dasharray="0"/>
+    </g>
+    <g id="i-right" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9.5 6l6 6-6 6"/>
+    </g>
+    <g id="i-building" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 20.5V5.4A1.4 1.4 0 015.4 4h7.2A1.4 1.4 0 0114 5.4v15.1"/>
+      <path d="M14 10h4.6A1.4 1.4 0 0120 11.4v9.1M2.6 20.5h18.8"/>
+      <path d="M7 8h4M7 11.4h4M7 14.8h4M16.4 13.6h1.2M16.4 17h1.2"/>
+    </g>
+  </defs>
+</svg>
+
+<div class="app">
+
+  <!-- ================= Barre latérale ================= -->
+  <aside class="side">
+    <div class="brand">
+      <span class="mark" aria-hidden="true">AI</span>
+      <span>
+        <span class="nm">My AI powered SDLC</span>
+        <span class="pl">Console · v0.9</span>
+      </span>
+    </div>
+
+    <button class="org" type="button" title="Changer d'entreprise">
+      <span class="mk" aria-hidden="true">AP</span>
+      <span>
+        <span class="t1">Atlas Pay SAS</span>
+        <span class="t2">Plan Équipe · 34 membres</span>
+      </span>
+      <svg aria-hidden="true"><use href="#i-down"/></svg>
+    </button>
+
+    <div class="sect-t" id="nav-org">Organisation</div>
+    <ul class="tree">
+      <li>
+        <button class="row" type="button" aria-expanded="true" aria-controls="tree-paiement">
+          <svg class="caret" aria-hidden="true"><use href="#i-right"/></svg>
+          <svg class="ic" aria-hidden="true"><use href="#i-users"/></svg>
+          Équipe Paiement <span class="n">12</span>
+        </button>
+        <ul id="tree-paiement">
+          <li><button class="row" type="button" aria-current="true">
+            <span class="ds" aria-hidden="true"></span> Atlas Pay API</button></li>
+          <li><button class="row" type="button">
+            <span class="ds" aria-hidden="true"></span> Checkout Web</button></li>
+        </ul>
+      </li>
+      <li>
+        <button class="row" type="button" aria-expanded="false" aria-controls="tree-plateforme">
+          <svg class="caret" aria-hidden="true"><use href="#i-right"/></svg>
+          <svg class="ic" aria-hidden="true"><use href="#i-users"/></svg>
+          Équipe Plateforme <span class="n">14</span>
+        </button>
+        <ul id="tree-plateforme" hidden>
+          <li><button class="row" type="button">
+            <span class="ds" aria-hidden="true"></span> Infrastructure</button></li>
+          <li><button class="row" type="button">
+            <span class="ds" aria-hidden="true"></span> Observabilité</button></li>
+        </ul>
+      </li>
+      <li>
+        <button class="row" type="button" aria-expanded="false" aria-controls="tree-data">
+          <svg class="caret" aria-hidden="true"><use href="#i-right"/></svg>
+          <svg class="ic" aria-hidden="true"><use href="#i-users"/></svg>
+          Équipe Data <span class="n">8</span>
+        </button>
+        <ul id="tree-data" hidden>
+          <li><button class="row" type="button">
+            <span class="ds" aria-hidden="true"></span> Entrepôt analytique</button></li>
+        </ul>
+      </li>
+    </ul>
+
+    <nav class="nav" aria-labelledby="nav-org" role="tablist" aria-orientation="vertical">
+      <button role="tab" id="tab-teams" aria-controls="view-teams" aria-selected="false" data-view="teams">
+        <svg aria-hidden="true"><use href="#i-users"/></svg> Équipes
+      </button>
+      <button role="tab" id="tab-projects" aria-controls="view-projects" aria-selected="false" data-view="projects">
+        <svg aria-hidden="true"><use href="#i-layers"/></svg> Projets <span class="tag">5</span>
+      </button>
+      <button role="tab" id="tab-members" aria-controls="view-members" aria-selected="false" data-view="members">
+        <svg aria-hidden="true"><use href="#i-id"/></svg> Membres &amp; rôles
+      </button>
+    </nav>
+
+    <div class="sect-t" id="nav-work">Travail</div>
+    <nav class="nav" aria-labelledby="nav-work" role="tablist" aria-orientation="vertical">
+      <button role="tab" id="tab-features" aria-controls="view-features" aria-selected="false" data-view="features">
+        <svg aria-hidden="true"><use href="#i-star"/></svg> Features <span class="tag">5</span>
+      </button>
+      <button role="tab" id="tab-tickets" aria-controls="view-tickets" aria-selected="false" data-view="tickets">
+        <svg aria-hidden="true"><use href="#i-ticket"/></svg> Tickets <span class="tag">47</span>
+      </button>
+      <button role="tab" id="tab-changes" aria-controls="view-changes" aria-selected="false" data-view="changes">
+        <svg aria-hidden="true"><use href="#i-branch"/></svg> Changes OpenSpec <span class="tag">3</span>
+      </button>
+    </nav>
+
+    <div class="sect-t" id="nav-pilot">Pilotage</div>
+    <nav class="nav" aria-labelledby="nav-pilot" role="tablist" aria-orientation="vertical">
+      <button role="tab" id="tab-overview" aria-controls="view-overview" aria-selected="true" data-view="overview">
+        <svg aria-hidden="true"><use href="#i-grid"/></svg> Vue d'ensemble
+      </button>
+      <button role="tab" id="tab-runs" aria-controls="view-runs" aria-selected="false" data-view="runs">
+        <svg aria-hidden="true"><use href="#i-play"/></svg> Runs d'agents <span class="tag live">4</span>
+      </button>
+      <button role="tab" id="tab-quality" aria-controls="view-quality" aria-selected="false" data-view="quality">
+        <svg aria-hidden="true"><use href="#i-shield"/></svg> Qualité &amp; recette
+      </button>
+      <button role="tab" id="tab-costs" aria-controls="view-costs" aria-selected="false" data-view="costs">
+        <svg aria-hidden="true"><use href="#i-coins"/></svg> Coûts
+      </button>
+      <button role="tab" id="tab-incidents" aria-controls="view-incidents" aria-selected="false" data-view="incidents">
+        <svg aria-hidden="true"><use href="#i-alert"/></svg> Incidents <span class="tag">2</span>
+      </button>
+    </nav>
+
+    <div class="sect-t" id="nav-ref">Référentiels</div>
+    <nav class="nav" aria-labelledby="nav-ref">
+      <button type="button"><svg aria-hidden="true"><use href="#i-building"/></svg> ADR &amp; architecture</button>
+      <button type="button"><svg aria-hidden="true"><use href="#i-book"/></svg> Runbook</button>
+      <button type="button"><svg aria-hidden="true"><use href="#i-cog"/></svg> Configuration</button>
+    </nav>
+
+    <div class="foot">
+      <div class="lbl"><span>Budget agents · octobre</span><b>62 %</b></div>
+      <div class="q" role="img" aria-label="1 248 € consommés sur 2 000 €"><span style="width:62%"></span></div>
+      <small>1 248 € / 2 000 € · réinitialisation le 1<sup>er</sup></small>
+    </div>
+  </aside>
+
+  <!-- ================= Zone principale ================= -->
+  <main>
+    <div class="topbar">
+      <button class="crumb" type="button" title="Changer d'entreprise, d'équipe ou de projet">
+        <span class="dot" aria-hidden="true"></span>
+        <span class="lv">Atlas&nbsp;Pay SAS</span>
+        <span class="sep" aria-hidden="true">›</span>
+        <span class="lv mid">Équipe Paiement</span>
+        <span class="sep mid" aria-hidden="true">›</span>
+        <span class="cur">Atlas Pay API</span>
+        <small>· 3 environnements</small>
+        <svg aria-hidden="true"><use href="#i-down"/></svg>
+      </button>
+
+      <label class="search">
+        <svg aria-hidden="true"><use href="#i-search"/></svg>
+        <span class="sr">Rechercher</span>
+        <input type="search" placeholder="Rechercher une tâche, un change, un run…">
+        <kbd>⌘K</kbd>
+      </label>
+
+      <div class="top-r">
+        <button class="iconbtn themebtn" type="button" id="theme" aria-pressed="false" title="Basculer le thème clair / sombre">
+          <svg class="i-sun" aria-hidden="true"><use href="#i-sun"/></svg>
+          <svg class="i-moon" aria-hidden="true"><use href="#i-moon"/></svg>
+          <span class="sr">Basculer le thème</span>
+        </button>
+        <button class="iconbtn" type="button" title="3 notifications">
+          <svg aria-hidden="true"><use href="#i-bell"/></svg>
+          <span class="badge">3</span>
+          <span class="sr">Notifications</span>
+        </button>
+        <button class="avatar" type="button" title="Compte de H. Kairi">HK</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <div class="demo">
+        <svg style="width:16px;height:16px;flex:none;margin-top:2px" aria-hidden="true"><use href="#i-alert"/></svg>
+        <p style="margin:0"><b>Maquette — données fictives.</b> Cette page sert à valider la structure et la hiérarchie
+        de l'information de la console « My AI powered SDLC » (organisation, travail, pilotage). Aucun chiffre n'est
+        mesuré. Les valeurs réelles proviendraient de <code>docs/journal/*.jsonl</code>, <code>reports/</code> et
+        <code>openspec/</code>, via la collecte du tableau de bord <code>suivi-projet</code>.</p>
+      </div>
+
+      <!-- ============ Équipes ============ -->
+      <section id="view-teams" role="tabpanel" aria-labelledby="tab-teams" tabindex="0" hidden>
+        <header class="phead">
+          <div>
+            <div class="eyebrow">Organisation · entreprise Atlas Pay SAS</div>
+            <h1>Équipes</h1>
+            <p>3 équipes · 34 membres · 5 projets · 12 agents assignés</p>
+          </div>
+          <div class="right">
+            <button class="btn ghost" type="button"><svg aria-hidden="true"><use href="#i-id"/></svg> Gérer les rôles</button>
+            <button class="btn" type="button"><svg aria-hidden="true"><use href="#i-users"/></svg> Créer une équipe</button>
+          </div>
+        </header>
+
+        <div class="teams">
+          <section class="card team">
+            <div class="th">
+              <span class="av" aria-hidden="true">EP</span>
+              <span>
+                <span class="h1">Équipe Paiement</span>
+                <span class="h2">Responsable · H. Kairi</span>
+              </span>
+              <span class="right"><span class="chip go">en activité</span></span>
+            </div>
+            <div class="bd">
+              <div class="kv"><span>Membres</span><b>12</b></div>
+              <div class="kv"><span>Projets</span><b>2 · 1 actif</b></div>
+              <div class="kv"><span>Tickets ouverts</span><b>8</b></div>
+              <div class="kv"><span>Agents assignés</span><b>6</b></div>
+              <div class="mt">
+                <div class="mh"><span>Charge des agents</span><b>78 %</b></div>
+                <div class="track" role="img" aria-label="78 pour cent"><span style="width:78%"></span></div>
+              </div>
+              <div class="mt">
+                <div class="mh"><span>Avancement des projets</span><b>68 %</b></div>
+                <div class="track" role="img" aria-label="68 pour cent"><span style="width:68%"></span></div>
+              </div>
+              <div class="chips">
+                <span class="chip mute">Atlas Pay API</span>
+                <span class="chip mute">Checkout Web</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="card team">
+            <div class="th">
+              <span class="av" aria-hidden="true" style="background:linear-gradient(140deg,#7a5cc4,#4c3a80)">PL</span>
+              <span>
+                <span class="h1">Équipe Plateforme</span>
+                <span class="h2">Responsable · M. Sow</span>
+              </span>
+              <span class="right"><span class="chip go">en activité</span></span>
+            </div>
+            <div class="bd">
+              <div class="kv"><span>Membres</span><b>14</b></div>
+              <div class="kv"><span>Projets</span><b>2 · 1 actif</b></div>
+              <div class="kv"><span>Tickets ouverts</span><b>11</b></div>
+              <div class="kv"><span>Agents assignés</span><b>4</b></div>
+              <div class="mt">
+                <div class="mh"><span>Charge des agents</span><b>64 %</b></div>
+                <div class="track" role="img" aria-label="64 pour cent"><span style="width:64%"></span></div>
+              </div>
+              <div class="mt">
+                <div class="mh"><span>Avancement des projets</span><b>52 %</b></div>
+                <div class="track" role="img" aria-label="52 pour cent"><span style="width:52%"></span></div>
+              </div>
+              <div class="chips">
+                <span class="chip mute">Infrastructure</span>
+                <span class="chip mute">Observabilité</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="card team">
+            <div class="th">
+              <span class="av" aria-hidden="true" style="background:linear-gradient(140deg,#1baf7a,#157a41)">DA</span>
+              <span>
+                <span class="h1">Équipe Data</span>
+                <span class="h2">Responsable · L. Bertrand</span>
+              </span>
+              <span class="right"><span class="chip wait">en veille</span></span>
+            </div>
+            <div class="bd">
+              <div class="kv"><span>Membres</span><b>8</b></div>
+              <div class="kv"><span>Projets</span><b>1 · en cadrage</b></div>
+              <div class="kv"><span>Tickets ouverts</span><b>5</b></div>
+              <div class="kv"><span>Agents assignés</span><b>2</b></div>
+              <div class="mt">
+                <div class="mh"><span>Charge des agents</span><b>41 %</b></div>
+                <div class="track" role="img" aria-label="41 pour cent"><span style="width:41%"></span></div>
+              </div>
+              <div class="mt">
+                <div class="mh"><span>Avancement des projets</span><b>30 %</b></div>
+                <div class="track" role="img" aria-label="30 pour cent"><span style="width:30%"></span></div>
+              </div>
+              <div class="chips">
+                <span class="chip mute">Entrepôt analytique</span>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <section class="card">
+          <div class="ch"><h2>Activité par équipe</h2><span class="r">30 derniers jours</span></div>
+          <div class="tbl">
+            <table>
+              <caption class="sr">Activité des agents et des tickets par équipe</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Équipe</th><th scope="col" class="nowrap">Membres</th>
+                  <th scope="col" class="nowrap">Runs</th><th scope="col" class="nowrap">Coût agents</th>
+                  <th scope="col" class="nowrap">Validé dès la 1<sup>re</sup> revue</th>
+                  <th scope="col" class="nowrap">Tickets ouverts</th><th scope="col" class="nowrap">État</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><b>Paiement</b></td><td class="num">12</td><td class="num">78</td>
+                  <td class="num">688 €</td>
+                  <td><span class="ib g" role="img" aria-label="88 pour cent"><span style="width:88%"></span></span><span class="num">88 %</span></td>
+                  <td class="num">8</td><td><span class="chip go">en activité</span></td>
+                </tr>
+                <tr>
+                  <td><b>Plateforme</b></td><td class="num">14</td><td class="num">52</td>
+                  <td class="num">418 €</td>
+                  <td><span class="ib g" role="img" aria-label="82 pour cent"><span style="width:82%"></span></span><span class="num">82 %</span></td>
+                  <td class="num">11</td><td><span class="chip go">en activité</span></td>
+                </tr>
+                <tr>
+                  <td><b>Data</b></td><td class="num">8</td><td class="num">16</td>
+                  <td class="num">142 €</td>
+                  <td><span class="ib w" role="img" aria-label="71 pour cent"><span style="width:71%"></span></span><span class="num">71 %</span></td>
+                  <td class="num">5</td><td><span class="chip wait">en veille</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <!-- ============ Membres & rôles ============ -->
+      <section id="view-members" role="tabpanel" aria-labelledby="tab-members" tabindex="0" hidden>
+        <header class="phead">
+          <div>
+            <div class="eyebrow">Organisation · accès et permissions</div>
+            <h1>Membres &amp; rôles</h1>
+            <p>34 membres · 6 rôles · 12 agents assignés à des personnes</p>
+          </div>
+          <div class="right">
+            <button class="btn" type="button"><svg aria-hidden="true"><use href="#i-users"/></svg> Inviter</button>
+          </div>
+        </header>
+
+        <div class="grid g-2e">
+          <section class="card">
+            <div class="ch"><h2>Membres</h2><span class="r">page 1 / 7</span></div>
+            <div class="tbl">
+              <table>
+                <caption class="sr">Membres de l'entreprise et leur charge</caption>
+                <thead>
+                  <tr><th scope="col">Membre</th><th scope="col" class="nowrap">Rôle</th>
+                  <th scope="col" class="nowrap">Équipe</th><th scope="col" class="nowrap">Charge</th>
+                  <th scope="col" class="nowrap">Agents</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>H. Kairi</td><td class="nowrap">Propriétaire</td><td class="nowrap">Paiement</td>
+                    <td><span class="ib" role="img" aria-label="78 pour cent"><span style="width:78%"></span></span><span class="num">78 %</span></td>
+                    <td class="num">3</td></tr>
+                  <tr><td>M. Sow</td><td class="nowrap">Responsable d'équipe</td><td class="nowrap">Plateforme</td>
+                    <td><span class="ib w" role="img" aria-label="64 pour cent"><span style="width:64%"></span></span><span class="num">64 %</span></td>
+                    <td class="num">2</td></tr>
+                  <tr><td>L. Bertrand</td><td class="nowrap">Responsable d'équipe</td><td class="nowrap">Data</td>
+                    <td><span class="ib" role="img" aria-label="41 pour cent"><span style="width:41%"></span></span><span class="num">41 %</span></td>
+                    <td class="num">1</td></tr>
+                  <tr><td>A. Diallo</td><td class="nowrap">Exécutant</td><td class="nowrap">Paiement</td>
+                    <td><span class="ib" role="img" aria-label="72 pour cent"><span style="width:72%"></span></span><span class="num">72 %</span></td>
+                    <td class="num">2</td></tr>
+                  <tr><td>C. Moreau</td><td class="nowrap">Relecteur</td><td class="nowrap">Paiement</td>
+                    <td><span class="ib" role="img" aria-label="58 pour cent"><span style="width:58%"></span></span><span class="num">58 %</span></td>
+                    <td class="num">2</td></tr>
+                  <tr><td>J. Petit</td><td class="nowrap">Observateur</td><td class="nowrap">Data</td>
+                    <td><span class="ib" role="img" aria-label="12 pour cent"><span style="width:12%"></span></span><span class="num">12 %</span></td>
+                    <td class="num">0</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="ch"><h2>Rôles et permissions</h2><span class="r">6 rôles</span></div>
+            <div class="tbl">
+              <table>
+                <caption class="sr">Rôles, portée et droits</caption>
+                <thead>
+                  <tr><th scope="col">Rôle</th><th scope="col" class="nowrap">Portée</th>
+                  <th scope="col">Droits</th><th scope="col" class="nowrap">Membres</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><b>Propriétaire</b></td><td class="nowrap">Entreprise</td>
+                    <td>Facturation, suppression, transfert · tous les droits</td><td class="num">1</td></tr>
+                  <tr><td><b>Administrateur</b></td><td class="nowrap">Entreprise</td>
+                    <td>Équipes, projets, membres, configuration des agents et des seuils</td><td class="num">3</td></tr>
+                  <tr><td><b>Responsable d'équipe</b></td><td class="nowrap">Équipe</td>
+                    <td>Créer et affecter les tickets, valider les gates de l'équipe</td><td class="num">3</td></tr>
+                  <tr><td><b>Exécutant</b></td><td class="nowrap">Projet</td>
+                    <td>Traiter les tâches assignées · les agents n'ont jamais git en écriture</td><td class="num">18</td></tr>
+                  <tr><td><b>Relecteur</b></td><td class="nowrap">Projet</td>
+                    <td>Relire les diffs et contester une spec · jamais auteur de la tâche relue</td><td class="num">6</td></tr>
+                  <tr><td><b>Observateur</b></td><td class="nowrap">Projet</td>
+                    <td>Lecture seule : suivi, indicateurs, journal</td><td class="num">3</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ============ Projets ============ -->
+      <section id="view-projects" role="tabpanel" aria-labelledby="tab-projects" tabindex="0" hidden>
+        <header class="phead">
+          <div>
+            <div class="eyebrow">Organisation · portefeuille</div>
+            <h1>Projets</h1>
+            <p>5 projets · 3 équipes · 2 gates en attente · 1 248 € sur 30 jours</p>
+          </div>
+          <div class="right">
+            <button class="btn" type="button"><svg aria-hidden="true"><use href="#i-layers"/></svg> Nouveau projet</button>
+          </div>
+        </header>
+
+        <section class="card">
+          <div class="filters">
+            <button class="fc" type="button" aria-pressed="true">Tous</button>
+            <button class="fc" type="button" aria-pressed="false">Paiement</button>
+            <button class="fc" type="button" aria-pressed="false">Plateforme</button>
+            <button class="fc" type="button" aria-pressed="false">Data</button>
+            <span class="sp">5 projets</span>
+          </div>
+          <div class="tbl">
+            <table>
+              <caption class="sr">Projets de l'entreprise, leur équipe et leur prochain gate</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Projet</th><th scope="col" class="nowrap">Équipe</th>
+                  <th scope="col" class="nowrap">Change OpenSpec</th><th scope="col" class="nowrap">Phase</th>
+                  <th scope="col" class="nowrap">Avancement</th><th scope="col" class="nowrap">Prochain gate</th>
+                  <th scope="col" class="nowrap">Coût 30 j</th><th scope="col" class="nowrap">État</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><b>Atlas Pay API</b><br><small style="color:var(--muted)">API de paiement · 3 environnements</small></td>
+                  <td class="nowrap">Paiement</td><td><code>auth-mfa</code></td>
+                  <td class="nowrap">Implémentation</td>
+                  <td><span class="ib" role="img" aria-label="68 pour cent"><span style="width:68%"></span></span><span class="num">68 %</span></td>
+                  <td class="nowrap">Recette</td><td class="num">420 €</td><td><span class="chip go">en cours</span></td>
+                </tr>
+                <tr>
+                  <td><b>Checkout Web</b><br><small style="color:var(--muted)">Parcours d'achat</small></td>
+                  <td class="nowrap">Paiement</td><td><code>checkout-v2</code></td>
+                  <td class="nowrap">Spec &amp; plan</td>
+                  <td><span class="ib" role="img" aria-label="35 pour cent"><span style="width:35%"></span></span><span class="num">35 %</span></td>
+                  <td class="nowrap">Spec freeze</td><td class="num">268 €</td><td><span class="chip wait">en revue</span></td>
+                </tr>
+                <tr>
+                  <td><b>Infrastructure</b><br><small style="color:var(--muted)">Provisionnement et CI</small></td>
+                  <td class="nowrap">Plateforme</td><td><code>infra-iac</code></td>
+                  <td class="nowrap">Implémentation</td>
+                  <td><span class="ib" role="img" aria-label="52 pour cent"><span style="width:52%"></span></span><span class="num">52 %</span></td>
+                  <td class="nowrap">Contrôles 5b</td><td class="num">218 €</td><td><span class="chip go">en cours</span></td>
+                </tr>
+                <tr>
+                  <td><b>Observabilité</b><br><small style="color:var(--muted)">Traces et métriques</small></td>
+                  <td class="nowrap">Plateforme</td><td>—</td>
+                  <td class="nowrap">Cadrage</td>
+                  <td><span class="ib" role="img" aria-label="12 pour cent"><span style="width:12%"></span></span><span class="num">12 %</span></td>
+                  <td class="nowrap">Cadrage</td><td class="num">96 €</td><td><span class="chip mute">en veille</span></td>
+                </tr>
+                <tr>
+                  <td><b>Entrepôt analytique</b><br><small style="color:var(--muted)">Tableaux de bord</small></td>
+                  <td class="nowrap">Data</td><td>—</td>
+                  <td class="nowrap">Cadrage</td>
+                  <td><span class="ib" role="img" aria-label="30 pour cent"><span style="width:30%"></span></span><span class="num">30 %</span></td>
+                  <td class="nowrap">Cadrage</td><td class="num">152 €</td><td><span class="chip mute">en veille</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <!-- ============ Features ============ -->
+      <section id="view-features" role="tabpanel" aria-labelledby="tab-features" tabindex="0" hidden>
+        <header class="phead">
+          <div>
+            <div class="eyebrow">Travail · besoins et livrables</div>
+            <h1>Features</h1>
+            <p>5 features · 2 en implémentation · 1 126 € sur 30 jours</p>
+          </div>
+          <div class="right">
+            <button class="btn" type="button"><svg aria-hidden="true"><use href="#i-star"/></svg> Nouvelle feature</button>
+          </div>
+        </header>
+
+        <section class="card">
+          <div class="filters">
+            <button class="fc" type="button" aria-pressed="true">Toutes</button>
+            <button class="fc" type="button" aria-pressed="false">En cours</button>
+            <button class="fc" type="button" aria-pressed="false">Livrées</button>
+            <button class="fc" type="button" aria-pressed="false">En veille</button>
+            <span class="sp">5 features</span>
+          </div>
+          <div class="tbl">
+            <table>
+              <caption class="sr">Features, leur projet, leur change et leur avancement</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Feature</th><th scope="col" class="nowrap">Projet</th>
+                  <th scope="col" class="nowrap">Change</th><th scope="col" class="nowrap">Phase</th>
+                  <th scope="col" class="nowrap">Avancement</th><th scope="col" class="nowrap">Recette</th>
+                  <th scope="col" class="nowrap">Coût</th><th scope="col" class="nowrap">Délai spec → prod</th>
+                  <th scope="col" class="nowrap">État</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><b>Authentification MFA</b></td><td class="nowrap">Atlas Pay API</td><td><code>auth-mfa</code></td>
+                  <td class="nowrap">Implémentation</td>
+                  <td><span class="ib" role="img" aria-label="68 pour cent"><span style="width:68%"></span></span><span class="num">68 %</span></td>
+                  <td class="num">18 / 22</td><td class="num">420 €</td><td class="num">6,5 j</td>
+                  <td><span class="chip go">en cours</span></td>
+                </tr>
+                <tr>
+                  <td><b>Paiement SEPA instantané</b></td><td class="nowrap">Atlas Pay API</td><td>—</td>
+                  <td class="nowrap">Spec &amp; plan</td>
+                  <td><span class="ib" role="img" aria-label="22 pour cent"><span style="width:22%"></span></span><span class="num">22 %</span></td>
+                  <td class="num">0 / 14</td><td class="num">268 €</td><td class="num">—</td>
+                  <td><span class="chip go">en cours</span></td>
+                </tr>
+                <tr>
+                  <td><b>Refonte du checkout</b></td><td class="nowrap">Checkout Web</td><td><code>checkout-v2</code></td>
+                  <td class="nowrap">Spec &amp; plan</td>
+                  <td><span class="ib" role="img" aria-label="35 pour cent"><span style="width:35%"></span></span><span class="num">35 %</span></td>
+                  <td class="num">—</td><td class="num">190 €</td><td class="num">—</td>
+                  <td><span class="chip wait">spec freeze</span></td>
+                </tr>
+                <tr>
+                  <td><b>Traces distribuées</b></td><td class="nowrap">Observabilité</td><td>—</td>
+                  <td class="nowrap">Cadrage</td>
+                  <td><span class="ib" role="img" aria-label="12 pour cent"><span style="width:12%"></span></span><span class="num">12 %</span></td>
+                  <td class="num">—</td><td class="num">96 €</td><td class="num">—</td>
+                  <td><span class="chip mute">en veille</span></td>
+                </tr>
+                <tr>
+                  <td><b>Tableaux de bord analytiques</b></td><td class="nowrap">Entrepôt analytique</td><td>—</td>
+                  <td class="nowrap">Cadrage</td>
+                  <td><span class="ib" role="img" aria-label="30 pour cent"><span style="width:30%"></span></span><span class="num">30 %</span></td>
+                  <td class="num">—</td><td class="num">152 €</td><td class="num">—</td>
+                  <td><span class="chip mute">en veille</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <!-- ============ Tickets ============ -->
+      <section id="view-tickets" role="tabpanel" aria-labelledby="tab-tickets" tabindex="0" hidden>
+        <header class="phead">
+          <div>
+            <div class="eyebrow">Travail · équipe Paiement</div>
+            <h1>Tickets</h1>
+            <p>47 ouverts · 12 assignés à des agents · 4 bugs bloquants · sprint 14</p>
+          </div>
+          <div class="right">
+            <div class="seg" role="group" aria-label="Affichage">
+              <button type="button" aria-pressed="true">Tableau</button>
+              <button type="button" aria-pressed="false">Liste</button>
+            </div>
+            <button class="btn" type="button"><svg aria-hidden="true"><use href="#i-ticket"/></svg> Nouveau ticket</button>
+          </div>
+        </header>
+
+        <section class="card" style="padding:14px">
+          <div class="filters" style="border:0;padding:0 2px 12px">
+            <button class="fc" type="button" aria-pressed="true">Tous</button>
+            <button class="fc" type="button" aria-pressed="false">Bugs</button>
+            <button class="fc" type="button" aria-pressed="false">Features</button>
+            <button class="fc" type="button" aria-pressed="false">Technique</button>
+            <span class="sp">sprint 14 · 24 tickets</span>
+          </div>
+
+          <div class="board">
+            <div class="col">
+              <h3>Nouveau <span class="n">4</span></h3>
+              <article class="tk">
+                <div class="tr"><span class="tref">TIC-482</span><span class="type bug">bug</span><span class="prio p1">P1</span></div>
+                <div class="tt">Le code de secours n'est pas consommé après usage</div>
+                <div class="tm">
+                  <span class="who" aria-hidden="true">AD</span> A. Diallo
+                  <span>feature Authentification MFA</span>
+                </div>
+              </article>
+              <article class="tk">
+                <div class="tr"><span class="tref">TIC-479</span><span class="type tech">technique</span><span class="prio p2">P2</span></div>
+                <div class="tt">Réviser la table <code>users</code> avant la migration MFA</div>
+                <div class="tm"><span class="who" aria-hidden="true">MS</span> M. Sow <span>bloqué par TIC-471</span></div>
+              </article>
+              <article class="tk">
+                <div class="tr"><span class="tref">TIC-477</span><span class="type feat">feature</span><span class="prio p3">P3</span></div>
+                <div class="tt">Journaliser les connexions refusées</div>
+                <div class="tm"><span class="who" aria-hidden="true">HK</span> H. Kairi <span><code>auth-mfa</code></span></div>
+              </article>
+            </div>
+
+            <div class="col">
+              <h3>En cours <span class="n">3</span></h3>
+              <article class="tk">
+                <div class="tr"><span class="tref">TIC-471</span><span class="type tech">technique</span><span class="prio p1">P1</span></div>
+                <div class="tt">Migration de la base <code>users</code></div>
+                <div class="tm"><span class="who" aria-hidden="true">EX</span> agent opencode <span>run 26 min · 5 itérations</span></div>
+              </article>
+              <article class="tk">
+                <div class="tr"><span class="tref">TIC-468</span><span class="type bug">bug</span><span class="prio p2">P2</span></div>
+                <div class="tt">Expiration de session trop agressive après MFA</div>
+                <div class="tm"><span class="who" aria-hidden="true">CM</span> C. Moreau <span><code>INC-014</code></span></div>
+              </article>
+              <article class="tk">
+                <div class="tr"><span class="tref">TIC-465</span><span class="type feat">feature</span><span class="prio p2">P2</span></div>
+                <div class="tt">Enrôlement TOTP par QR code</div>
+                <div class="tm"><span class="who" aria-hidden="true">EX</span> agent codex <span>relecture en attente</span></div>
+              </article>
+            </div>
+
+            <div class="col">
+              <h3>En revue <span class="n">2</span></h3>
+              <article class="tk">
+                <div class="tr"><span class="tref">TIC-464</span><span class="type feat">feature</span><span class="prio p2">P2</span></div>
+                <div class="tt">Politique de mot de passe configurable</div>
+                <div class="tm"><span class="who" aria-hidden="true">RE</span> agent claude-code <span>1<sup>re</sup> revue</span></div>
+              </article>
+              <article class="tk">
+                <div class="tr"><span class="tref">TIC-459</span><span class="type tech">technique</span><span class="prio p3">P3</span></div>
+                <div class="tt">Extraire le module TOTP du contrôleur</div>
+                <div class="tm"><span class="who" aria-hidden="true">CM</span> C. Moreau <span>diff 412 lignes</span></div>
+              </article>
+            </div>
+
+            <div class="col">
+              <h3>Terminé <span class="n">5</span></h3>
+              <article class="tk">
+                <div class="tr"><span class="tref">TIC-455</span><span class="type feat">feature</span><span class="prio p2">P2</span></div>
+                <div class="tt">Schéma MFA et codes de secours</div>
+                <div class="tm"><span class="who" aria-hidden="true">AD</span> A. Diallo <span>validé dès la 1<sup>re</sup> revue</span></div>
+              </article>
+              <article class="tk">
+                <div class="tr"><span class="tref">TIC-451</span><span class="type bug">bug</span><span class="prio p1">P1</span></div>
+                <div class="tt">Fuite du jeton de rafraîchissement dans les logs</div>
+                <div class="tm"><span class="who" aria-hidden="true">HK</span> H. Kairi <span>correctif déployé</span></div>
+              </article>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <!-- ============ Changes OpenSpec ============ -->
+      <section id="view-changes" role="tabpanel" aria-labelledby="tab-changes" tabindex="0" hidden>
+        <header class="phead">
+          <div>
+            <div class="eyebrow">Travail · spécifications gelées</div>
+            <h1>Changes OpenSpec</h1>
+            <p>3 changes actifs · 12 archivés · pas de code sans spec validée</p>
+          </div>
+          <div class="right">
+            <button class="btn" type="button"><svg aria-hidden="true"><use href="#i-branch"/></svg> Proposer un change</button>
+          </div>
+        </header>
+
+        <section class="card">
+          <div class="tbl">
+            <table>
+              <caption class="sr">Changes OpenSpec, leurs gates et leur avancement</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Change</th><th scope="col" class="nowrap">Projet</th>
+                  <th scope="col" class="nowrap">Scénarios</th><th scope="col" class="nowrap">Relecteurs</th>
+                  <th scope="col" class="nowrap">Spec freeze</th><th scope="col" class="nowrap">Recette</th>
+                  <th scope="col" class="nowrap">Go / no-go</th><th scope="col" class="nowrap">État</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><b><code>auth-mfa</code></b><br><small style="color:var(--muted)">Ajouter le second facteur à la connexion</small></td>
+                  <td class="nowrap">Atlas Pay API</td><td class="num">22</td><td class="num">2</td>
+                  <td><span class="chip ok">validé</span></td>
+                  <td><span class="ib" role="img" aria-label="82 pour cent"><span style="width:82%"></span></span><span class="num">18 / 22</span></td>
+                  <td><span class="chip wait">en attente</span></td>
+                  <td><span class="chip go">en cours</span></td>
+                </tr>
+                <tr>
+                  <td><b><code>checkout-v2</code></b><br><small style="color:var(--muted)">Refonte du parcours d'achat</small></td>
+                  <td class="nowrap">Checkout Web</td><td class="num">14</td><td class="num">1</td>
+                  <td><span class="chip wait">en revue</span></td>
+                  <td><span class="chip mute">—</span></td>
+                  <td><span class="chip mute">—</span></td>
+                  <td><span class="chip wait">contesté</span></td>
+                </tr>
+                <tr>
+                  <td><b><code>infra-iac</code></b><br><small style="color:var(--muted)">Provisionnement déclaratif</small></td>
+                  <td class="nowrap">Infrastructure</td><td class="num">9</td><td class="num">2</td>
+                  <td><span class="chip ok">validé</span></td>
+                  <td><span class="chip ok">9 / 9</span></td>
+                  <td><span class="chip ok">validé</span></td>
+                  <td><span class="chip ok">livré</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" style="margin-top:16px">
+          <div class="ch"><h2>Règles du cycle de vie</h2><span class="r">rappel du framework</span></div>
+          <div class="body">
+            <ul class="notes">
+              <li><b>Pas de code sans spec validée</b> — le gate <b>spec freeze</b> précède toute implémentation.</li>
+              <li><b>Relecteur ≠ auteur</b> — un change est contesté par un agent différent de celui qui l'a rédigé.</li>
+              <li><b>Change request</b> — toute évolution après le gel passe par un nouveau change lié et une analyse d'impact.</li>
+              <li><b>Git est réservé à l'humain</b> — les agents proposent le message de commit, ils ne committent jamais.</li>
+            </ul>
+          </div>
+        </section>
+      </section>
+
+      <!-- ============ Vue d'ensemble ============ -->
+      <section id="view-overview" role="tabpanel" aria-labelledby="tab-overview" tabindex="0">
+
+        <header class="phead">
+          <div>
+            <div class="eyebrow">Projet Atlas Pay · feature <code>authentication</code></div>
+            <h1>Vue d'ensemble</h1>
+            <p>Change OpenSpec <code>auth-mfa</code> · lot 4/5 · 12 agents actifs · dernière mise à jour il y a 2 min</p>
+          </div>
+          <div class="right">
+            <div class="seg" role="group" aria-label="Période">
+              <button type="button" aria-pressed="false">7 j</button>
+              <button type="button" aria-pressed="true">30 j</button>
+              <button type="button" aria-pressed="false">90 j</button>
+            </div>
+            <button class="btn ghost" type="button"><svg aria-hidden="true"><use href="#i-export"/></svg> Exporter</button>
+            <button class="btn" type="button"><svg aria-hidden="true"><use href="#i-bolt"/></svg> Assigner une tâche</button>
+          </div>
+        </header>
+
+        <!-- Indicateurs -->
+        <div class="kpis">
+          <div class="card kpi">
+            <div class="kt"><svg aria-hidden="true"><use href="#i-check"/></svg> Avancement global</div>
+            <div class="kv">68 <small>%</small></div>
+            <div class="kd"><span class="delta up">+9 pts</span> 27 / 40 tâches livrées</div>
+            <div class="kbar" role="img" aria-label="68 %"><span style="width:68%"></span></div>
+          </div>
+          <div class="card kpi">
+            <div class="kt"><svg aria-hidden="true"><use href="#i-play"/></svg> Runs cette semaine</div>
+            <div class="kv">146</div>
+            <div class="kd"><span class="delta up">+18 %</span> 12 agents · 4 en cours</div>
+            <div class="kbar" role="img" aria-label="60 %"><span style="width:60%"></span></div>
+          </div>
+          <div class="card kpi good">
+            <div class="kt"><svg aria-hidden="true"><use href="#i-shield"/></svg> Validé dès la 1<sup>re</sup> revue</div>
+            <div class="kv">86 <small>%</small></div>
+            <div class="kd"><span class="delta flat">cible 80 %</span> 4 escalades sur 30 j</div>
+            <div class="kbar" role="img" aria-label="86 %"><span style="width:86%"></span></div>
+          </div>
+          <div class="card kpi">
+            <div class="kt"><svg aria-hidden="true"><use href="#i-clock"/></svg> Délai spec → production</div>
+            <div class="kv">6,5 <small>j</small></div>
+            <div class="kd"><span class="delta up">−1,2 j</span> médiane sur 5 features</div>
+            <div class="kbar" role="img" aria-label="45 %"><span style="width:45%"></span></div>
+          </div>
+          <div class="card kpi">
+            <div class="kt"><svg aria-hidden="true"><use href="#i-coins"/></svg> Coût agents · 30 j</div>
+            <div class="kv">1 248 <small>€</small></div>
+            <div class="kd"><span class="delta flat">62 % du budget</span> 41,2 M tokens</div>
+            <div class="kbar" role="img" aria-label="62 %"><span style="width:62%"></span></div>
+          </div>
+        </div>
+
+        <!-- Pipeline + gates -->
+        <div class="grid g-2">
+          <section class="card">
+            <div class="ch">
+              <h2>Cycle de vie — phases du framework</h2>
+              <span class="r">étape courante : <b>Implémentation</b></span>
+            </div>
+            <div class="body">
+              <ol class="pipe" data-phases>
+                <li><button type="button" class="st-done">
+                  <span class="st"><span class="n">1</span><span><span class="nm">Cadrage</span><span class="mt">2 / 2 · validé</span></span></span>
+                  <span class="pb"><span style="width:100%"></span></span>
+                </button></li>
+                <li><button type="button" class="st-done">
+                  <span class="st"><span class="n">2</span><span><span class="nm">Architecture</span><span class="mt">3 / 3 · ADR acceptés</span></span></span>
+                  <span class="pb"><span style="width:100%"></span></span>
+                </button></li>
+                <li><button type="button" class="st-done">
+                  <span class="st"><span class="n">3</span><span><span class="nm">Spec &amp; plan</span><span class="mt">4 / 4 · spec freeze</span></span></span>
+                  <span class="pb"><span style="width:100%"></span></span>
+                </button></li>
+                <li><button type="button" class="st-doing">
+                  <span class="st"><span class="n">4</span><span><span class="nm">Implémentation</span><span class="mt">12 / 18 · en cours</span></span></span>
+                  <span class="pb"><span style="width:67%"></span></span>
+                </button></li>
+                <li><button type="button" class="st-todo">
+                  <span class="st"><span class="n">5</span><span><span class="nm">Recette</span><span class="mt">18 / 22 scénarios</span></span></span>
+                  <span class="pb"><span style="width:82%"></span></span>
+                </button></li>
+                <li><button type="button" class="st-todo">
+                  <span class="st"><span class="n">6</span><span><span class="nm">Production</span><span class="mt">go / no-go en attente</span></span></span>
+                  <span class="pb"><span style="width:0%"></span></span>
+                </button></li>
+              </ol>
+
+              <div class="sep">Tâches en cours d'implémentation</div>
+              <div class="tbl">
+              <table>
+                <caption class="sr">Tâches en cours dans la phase d'implémentation</caption>
+                <thead>
+                  <tr><th scope="col" class="nowrap">Tâche</th><th scope="col" class="nowrap">Exécutant</th><th scope="col" class="nowrap">Relecteur</th><th scope="col" class="nowrap">État</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>5.3</code> Politique de mot de passe</td>
+                    <td class="nowrap">opencode · deepseek-v4.1-flash</td>
+                    <td class="nowrap">claude-code</td>
+                    <td><span class="chip go"><span class="pulse"></span> en run</span></td>
+                  </tr>
+                  <tr>
+                    <td><code>5.4</code> Enrôlement TOTP</td>
+                    <td class="nowrap">codex · gpt-5.1-codex</td>
+                    <td class="nowrap">claude-code</td>
+                    <td><span class="chip wait">1<sup>re</sup> revue</span></td>
+                  </tr>
+                  <tr>
+                    <td><code>5.5</code> Codes de secours</td>
+                    <td class="nowrap">opencode · deepseek-v4.1-flash</td>
+                    <td class="nowrap">claude-code</td>
+                    <td><span class="chip mute">à faire</span></td>
+                  </tr>
+                  <tr>
+                    <td><code>5.6</code> Journal d'audit des connexions</td>
+                    <td class="nowrap">—</td>
+                    <td class="nowrap">—</td>
+                    <td><span class="chip no">bloquée · dépend de 5.4</span></td>
+                  </tr>
+                </tbody>
+              </table>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="ch"><h2>Gates</h2><span class="r">3 jalons</span></div>
+            <div class="gate ok">
+              <span class="gi" aria-hidden="true"><svg><use href="#i-check"/></svg></span>
+              <span>
+                <span class="gt">Spec freeze</span>
+                <span class="gd">change <code>auth-mfa</code> · 2 relecteurs · 0 réserve bloquante</span>
+              </span>
+              <span class="gs"><span class="chip ok">validé</span></span>
+            </div>
+            <div class="gate wait">
+              <span class="gi" aria-hidden="true"><svg><use href="#i-clock"/></svg></span>
+              <span>
+                <span class="gt">Recette préproduction</span>
+                <span class="gd">18 / 22 scénarios exécutés · 4 restants</span>
+              </span>
+              <span class="gs"><span class="chip wait"><span class="pulse"></span> en cours</span></span>
+            </div>
+            <div class="gate">
+              <span class="gi" aria-hidden="true"><svg><use href="#i-gate"/></svg></span>
+              <span>
+                <span class="gt">Go / no-go</span>
+                <span class="gd">en attente de la recette et du runbook</span>
+              </span>
+              <span class="gs"><span class="chip mute">à venir</span></span>
+            </div>
+            <div class="gate">
+              <span class="gi" aria-hidden="true"><svg><use href="#i-shield"/></svg></span>
+              <span>
+                <span class="gt">Contrôles 5b (<code>scripts/ci.sh</code>)</span>
+                <span class="gd">lint · tests · couverture · sécurité — 4 min 12 s</span>
+              </span>
+              <span class="gs"><span class="chip ok">pass</span></span>
+            </div>
+          </section>
+        </div>
+
+        <!-- Activité + runs -->
+        <div class="grid g-2">
+          <section class="card">
+            <div class="ch">
+              <h2>Activité des agents — 14 derniers jours</h2>
+              <span class="r">runs / jour et part validée dès la 1<sup>re</sup> revue</span>
+            </div>
+            <div class="body">
+              <div class="chart" id="chart" role="img"
+                   aria-label="Histogramme : de 12 à 41 runs par jour sur 14 jours. La part validée dès la première revue progresse de 58 à 88 pour cent."></div>
+              <div class="legend">
+                <span><i class="line" style="background:var(--brand2)"></i> Runs par jour</span>
+                <span><i class="line" style="background:var(--done)"></i> Validé dès la 1<sup>re</sup> revue (%)</span>
+              </div>
+              <div class="qstats" style="margin-top:14px">
+                <div class="qstat"><b>146</b><small>runs · 30 j</small></div>
+                <div class="qstat"><b>26</b><small>runs / jour · médiane</small></div>
+                <div class="qstat"><b>41</b><small>meilleur jour</small></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="ch">
+              <h2>Runs en direct</h2>
+              <span class="r"><span class="chip go"><span class="pulse"></span> 4 actifs</span></span>
+            </div>
+            <div role="status" aria-live="polite">
+              <div class="run">
+                <span class="who exec" aria-hidden="true">EX</span>
+                <span>
+                  <span class="t1">Politique de mot de passe <span class="chip go">run 12 min</span></span>
+                  <span class="t2"><code>5.3</code> · opencode · deepseek-v4.1-flash · 3 itérations</span>
+                </span>
+                <span class="r"><b>1,4 €</b>184 k tokens</span>
+              </div>
+              <div class="run">
+                <span class="who rev" aria-hidden="true">RE</span>
+                <span>
+                  <span class="t1">Relecture — Enrôlement TOTP <span class="chip wait">1<sup>re</sup> revue</span></span>
+                  <span class="t2"><code>5.4</code> · claude-code · claude-sonnet-4-6 · diff 412 lignes</span>
+                </span>
+                <span class="r"><b>0,9 €</b>96 k tokens</span>
+              </div>
+              <div class="run">
+                <span class="who orch" aria-hidden="true">OR</span>
+                <span>
+                  <span class="t1">Replanification du lot 5 <span class="chip go">run 2 min</span></span>
+                  <span class="t2">orchestrateur · claude-opus-4-6 · 40 tâches rechargées</span>
+                </span>
+                <span class="r"><b>2,1 €</b>271 k tokens</span>
+              </div>
+              <div class="run">
+                <span class="who exec" aria-hidden="true">EX</span>
+                <span>
+                  <span class="t1">Contestation de spec <code>auth-mfa</code> <span class="chip ok">terminé</span></span>
+                  <span class="t2">spec-challenger · claude-sonnet-4-6 · 6 scénarios manquants relevés</span>
+                </span>
+                <span class="r"><b>0,6 €</b>58 k tokens</span>
+              </div>
+              <div class="run">
+                <span class="who exec" aria-hidden="true">EX</span>
+                <span>
+                  <span class="t1">Contrôles 5b — branche <code>feat/mfa</code> <span class="chip ok">pass</span></span>
+                  <span class="t2">scripts/ci.sh · lint · 415 tests · couverture 84,2 %</span>
+                </span>
+                <span class="r"><b>0,2 €</b>12 k tokens</span>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Qualité + coûts + incidents -->
+        <div class="grid g-3">
+          <section class="card">
+            <div class="ch"><h2>Qualité</h2><span class="r">branche <code>main</code></span></div>
+            <div class="body">
+              <div class="meter">
+                <div class="mh"><span>Couverture de tests</span><b>84,2 %</b></div>
+                <div class="track" role="img" aria-label="84,2 pour cent, seuil à 80"><span style="width:84.2%"></span><i style="left:80%"></i></div>
+                <div class="mf">seuil projet 80 % · +4,2 pts de marge</div>
+              </div>
+              <div class="qstats">
+                <div class="qstat ok"><b>415</b><small>tests ✓</small></div>
+                <div class="qstat ok"><b>0</b><small>échec</small></div>
+                <div class="qstat warn"><b>3</b><small>vuln. mineures</small></div>
+              </div>
+              <ul class="notes">
+                <li><b>SARIF</b> — 0 vulnérabilité bloquante, 3 mineures (dépendances).</li>
+                <li><b>Recette</b> — 18 / 22 scénarios validés en préproduction.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="ch"><h2>Coûts par feature</h2><span class="r">30 j · 1 248 €</span></div>
+            <div class="body">
+              <div class="cost"><span class="cl">Authentication</span><span class="cb"><span style="width:83%"></span></span><span class="cv"><b>420 €</b></span></div>
+              <div class="cost"><span class="cl">Infrastructure</span><span class="cb"><span style="width:52%"></span></span><span class="cv">218 €</span></div>
+              <div class="cost"><span class="cl">Billing</span><span class="cb"><span style="width:54%"></span></span><span class="cv">268 €</span></div>
+              <div class="cost"><span class="cl">Search</span><span class="cb"><span style="width:38%"></span></span><span class="cv">190 €</span></div>
+              <div class="cost"><span class="cl">Notifications</span><span class="cb"><span style="width:30%"></span></span><span class="cv">152 €</span></div>
+              <div class="sep" style="margin:16px 0 10px">Top consommation</div>
+              <ul class="notes">
+                <li><b>Relectures</b> — 34 % du coût total (412 €).</li>
+                <li><b>Escalades</b> — 4 runs relancés, 118 €, dont 2 évitables (brief incomplet).</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="ch"><h2>Incidents</h2><span class="r">2 ouverts</span></div>
+            <div class="inc s2">
+              <span class="sev" aria-hidden="true"></span>
+              <span>
+                <span class="it">Expiration de session trop agressive après MFA</span>
+                <span class="id"><code>INC-014</code> · lenteur · ouvert il y a 2 j · MTTR cible 24 h</span>
+              </span>
+              <span class="chip no">en cours</span>
+            </div>
+            <div class="inc s3">
+              <span class="sev" aria-hidden="true"></span>
+              <span>
+                <span class="it">Job de nuit du tableau de bord en échec</span>
+                <span class="id"><code>INC-013</code> · mineur · ouvert il y a 5 j</span>
+              </span>
+              <span class="chip wait">correctif prêt</span>
+            </div>
+            <div class="inc s4">
+              <span class="sev" aria-hidden="true"></span>
+              <span>
+                <span class="it">Rupture de TLS sur l'environnement de recette</span>
+                <span class="id"><code>INC-012</code> · clôturé · post-mortem publié</span>
+              </span>
+              <span class="chip ok">clôturé</span>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ============ Runs d'agents ============ -->
+      <section id="view-runs" role="tabpanel" aria-labelledby="tab-runs" tabindex="0" hidden>
+        <header class="phead">
+          <div>
+            <div class="eyebrow">Journal · <code>docs/journal/runs.jsonl</code></div>
+            <h1>Runs d'agents</h1>
+            <p>146 runs sur 30 jours · 4 en cours · coût cumulé 1 248 €</p>
+          </div>
+          <div class="right">
+            <button class="btn ghost" type="button"><svg aria-hidden="true"><use href="#i-export"/></svg> Exporter le journal</button>
+          </div>
+        </header>
+
+        <section class="card">
+          <div class="filters">
+            <button class="fc" type="button" aria-pressed="true">Tous</button>
+            <button class="fc" type="button" aria-pressed="false">En cours</button>
+            <button class="fc" type="button" aria-pressed="false">Validés</button>
+            <button class="fc" type="button" aria-pressed="false">Escalades</button>
+            <button class="fc" type="button" aria-pressed="false">Échecs</button>
+            <span class="sp">146 runs · page 1 / 15</span>
+          </div>
+          <div class="tbl">
+            <table>
+              <caption class="sr">Journal des runs d'agents</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Run</th><th scope="col">Tâche</th><th scope="col">Agent</th>
+                  <th scope="col">Modèle</th><th scope="col">Durée</th><th scope="col">Itér.</th>
+                  <th scope="col">Tokens</th><th scope="col">Coût</th><th scope="col">État</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="mono">#1 482</td><td><code>5.3</code> Politique de mot de passe</td><td>opencode</td><td>deepseek-v4.1-flash</td><td class="num">12 min</td><td class="num">3</td><td class="num">184 k</td><td class="num">1,40 €</td><td><span class="chip go"><span class="pulse"></span> en cours</span></td></tr>
+                <tr><td class="mono">#1 481</td><td><code>5.4</code> Relecture — Enrôlement TOTP</td><td>claude-code</td><td>claude-sonnet-4-6</td><td class="num">4 min</td><td class="num">1</td><td class="num">96 k</td><td class="num">0,90 €</td><td><span class="chip wait">1<sup>re</sup> revue</span></td></tr>
+                <tr><td class="mono">#1 480</td><td>Replanification du lot 5</td><td>orchestrateur</td><td>claude-opus-4-6</td><td class="num">2 min</td><td class="num">1</td><td class="num">271 k</td><td class="num">2,10 €</td><td><span class="chip go"><span class="pulse"></span> en cours</span></td></tr>
+                <tr><td class="mono">#1 478</td><td>Contestation <code>auth-mfa</code></td><td>spec-challenger</td><td>claude-sonnet-4-6</td><td class="num">7 min</td><td class="num">1</td><td class="num">58 k</td><td class="num">0,60 €</td><td><span class="chip ok">validé</span></td></tr>
+                <tr><td class="mono">#1 476</td><td>Contrôles 5b — <code>feat/mfa</code></td><td>ci</td><td>—</td><td class="num">4 min</td><td class="num">2</td><td class="num">12 k</td><td class="num">0,20 €</td><td><span class="chip ok">pass</span></td></tr>
+                <tr><td class="mono">#1 471</td><td><code>5.2</code> Migration base <code>users</code></td><td>opencode</td><td>deepseek-v4.1-flash</td><td class="num">26 min</td><td class="num">5</td><td class="num">412 k</td><td class="num">3,10 €</td><td><span class="chip no">escalade</span></td></tr>
+                <tr><td class="mono">#1 469</td><td><code>5.1</code> Schéma MFA</td><td>codex</td><td>gpt-5.1-codex</td><td class="num">18 min</td><td class="num">2</td><td class="num">238 k</td><td class="num">1,80 €</td><td><span class="chip ok">validé</span></td></tr>
+                <tr><td class="mono">#1 465</td><td>Runbook — MFA</td><td>doc-writer</td><td>claude-sonnet-4-6</td><td class="num">6 min</td><td class="num">1</td><td class="num">74 k</td><td class="num">0,70 €</td><td><span class="chip ok">validé</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <!-- ============ Qualité ============ -->
+      <section id="view-quality" role="tabpanel" aria-labelledby="tab-quality" tabindex="0" hidden>
+        <header class="phead">
+          <div>
+            <div class="eyebrow">Contrôles 5b · recette 7b</div>
+            <h1>Qualité &amp; recette</h1>
+            <p>Dernier <code>scripts/ci.sh</code> : pass, il y a 22 min · 415 tests · couverture 84,2 %</p>
+          </div>
+          <div class="right">
+            <button class="btn ghost" type="button"><svg aria-hidden="true"><use href="#i-export"/></svg> Rapport SARIF</button>
+          </div>
+        </header>
+
+        <div class="grid g-2e">
+          <section class="card">
+            <div class="ch"><h2>Couverture par module</h2><span class="r">seuil projet 80 %</span></div>
+            <div class="body">
+              <div class="meter"><div class="mh"><span><code>src/auth/core.ts</code></span><b>91,4 %</b></div><div class="track" role="img" aria-label="91,4 pour cent"><span style="width:91.4%"></span><i style="left:80%"></i></div></div>
+              <div class="meter"><div class="mh"><span><code>src/auth/totp.ts</code></span><b>86,0 %</b></div><div class="track" role="img" aria-label="86 pour cent"><span style="width:86%"></span><i style="left:80%"></i></div></div>
+              <div class="meter"><div class="mh"><span><code>src/billing/</code></span><b>88,1 %</b></div><div class="track" role="img" aria-label="88,1 pour cent"><span style="width:88.1%"></span><i style="left:80%"></i></div></div>
+              <div class="meter" style="margin-bottom:0"><div class="mh"><span><code>src/search/</code></span><b>62,7 %</b></div><div class="track" role="img" aria-label="62,7 pour cent, sous le seuil"><span style="width:62.7%;background:linear-gradient(90deg,#b7791f,#ec835a)"></span><i style="left:80%"></i></div></div>
+              <ul class="notes">
+                <li><code>src/search/</code> est sous le seuil : tâche <code>6.2</code> planifiée dans le lot suivant.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="ch"><h2>Matrice de recette</h2><span class="r">18 / 22 · préproduction</span></div>
+            <div class="tbl">
+              <table>
+                <caption class="sr">Scénarios de recette</caption>
+                <thead><tr><th scope="col">Scénario</th><th scope="col">Test</th><th scope="col">Résultat</th></tr></thead>
+                <tbody>
+                  <tr><td>Activation MFA — nominal</td><td class="mono">auth_mfa.spec</td><td><span class="chip ok">conforme</span></td></tr>
+                  <tr><td>Code TOTP expiré</td><td class="mono">auth_mfa.spec</td><td><span class="chip ok">conforme</span></td></tr>
+                  <tr><td>10 codes erronés → verrouillage</td><td class="mono">auth_lock.spec</td><td><span class="chip ok">conforme</span></td></tr>
+                  <tr><td>Codes de secours — épuisement</td><td class="mono">—</td><td><span class="chip wait">à exécuter</span></td></tr>
+                  <tr><td>Rejeu de session après MFA</td><td class="mono">—</td><td><span class="chip no">non conforme <code>INC-014</code></span></td></tr>
+                  <tr><td>Accessibilité du formulaire (RGAA)</td><td class="mono">—</td><td><span class="chip wait">à exécuter</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ============ Coûts ============ -->
+      <section id="view-costs" role="tabpanel" aria-labelledby="tab-costs" tabindex="0" hidden>
+        <header class="phead">
+          <div>
+            <div class="eyebrow">Consommation · 30 jours</div>
+            <h1>Coûts</h1>
+            <p>1 248 € sur un budget de 2 000 € · 41,2 M tokens · coût médian 1,10 € par tâche livrée</p>
+          </div>
+        </header>
+
+        <div class="grid g-2e">
+          <section class="card">
+            <div class="ch"><h2>Répartition par rôle d'agent</h2><span class="r">30 j</span></div>
+            <div class="body">
+              <div class="cost"><span class="cl">Relecture</span><span class="cb"><span style="width:33%"></span></span><span class="cv"><b>412 €</b></span></div>
+              <div class="cost"><span class="cl">Implémentation</span><span class="cb"><span style="width:26%"></span></span><span class="cv">324 €</span></div>
+              <div class="cost"><span class="cl">Orchestration</span><span class="cb"><span style="width:20%"></span></span><span class="cv">251 €</span></div>
+              <div class="cost"><span class="cl">Contestation de spec</span><span class="cb"><span style="width:10%"></span></span><span class="cv">129 €</span></div>
+              <div class="cost" style="margin-bottom:0"><span class="cl">Documentation</span><span class="cb"><span style="width:9%"></span></span><span class="cv">132 €</span></div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="ch"><h2>Détail par tâche</h2><span class="r">top 5</span></div>
+            <div class="tbl">
+              <table>
+                <caption class="sr">Tâches les plus coûteuses</caption>
+                <thead><tr><th scope="col">Tâche</th><th scope="col">Itér.</th><th scope="col">Tokens</th><th scope="col">Coût</th></tr></thead>
+                <tbody>
+                  <tr><td><code>5.2</code> Migration base <code>users</code></td><td class="num">5</td><td class="num">412 k</td><td class="num">3,10 €</td></tr>
+                  <tr><td><code>5.1</code> Schéma MFA</td><td class="num">2</td><td class="num">238 k</td><td class="num">1,80 €</td></tr>
+                  <tr><td>Replanification lot 5</td><td class="num">1</td><td class="num">271 k</td><td class="num">2,10 €</td></tr>
+                  <tr><td><code>5.3</code> Politique de mot de passe</td><td class="num">3</td><td class="num">184 k</td><td class="num">1,40 €</td></tr>
+                  <tr><td><code>4.7</code> Facturation — webhooks</td><td class="num">6</td><td class="num">356 k</td><td class="num">2,60 €</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ============ Incidents ============ -->
+      <section id="view-incidents" role="tabpanel" aria-labelledby="tab-incidents" tabindex="0" hidden>
+        <header class="phead">
+          <div>
+            <div class="eyebrow">Voie transverse · <code>hotfix</code></div>
+            <h1>Incidents</h1>
+            <p>2 ouverts · 1 clôturé sur 30 j · MTTR médian 11 h</p>
+          </div>
+          <div class="right">
+            <button class="btn ghost" type="button"><svg aria-hidden="true"><use href="#i-doc"/></svg> Post-mortems</button>
+          </div>
+        </header>
+
+        <section class="card">
+          <div class="inc s2">
+            <span class="sev" aria-hidden="true"></span>
+            <span>
+              <span class="it">Expiration de session trop agressive après MFA</span>
+              <span class="id">
+                <code>INC-014</code> · sévérité haute · ouvert il y a 2 j ·
+                diagnostic : révocation du jeton de rafraîchissement lors du second facteur
+              </span>
+            </span>
+            <span class="chip no">en cours</span>
+          </div>
+          <div class="inc s3">
+            <span class="sev" aria-hidden="true"></span>
+            <span>
+              <span class="it">Job de nuit du tableau de bord en échec</span>
+              <span class="id"><code>INC-013</code> · sévérité moyenne · ouvert il y a 5 j · correctif minimal + test de non-régression prêts</span>
+            </span>
+            <span class="chip wait">go / no-go</span>
+          </div>
+          <div class="inc s4">
+            <span class="sev" aria-hidden="true"></span>
+            <span>
+              <span class="it">Rupture de TLS sur l'environnement de recette</span>
+              <span class="id"><code>INC-012</code> · clôturé il y a 17 j · MTTR 3 h 40 · post-mortem publié</span>
+            </span>
+            <span class="chip ok">clôturé</span>
+          </div>
+        </section>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- Thème ---------- */
+  var root = document.documentElement;
+  var tbtn = document.getElementById("theme");
+  function setTheme(mode){
+    if(mode === "system"){ root.removeAttribute("data-theme"); }
+    else { root.setAttribute("data-theme", mode); }
+    var dark = mode === "dark" ||
+      (mode === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    tbtn.setAttribute("aria-pressed", String(dark));
+    try { localStorage.setItem("sdlc-theme", mode); } catch(e){}
+  }
+  var saved = "system";
+  try { saved = localStorage.getItem("sdlc-theme") || "system"; } catch(e){}
+  setTheme(saved);
+  tbtn.addEventListener("click", function(){
+    var dark = tbtn.getAttribute("aria-pressed") === "true";
+    setTheme(dark ? "light" : "dark");
+  });
+
+  /* ---------- Onglets ---------- */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"][data-view]'));
+  function show(view){
+    tabs.forEach(function(t){
+      var on = t.getAttribute("data-view") === view;
+      t.setAttribute("aria-selected", String(on));
+      var panel = document.getElementById(t.getAttribute("aria-controls"));
+      if(panel){ panel.hidden = !on; }
+    });
+    var act = document.getElementById("view-" + view);
+    if(act){
+      var h = act.querySelector("h1");
+      if(h){ h.setAttribute("tabindex","-1"); h.focus({preventScroll:true}); }
+      window.scrollTo({top:0});
+    }
+  }
+  tabs.forEach(function(t){
+    t.addEventListener("click", function(){ show(t.getAttribute("data-view")); });
+    t.addEventListener("keydown", function(e){
+      var i = tabs.indexOf(t), n = null;
+      if(e.key === "ArrowDown" || e.key === "ArrowRight"){ n = tabs[(i+1)%tabs.length]; }
+      if(e.key === "ArrowUp" || e.key === "ArrowLeft"){ n = tabs[(i-1+tabs.length)%tabs.length]; }
+      if(e.key === "Home"){ n = tabs[0]; }
+      if(e.key === "End"){ n = tabs[tabs.length-1]; }
+      if(n){ e.preventDefault(); n.focus(); n.click(); }
+    });
+  });
+
+  /* ---------- Graphique d'activité ---------- */
+  var runs = [12,18,9,24,31,22,14,27,35,29,18,33,41,26];
+  var pass = [58,62,55,71,68,74,66,79,72,81,77,83,86,88];
+  var host = document.getElementById("chart");
+  if(host){
+    var W = 720, H = 200, PADL = 30, PADR = 32, PADT = 12, PADB = 24;
+    var iw = W - PADL - PADR, ih = H - PADT - PADB;
+    var rmax = 50, pmax = 100;
+    var step = iw / (runs.length - 1);
+    var bx = function(i){ return PADL + i*step; };
+    var ry = function(v){ return PADT + ih - (v/rmax)*ih; };
+    var py = function(v){ return PADT + ih - (v/pmax)*ih; };
+
+    var bars = runs.map(function(v,i){
+      var w = Math.min(16, step*0.42), h = (v/rmax)*ih;
+      return '<rect x="'+(bx(i)-w/2).toFixed(1)+'" y="'+(PADT+ih-h).toFixed(1)+'" width="'+w.toFixed(1)+
+             '" height="'+h.toFixed(1)+'" rx="3" fill="var(--brand2)" opacity=".28"></rect>';
+    }).join("");
+
+    var line = pass.map(function(v,i){ return (i? "L":"M") + bx(i).toFixed(1) + " " + py(v).toFixed(1); }).join(" ");
+    var area = line + " L" + bx(pass.length-1).toFixed(1) + " " + (PADT+ih) + " L" + bx(0).toFixed(1) + " " + (PADT+ih) + " Z";
+
+    var grid = [0,25,50,75,100].map(function(p){
+      var y = PADT + ih - (p/100)*ih;
+      return '<line x1="'+PADL+'" x2="'+(W-PADR)+'" y1="'+y.toFixed(1)+'" y2="'+y.toFixed(1)+
+             '" stroke="var(--grid)" stroke-width="1"></line>'+
+             '<text x="'+(PADL-8)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end" font-size="10.5" fill="var(--muted)">'+
+             Math.round(p*rmax/100)+'</text>';
+    }).join("");
+
+    var dots = pass.map(function(v,i){
+      return '<circle cx="'+bx(i).toFixed(1)+'" cy="'+py(v).toFixed(1)+'" r="3" fill="var(--panel)" stroke="var(--done)" stroke-width="2"></circle>';
+    }).join("");
+
+    var days15 = ["Lun 5","","","","Sam 10","","","","Lun 13","","","","","Dim 18"];
+    var labels = days15.map(function(t,i){
+      return t ? '<text x="'+bx(i).toFixed(1)+'" y="'+(H-6)+'" text-anchor="middle" font-size="10.5" fill="var(--muted)">'+t+'</text>' : "";
+    }).join("");
+
+    host.innerHTML = '<svg viewBox="0 0 '+W+' '+H+'" aria-hidden="true" '+
+      'font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif">'+
+      grid + bars +
+      '<path d="'+area+'" fill="var(--done)" opacity=".12"></path>'+
+      '<path d="'+line+'" fill="none" stroke="var(--done)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"></path>'+
+      dots + labels + '</svg>';
+  }
+  /* ---------- Arborescence équipes → projets ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll('.tree .row[aria-expanded]'), function(btn){
+    var panel = document.getElementById(btn.getAttribute('aria-controls'));
+    if(!panel){ return; }
+    btn.addEventListener('click', function(){
+      var open = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!open));
+      panel.hidden = open;
+    });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('.tree ul .row'), function(btn){
+    btn.addEventListener('click', function(){
+      Array.prototype.forEach.call(document.querySelectorAll('.tree .row[aria-current]'), function(o){
+        o.removeAttribute('aria-current');
+      });
+      btn.setAttribute('aria-current', 'true');
+      var cur = document.querySelector('.crumb .cur');
+      if(cur){ cur.textContent = btn.textContent.trim(); }
+      show('projects');
+    });
+  });
+})();
+</script>
+</body>
+</html>

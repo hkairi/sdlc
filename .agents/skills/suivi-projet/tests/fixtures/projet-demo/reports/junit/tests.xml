@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="12" failures="1" errors="0" skipped="1" time="7.5">
+  <testsuite name="api.tests" tests="8" failures="1" errors="0" skipped="0" time="5.0">
+    <testcase classname="api.tests.SearchTest" name="test_index"/>
+    <testcase classname="api.tests.SearchTest" name="test_latency">
+      <failure message="attendu 200 ms, obtenu 410 ms"/>
+    </testcase>
+  </testsuite>
+  <testsuite name="web.tests" tests="4" failures="0" errors="0" skipped="1" time="2.5">
+    <testcase classname="web.tests.CatalogTest" name="test_render"/>
+    <testcase classname="web.tests.CatalogTest" name="test_export">
+      <skipped/>
+    </testcase>
+  </testsuite>
+</testsuites>

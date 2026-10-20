@@ -1,0 +1,1337 @@
+{
+  "schema": 1,
+  "meta": {
+    "title": "Suivi d'avancement — Construction du framework · AI-DRIVEN-SDLC",
+    "h1": "Construction du framework — fichier de suivi",
+    "eyebrow": "AI-DRIVEN-SDLC · Framework · Suivi d'avancement",
+    "subtitle": "Spec <code>docs/conception/workflow-sdlc.md</code> · 40 tâches · 10 lots",
+    "storage_key": null,
+    "lang": "fr"
+  },
+  "file_updated": "2026-10-20",
+  "features": [
+    {
+      "id": "framework",
+      "name": "Framework",
+      "color": "#5c6b7a",
+      "change": "conception",
+      "objective": "Construire le framework SDLC augmenté par agents : socle, gabarits, CI et déploiement, adaptateurs Claude/Codex/OpenCode, skills et tableau de bord `suivi-projet`. Exécutant : OpenCode (`opencode-go/deepseek-v4.1-flash`) ; orchestrateur et relecteur : Claude Code.",
+      "tasks_file": "docs/conception/tasks.md",
+      "sources": {
+        "spec": "conception/workflow-sdlc.md",
+        "tasks": "conception/tasks.md",
+        "schéma": "workflow-sdlc.html"
+      },
+      "phases": [
+        {
+          "id": "cadrage",
+          "name": "Cadrage",
+          "color": "#5c6b7a",
+          "order": 1,
+          "items": [
+            {
+              "id": "proposal",
+              "label": "Proposition rédigée (proposal.md : Why / What / Impact)",
+              "status": "done",
+              "updated": "2026-10-11",
+              "note": "Spec de référence <code>docs/conception/workflow-sdlc.md</code> (§ 1 à 13) : objet, principes, workflow, skills, installation."
+            },
+            {
+              "id": "deltas",
+              "label": "Deltas de specs (## ADDED|MODIFIED|REMOVED, ≥1 scénario)",
+              "status": "done",
+              "updated": "2026-10-11",
+              "note": "Non applicable : chantier hors change OpenSpec ; la spec de référence en tient lieu."
+            },
+            {
+              "id": "design",
+              "label": "design.md si changement transversal, dépendance externe ou modèle de données",
+              "status": "done",
+              "updated": "2026-10-11",
+              "note": "Schéma <code>docs/workflow-sdlc.html</code> + maquette <code>docs/mockup-suivi-projet.html</code> validée."
+            },
+            {
+              "id": "validate",
+              "label": "openspec validate <id> --strict sans erreur",
+              "status": "done",
+              "updated": "2026-10-11",
+              "note": "Non applicable (pas de change OpenSpec)."
+            },
+            {
+              "id": "decisions",
+              "label": "Décisions tranchées consignées",
+              "status": "done",
+              "updated": "2026-10-11",
+              "note": "Décisions consignées dans la spec : rôles, git réservé à l'humain, Markdown source / HTML rendu, modes par agents, <code>.sdlc/</code>, copie du dépôt de suivi-taches."
+            },
+            {
+              "id": "approval",
+              "label": "Proposition approuvée avant implémentation",
+              "status": "done",
+              "updated": "2026-10-11",
+              "note": "Workflow, outils et découpage validés par l'utilisateur le 2026-10-11 avant délégation."
+            }
+          ],
+          "status": "done"
+        },
+        {
+          "id": "plan",
+          "name": "Planification",
+          "color": "#0f4c81",
+          "order": 2,
+          "items": [
+            {
+              "id": "tasks",
+              "label": "tasks.md découpé en lots et tâches",
+              "status": "done",
+              "updated": "2026-10-11",
+              "note": "<code>docs/conception/tasks.md</code> : 9 lots, 37 tâches."
+            },
+            {
+              "id": "deps",
+              "label": "Dépendances externes identifiées",
+              "status": "done",
+              "updated": "2026-10-11",
+              "note": "OpenCode Go (<code>deepseek-v4.1-flash</code>, Zen sans crédit), CLI OpenSpec, Chrome headless pour les contrôles visuels."
+            },
+            {
+              "id": "tracking",
+              "label": "Fichier de suivi généré",
+              "status": "done",
+              "updated": "2026-10-11",
+              "note": "Suivi généré puis migré vers <code>docs/suivi/state.json</code> (copie du dépôt de la skill)."
+            }
+          ],
+          "status": "done"
+        },
+        {
+          "id": "impl",
+          "name": "Implémentation",
+          "color": "#2b6cb0",
+          "order": 3,
+          "items": [],
+          "status": "doing"
+        },
+        {
+          "id": "validation",
+          "name": "Validation",
+          "color": "#b7791f",
+          "order": 4,
+          "items": [
+            {
+              "id": "tests",
+              "label": "Tests relancés (suites concernées, 0 échec)",
+              "status": "done",
+              "updated": "2026-10-11",
+              "note": "162 tests relancés par Claude Code sur 7 suites, 0 échec, 0 ignoré (dont 26 de bout en bout)."
+            },
+            {
+              "id": "lint",
+              "label": "Linter / formateur : 0 offense",
+              "status": "done",
+              "updated": "2026-10-11",
+              "note": "ruff 0.6.9 (règles par défaut, <code>ruff.toml</code> ajouté) sur 25 scripts : 4 anomalies corrigées par Claude Code (variable morte dans collect.py, 2 noms ambigus et 1 variable inutilisée dans les tests) ; 0 restante ; suites suivi-projet et suivi-taches relancées : OK. shellcheck absent : ci.sh et detect.sh contrôlés par <code>bash -n</code> seulement."
+            },
+            {
+              "id": "typecheck",
+              "label": "Compilation / typecheck OK sur les surfaces touchées",
+              "status": "done",
+              "updated": "2026-10-11",
+              "note": "<code>node --check</code> sur le JavaScript des HTML générés, <code>py_compile</code> des scripts, JSON et TOML validés."
+            },
+            {
+              "id": "acceptance",
+              "label": "Critères d'acceptation vérifiés",
+              "status": "done",
+              "updated": "2026-10-11",
+              "note": "Critères des 37 tâches vérifiés par Claude Code."
+            },
+            {
+              "id": "review",
+              "label": "Revue de code / relecture",
+              "status": "done",
+              "updated": "2026-10-11",
+              "note": "Chaque lot relu par Claude Code (relecteur ≠ exécutant OpenCode) ; 3 lots renvoyés en correction (7, 8, test de suivi)."
+            },
+            {
+              "id": "specs",
+              "label": "Comportement conforme aux deltas de specs",
+              "status": "done",
+              "updated": "2026-10-11",
+              "note": "Conforme à la spec, y compris les 2 écarts du § 13 corrigés au lot 10."
+            }
+          ],
+          "status": "done"
+        },
+        {
+          "id": "deploy",
+          "name": "Déploiement",
+          "color": "#7d3c98",
+          "order": 5,
+          "items": [
+            {
+              "id": "migrations",
+              "label": "Migrations réversibles, up/down testés",
+              "status": "done",
+              "updated": "2026-10-11",
+              "note": "Non applicable (pas de base de données)."
+            },
+            {
+              "id": "env",
+              "label": "Variables d'environnement et secrets à jour",
+              "status": "done",
+              "updated": "2026-10-11",
+              "note": "Non applicable (aucune variable ni secret requis)."
+            },
+            {
+              "id": "runbook",
+              "label": "Étapes de déploiement / runbook à jour",
+              "status": "done",
+              "updated": "2026-10-11",
+              "note": "Procédure d'installation dans le README : <code>bin/sdlc-install</code> (--dry-run, --upgrade, --uninstall)."
+            },
+            {
+              "id": "prod",
+              "label": "Déployé en production",
+              "status": "todo",
+              "updated": "2026-10-11",
+              "note": "Publication = commit et push par l'utilisateur (git réservé à l'humain)."
+            },
+            {
+              "id": "smoke",
+              "label": "Smoke test post-déploiement",
+              "status": "doing",
+              "updated": "2026-10-11",
+              "note": "Pilote : étapes 0 à 3 faites (spec gelée le 2026-10-11 : 19 exigences, 52 scénarios, 24 tâches) ; étape 4 en cours : suivi du pilote généré (manifeste, phases cadrage 6/6, planification 2/3), en attente du gate « priorités du sprint ». Constats pilote : 14 (dont runs.jsonl sans rédacteur désigné, décisions perdues et attributions non planifiables par generate.py, sous-titre HTML échappé)."
+            }
+          ],
+          "status": "doing"
+        },
+        {
+          "id": "cloture",
+          "name": "Clôture",
+          "color": "#1f9d55",
+          "order": 6,
+          "items": [
+            {
+              "id": "archive",
+              "label": "Change archivé (openspec archive)",
+              "status": "todo",
+              "updated": "",
+              "note": ""
+            },
+            {
+              "id": "docs_features",
+              "label": "features.md à jour",
+              "status": "todo",
+              "updated": "",
+              "note": ""
+            },
+            {
+              "id": "docs_architecture",
+              "label": "architecture.md à jour si archi / infra",
+              "status": "todo",
+              "updated": "",
+              "note": ""
+            },
+            {
+              "id": "docs_runbook",
+              "label": "runbook.md à jour si setup / env / procédure",
+              "status": "todo",
+              "updated": "",
+              "note": ""
+            },
+            {
+              "id": "monitoring",
+              "label": "Suivi post-déploiement (logs, métriques, incidents)",
+              "status": "todo",
+              "updated": "",
+              "note": ""
+            },
+            {
+              "id": "retro",
+              "label": "Écarts et retour consignés",
+              "status": "todo",
+              "updated": "",
+              "note": ""
+            }
+          ],
+          "status": "todo"
+        }
+      ],
+      "lots": [
+        {
+          "id": "L1",
+          "name": "1 · Socle et configuration"
+        },
+        {
+          "id": "L2",
+          "name": "2 · Gabarits documentaires (templates/docs/)"
+        },
+        {
+          "id": "L3",
+          "name": "3 · CI et déploiement"
+        },
+        {
+          "id": "L4",
+          "name": "4 · Adaptateurs et passation"
+        },
+        {
+          "id": "L5",
+          "name": "5 · Skills de cadrage et de conception"
+        },
+        {
+          "id": "L6",
+          "name": "6 · Skills de construction et d'exploitation"
+        },
+        {
+          "id": "L7",
+          "name": "7 · Tableau de bord suivi-projet"
+        },
+        {
+          "id": "L8",
+          "name": "8 · Évolution de la skill suivi-taches (copie du dépôt)"
+        },
+        {
+          "id": "L9",
+          "name": "9 · Installation dans un projet existant"
+        },
+        {
+          "id": "L10",
+          "name": "10 · Écarts du § 13 révélés par les tests de bout en bout"
+        },
+        {
+          "id": "L11",
+          "name": "11 · Plugin OpenCode ai-sdlc-tracker (copie distribuée)"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "1.1",
+          "lot": "L1",
+          "title": "AGENTS.md : principes du § 2, règle de premier lancement (sdlc-init si sdlc.config.yaml…",
+          "text": "`AGENTS.md` : principes du § 2, règle de premier lancement (`sdlc-init` si `sdlc.config.yaml` absent), rôles, conventions de rédaction, Definition of Done, liste des skills",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Fait par OpenCode (kimi). La session Kimi a continué après son arrêt et a réécrit <code>AGENTS.md</code> à 13:25 ; corrections de relecture réappliquées par Claude Code (interdits propres au framework retirés, revérification par l'orchestrateur).",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "1.2",
+          "lot": "L1",
+          "title": "CLAUDE.md : @AGENTS.md + spécificités Claude Code (listes d'outils comme levier fiable,…",
+          "text": "`CLAUDE.md` : `@AGENTS.md` + spécificités Claude Code (listes d'outils comme levier fiable, pas de git en écriture)",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Fait par OpenCode (kimi-k2.7-code) ; relu par Claude Code le 2026-10-11 : 5 corrections (interdits propres au framework retirés d'<code>AGENTS.md</code>, règle de revérification par l'orchestrateur ajoutée, sévérité « basse », limite <code>embed_max_kb</code> totale, sens de génération des adaptateurs dans le README).",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "1.3",
+          "lot": "L1",
+          "title": "README.md : objet, installation dans un projet, premier lancement, arborescence, liens…",
+          "text": "`README.md` : objet, installation dans un projet, premier lancement, arborescence, liens vers la spec et les schémas",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Fait par OpenCode (kimi-k2.7-code) ; relu par Claude Code le 2026-10-11 : 5 corrections (interdits propres au framework retirés d'<code>AGENTS.md</code>, règle de revérification par l'orchestrateur ajoutée, sévérité « basse », limite <code>embed_max_kb</code> totale, sens de génération des adaptateurs dans le README).",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "1.4",
+          "lot": "L1",
+          "title": "sdlc.config.example.yaml",
+          "text": "`sdlc.config.example.yaml` : toutes les clés du § 4, commentées, valeurs autorisées indiquées",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Fait par OpenCode (kimi-k2.7-code) ; relu par Claude Code le 2026-10-11 : 5 corrections (interdits propres au framework retirés d'<code>AGENTS.md</code>, règle de revérification par l'orchestrateur ajoutée, sévérité « basse », limite <code>embed_max_kb</code> totale, sens de génération des adaptateurs dans le README).",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "1.5",
+          "lot": "L1",
+          "title": "Lien symbolique .claude/skills -> ../.agents/skills et arborescence templates/ vide prête",
+          "text": "Lien symbolique `.claude/skills -> ../.agents/skills` et arborescence `templates/` vide prête",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Fait par OpenCode (kimi-k2.7-code) ; relu par Claude Code le 2026-10-11 : 5 corrections (interdits propres au framework retirés d'<code>AGENTS.md</code>, règle de revérification par l'orchestrateur ajoutée, sévérité « basse », limite <code>embed_max_kb</code> totale, sens de génération des adaptateurs dans le README).",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "2.1",
+          "lot": "L2",
+          "title": "brief.md, exigences-nf.md, etat-des-lieux.md",
+          "text": "`brief.md`, `exigences-nf.md`, `etat-des-lieux.md`",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "14 gabarits écrits par OpenCode (kimi) avant son arrêt, vérifiés par DeepSeek puis relus par Claude Code : consignes <code>&lt;!-- --&gt;</code> et marqueurs présents, aucun commentaire imbriqué.",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "2.2",
+          "lot": "L2",
+          "title": "adr.md (format avec statut, contexte, décision, conséquences, alternatives) et adr-index.md",
+          "text": "`adr.md` (format avec statut, contexte, décision, conséquences, alternatives) et `adr-index.md`",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "14 gabarits écrits par OpenCode (kimi) avant son arrêt, vérifiés par DeepSeek puis relus par Claude Code : consignes <code>&lt;!-- --&gt;</code> et marqueurs présents, aucun commentaire imbriqué.",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "2.3",
+          "lot": "L2",
+          "title": "menaces.md (analyse STRIDE légère)",
+          "text": "`menaces.md` (analyse STRIDE légère)",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "14 gabarits écrits par OpenCode (kimi) avant son arrêt, vérifiés par DeepSeek puis relus par Claude Code : consignes <code>&lt;!-- --&gt;</code> et marqueurs présents, aucun commentaire imbriqué.",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "2.4",
+          "lot": "L2",
+          "title": "runbook.md et runbook-fiche.md",
+          "text": "`runbook.md` et `runbook-fiche.md`",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "14 gabarits écrits par OpenCode (kimi) avant son arrêt, vérifiés par DeepSeek puis relus par Claude Code : consignes <code>&lt;!-- --&gt;</code> et marqueurs présents, aucun commentaire imbriqué.",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "2.5",
+          "lot": "L2",
+          "title": "recette.md (matrice scénario → test → résultat)",
+          "text": "`recette.md` (matrice scénario → test → résultat)",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "14 gabarits écrits par OpenCode (kimi) avant son arrêt, vérifiés par DeepSeek puis relus par Claude Code : consignes <code>&lt;!-- --&gt;</code> et marqueurs présents, aucun commentaire imbriqué.",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "2.6",
+          "lot": "L2",
+          "title": "change-request.md, incident-post-mortem.md, retro.md, client-report.md, release-notes.md",
+          "text": "`change-request.md`, `incident-post-mortem.md`, `retro.md`, `client-report.md`, `release-notes.md`",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "14 gabarits écrits par OpenCode (kimi) avant son arrêt, vérifiés par DeepSeek puis relus par Claude Code : consignes <code>&lt;!-- --&gt;</code> et marqueurs présents, aucun commentaire imbriqué.",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "3.1",
+          "lot": "L3",
+          "title": "templates/scripts/ci.sh",
+          "text": "`templates/scripts/ci.sh` : contrat de sortie du § 10, sections par stack, seuils lus dans la config",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Relu et vérifié par Claude Code : <code>bash -n</code> OK, 22 tests unitaires de <code>check_thresholds.py</code> OK, <code>reports/summary.json</code> conforme.",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "3.2",
+          "lot": "L3",
+          "title": "templates/ci/{github-actions,gitlab-ci,forgejo-actions,jenkins,none}/",
+          "text": "`templates/ci/{github-actions,gitlab-ci,forgejo-actions,jenkins,none}/`",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "5 pipelines (GitHub, GitLab, Forgejo, Jenkins, none) ; YAML validé par l'exécutant ; non exécutés sur un vrai serveur de CI.",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "3.3",
+          "lot": "L3",
+          "title": "templates/deploy/<profil>/ pour les 8 profils",
+          "text": "`templates/deploy/<profil>/` pour les 8 profils : `README.md`, `deploy.md`, `runbook-sections.md`",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "8 profils × 3 fichiers ; commentaire HTML imbriqué corrigé par Claude Code dans <code>vps-compose/deploy.md</code>.",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "4.1",
+          "lot": "L4",
+          "title": "templates/adapters/claude/",
+          "text": "`templates/adapters/claude/` : `CLAUDE.md`, `settings.json`, agents `implementer`, `reviewer`, `doc-writer`, `spec-challenger`, commandes",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Relu : deny git en écriture et secrets, agents avec listes d'outils. JSON validé par Claude Code.",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "4.2",
+          "lot": "L4",
+          "title": "templates/adapters/opencode/",
+          "text": "`templates/adapters/opencode/` : `opencode.json`, agents, commandes",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Relu : <code>\"*\"</code> d'abord puis règles spécifiques (dernière gagnante), <code>external_directory</code> refusé. JSON validé.",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "4.3",
+          "lot": "L4",
+          "title": "templates/adapters/codex/",
+          "text": "`templates/adapters/codex/` : `config.toml`, agents `.toml`, `rules/sdlc.rules`",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Relu : <code>sandbox_mode</code> par agent, règles <code>forbidden</code> pour git en écriture. TOML validé (5/5) par Claude Code.",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "4.4",
+          "lot": "L4",
+          "title": "templates/handoff/input.md et report.schema.json",
+          "text": "`templates/handoff/input.md` et `report.schema.json`",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Schéma draft 2020-12 et exemple : JSON valide ; validation par <code>jsonschema</code> impossible (module absent).",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "5.1",
+          "lot": "L5",
+          "title": "sdlc-init",
+          "text": "`sdlc-init`",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Vérifié par Claude Code sur un projet de test : <code>detect.sh</code> renvoie un JSON valide ; <code>render_adapters.py</code> génère 15 fichiers (Claude + Codex, sans OpenCode désactivé), aucun marqueur restant, autorisations limitées aux CLI activées. Pas de tests unitaires automatisés.",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "5.2",
+          "lot": "L5",
+          "title": "etat-des-lieux, cadrage, adr, spec-review, tdd",
+          "text": "`etat-des-lieux`, `cadrage`, `adr`, `spec-review`, `tdd`",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "5 skills relues (frontmatter name + description) ; <code>new_adr.py</code> testé : ADR-001 créé et index mis à jour.",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "6.1",
+          "lot": "L6",
+          "title": "ci-setup, recette, deploy-procedure, runbook, changelog",
+          "text": "`ci-setup`, `recette`, `deploy-procedure`, `runbook`, `changelog`",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Relu par Claude Code : 5 skills, frontmatter conforme, tous les gabarits cités existent.",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "6.2",
+          "lot": "L6",
+          "title": "change-request, hotfix, retro, metrics, client-report",
+          "text": "`change-request`, `hotfix`, `retro`, `metrics`, `client-report`",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Relu : 5 skills ; <code>metrics.py</code> : 11 tests OK relancés par Claude Code. Champs optionnels <code>spec_freeze_ts</code> / <code>feature</code> ajoutés au § 12 de la spec.",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "7.1",
+          "lot": "L7",
+          "title": "collect.py : normalisation des sources du § 11, avec jeux d'essai dans tests/fixtures/",
+          "text": "`collect.py` : normalisation des sources du § 11, avec jeux d'essai dans `tests/fixtures/`",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Corrigé par OpenCode (deepseek) puis vérifié par Claude Code : 29 tests OK ; premier lancement sur la fixture → couverture 85 %, 3 vulnérabilités (2 bloquantes), historique à 1 point sans doublon, schéma découvert ; rendu contrôlé en capture.",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "7.2",
+          "lot": "L7",
+          "title": "generate.py + gabarit dérivé de la maquette",
+          "text": "`generate.py` + gabarit dérivé de la maquette",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Corrigé par OpenCode (deepseek) puis vérifié par Claude Code : 29 tests OK ; premier lancement sur la fixture → couverture 85 %, 3 vulnérabilités (2 bloquantes), historique à 1 point sans doublon, schéma découvert ; rendu contrôlé en capture.",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "7.3",
+          "lot": "L7",
+          "title": "Tests automatisés",
+          "text": "Tests automatisés (collecte et génération) et `SKILL.md`",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Corrigé par OpenCode (deepseek) puis vérifié par Claude Code : 29 tests OK ; premier lancement sur la fixture → couverture 85 %, 3 vulnérabilités (2 bloquantes), historique à 1 point sans doublon, schéma découvert ; rendu contrôlé en capture.",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "8.1",
+          "lot": "L8",
+          "title": "État de référence dans docs/suivi/state.json",
+          "text": "État de référence dans `docs/suivi/state.json` (format partagé avec `suivi-projet`) ; le HTML devient un rendu généré",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Corrigé par OpenCode puis vérifié par Claude Code : état dans <code>docs/suivi/state.json</code> (schéma commun avec suivi-projet) ; 31 tests suivi-taches et 33 suivi-projet OK.",
+          "history": [
+            {
+              "date": "2026-10-11",
+              "status": "done",
+              "note": "Corrigé par OpenCode puis vérifié par Claude Code : état dans <code>docs/suivi/state.json</code> (schéma commun avec suivi-projet) ; 31 tests suivi-taches et 33 suivi-projet OK."
+            }
+          ],
+          "executor": "opencode",
+          "reviewer": "claude",
+          "review_iteration": 2,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "8.2",
+          "lot": "L8",
+          "title": "Scripts track*.py qui écrivent l'état JSON puis régénèrent le HTML ; migration depuis un…",
+          "text": "Scripts `track*.py` qui écrivent l'état JSON puis régénèrent le HTML ; migration depuis un suivi HTML existant",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Migration du vrai suivi : 30 tâches (25 terminées, 5 en cours), objectif, 3 sources et textes complets conservés ; écriture atomique.",
+          "history": [
+            {
+              "date": "2026-10-11",
+              "status": "done",
+              "note": "Migration du vrai suivi : 30 tâches (25 terminées, 5 en cours), objectif, 3 sources et textes complets conservés ; écriture atomique."
+            }
+          ],
+          "executor": "opencode",
+          "reviewer": "claude",
+          "review_iteration": 2,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "8.3",
+          "lot": "L8",
+          "title": "Rôles par tâche",
+          "text": "Rôles par tâche : exécutant, relecteur (≠ auteur), itération de revue, escalade, « prêt à commiter » avec message proposé",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Rôles, itération, escalade et « prêt à commiter » enregistrés et affichés ; relecteur = exécutant refusé (testé).",
+          "history": [
+            {
+              "date": "2026-10-11",
+              "status": "done",
+              "note": "Rôles, itération, escalade et « prêt à commiter » enregistrés et affichés ; relecteur = exécutant refusé (testé)."
+            }
+          ],
+          "executor": "opencode",
+          "reviewer": "claude",
+          "review_iteration": 2,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "8.4",
+          "lot": "L8",
+          "title": "Lecteur Markdown dans le suivi",
+          "text": "Lecteur Markdown dans le suivi (proposal, design, tasks, deltas de spec)",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Lecteur Markdown embarqué (markdown-it, HTML brut désactivé, rendu OpenSpec).",
+          "history": [
+            {
+              "date": "2026-10-11",
+              "status": "done",
+              "note": "Lecteur Markdown embarqué (markdown-it, HTML brut désactivé, rendu OpenSpec)."
+            }
+          ],
+          "executor": "opencode",
+          "reviewer": "claude",
+          "review_iteration": 2,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "8.5",
+          "lot": "L8",
+          "title": "Portabilité : chemins .agents/skills/, vérifications lues dans sdlc.config.yaml et…",
+          "text": "Portabilité : chemins `.agents/skills/`, vérifications lues dans `sdlc.config.yaml` et `scripts/ci.sh`, plus de commandes propres à un projet",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "SKILL.md portable ; régression corrigée (focus, URL partageable, cartes, export/import) ; vérifié en capture.",
+          "history": [
+            {
+              "date": "2026-10-11",
+              "status": "done",
+              "note": "SKILL.md portable ; régression corrigée (focus, URL partageable, cartes, export/import) ; vérifié en capture."
+            }
+          ],
+          "executor": "opencode",
+          "reviewer": "claude",
+          "review_iteration": 2,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "9.1",
+          "lot": "L9",
+          "title": "Installateur bin/sdlc-install",
+          "text": "Installateur `bin/sdlc-install` : espace `.sdlc/`, manifeste sha256, `--dry-run`, idempotence, conflits de skills signalés",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Vérifié par Claude Code sur un faux projet Django : 168 fichiers sous <code>.sdlc/</code> et <code>.agents/skills/</code>, 2ᵉ passage sans écriture, <code>--dry-run</code> sans écriture ; 20 tests OK.",
+          "history": [
+            {
+              "date": "2026-10-11",
+              "status": "doing",
+              "note": "Délégué le 2026-10-11 à OpenCode (deepseek), exécution 9A (installateur)."
+            },
+            {
+              "date": "2026-10-11",
+              "status": "done",
+              "note": "Vérifié par Claude Code sur un faux projet Django : 168 fichiers sous <code>.sdlc/</code> et <code>.agents/skills/</code>, 2ᵉ passage sans écriture, <code>--dry-run</code> sans écriture ; 20 tests OK."
+            }
+          ],
+          "executor": "opencode",
+          "reviewer": "claude",
+          "review_iteration": 1,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "9.2",
+          "lot": "L9",
+          "title": "Fusion non destructive",
+          "text": "Fusion non destructive : blocs délimités dans `AGENTS.md` et `.gitignore`, `@AGENTS.md` dans `CLAUDE.md`, liens `.claude/skills`",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Bloc délimité en tête d'<code>AGENTS.md</code> (règles maison conservées), <code>@AGENTS.md</code> ajouté à <code>CLAUDE.md</code>, bloc <code>.gitignore</code> ; README, <code>templates/</code> du projet et CI intacts.",
+          "history": [
+            {
+              "date": "2026-10-11",
+              "status": "doing",
+              "note": "Délégué le 2026-10-11 à OpenCode (deepseek), exécution 9A (installateur)."
+            },
+            {
+              "date": "2026-10-11",
+              "status": "done",
+              "note": "Bloc délimité en tête d'<code>AGENTS.md</code> (règles maison conservées), <code>@AGENTS.md</code> ajouté à <code>CLAUDE.md</code>, bloc <code>.gitignore</code> ; README, <code>templates/</code> du projet et CI intacts."
+            }
+          ],
+          "executor": "opencode",
+          "reviewer": "claude",
+          "review_iteration": 1,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "9.3",
+          "lot": "L9",
+          "title": "--upgrade (fichiers non modifiés seulement) et --uninstall",
+          "text": "`--upgrade` (fichiers non modifiés seulement) et `--uninstall`",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "<code>--uninstall</code> : les 6 fichiers d'origine restaurés à l'identique (empreintes comparées). <code>--upgrade</code> couvert par les tests.",
+          "history": [
+            {
+              "date": "2026-10-11",
+              "status": "doing",
+              "note": "Délégué le 2026-10-11 à OpenCode (deepseek), exécution 9A (installateur)."
+            },
+            {
+              "date": "2026-10-11",
+              "status": "done",
+              "note": "<code>--uninstall</code> : les 6 fichiers d'origine restaurés à l'identique (empreintes comparées). <code>--upgrade</code> couvert par les tests."
+            }
+          ],
+          "executor": "opencode",
+          "reviewer": "claude",
+          "review_iteration": 1,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "9.4",
+          "lot": "L9",
+          "title": "Section paths et liens .sdlc/ dans le dépôt du framework ; plus aucune référence en dur à…",
+          "text": "Section `paths` et liens `.sdlc/` dans le dépôt du framework ; plus aucune référence en dur à `templates/` ni `docs/conception/`",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Vérifié par Claude Code : liens <code>.sdlc/templates</code> et <code>.sdlc/workflow-sdlc.md</code>, plus aucune référence en dur à <code>templates/</code> ni <code>docs/conception/</code> ; scripts lisent <code>paths</code>.",
+          "history": [
+            {
+              "date": "2026-10-11",
+              "status": "doing",
+              "note": "Délégué le 2026-10-11 à OpenCode (deepseek), exécution 9B (chemins et parcours existant)."
+            },
+            {
+              "date": "2026-10-11",
+              "status": "doing",
+              "note": "Délégué le 2026-10-11 à OpenCode (deepseek), exécution 9B (chemins, parcours existant, correctifs suivi-taches)."
+            },
+            {
+              "date": "2026-10-11",
+              "status": "done",
+              "note": "Vérifié par Claude Code : liens <code>.sdlc/templates</code> et <code>.sdlc/workflow-sdlc.md</code>, plus aucune référence en dur à <code>templates/</code> ni <code>docs/conception/</code> ; scripts lisent <code>paths</code>."
+            }
+          ],
+          "executor": "opencode",
+          "reviewer": "claude",
+          "review_iteration": 1,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "9.5",
+          "lot": "L9",
+          "title": "sdlc-init et etat-des-lieux",
+          "text": "`sdlc-init` et `etat-des-lieux` : parcours projet existant (pré-remplissage, `openspec init`, specs de référence de l'existant)",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "<code>detect.sh</code> sort les commandes test/lint/couverture et <code>SDLC_*_CMD</code> (3 tests) ; <code>sdlc-init</code> et <code>etat-des-lieux</code> : parcours projet existant.",
+          "history": [
+            {
+              "date": "2026-10-11",
+              "status": "doing",
+              "note": "Délégué le 2026-10-11 à OpenCode (deepseek), exécution 9B (chemins et parcours existant)."
+            },
+            {
+              "date": "2026-10-11",
+              "status": "doing",
+              "note": "Délégué le 2026-10-11 à OpenCode (deepseek), exécution 9B (chemins, parcours existant, correctifs suivi-taches)."
+            },
+            {
+              "date": "2026-10-11",
+              "status": "done",
+              "note": "<code>detect.sh</code> sort les commandes test/lint/couverture et <code>SDLC_*_CMD</code> (3 tests) ; <code>sdlc-init</code> et <code>etat-des-lieux</code> : parcours projet existant."
+            }
+          ],
+          "executor": "opencode",
+          "reviewer": "claude",
+          "review_iteration": 1,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "9.6",
+          "lot": "L9",
+          "title": "ci-setup : ci.mode integrate | replace | none et réutilisation des commandes existantes",
+          "text": "`ci-setup` : `ci.mode` integrate | replace | none et réutilisation des commandes existantes",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "<code>ci.mode</code> integrate | replace | none ; extrait <code>integrate.md</code> par outil de CI.",
+          "history": [
+            {
+              "date": "2026-10-11",
+              "status": "doing",
+              "note": "Délégué le 2026-10-11 à OpenCode (deepseek), exécution 9B (chemins et parcours existant)."
+            },
+            {
+              "date": "2026-10-11",
+              "status": "doing",
+              "note": "Délégué le 2026-10-11 à OpenCode (deepseek), exécution 9B (chemins, parcours existant, correctifs suivi-taches)."
+            },
+            {
+              "date": "2026-10-11",
+              "status": "done",
+              "note": "<code>ci.mode</code> integrate | replace | none ; extrait <code>integrate.md</code> par outil de CI."
+            }
+          ],
+          "executor": "opencode",
+          "reviewer": "claude",
+          "review_iteration": 1,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "9.7",
+          "lot": "L9",
+          "title": "Tests de bout en bout sur projets existants simulés",
+          "text": "Tests de bout en bout sur projets existants simulés (Django avec `templates/`, Node avec GitHub Actions et OpenSpec)",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "24 tests de bout en bout (Django et Node : dry-run, installation, detect, config, adaptateurs, ADR dans <code>paths.adr</code>, ci.sh, suivis, réinstallation, upgrade, désinstallation). Suites relancées par Claude Code : 147 tests, 0 échec, 0 ignoré. Limites : CLAUDE.md existant sans les spécificités Claude ; adaptateurs non retirés par --uninstall.",
+          "history": [
+            {
+              "date": "2026-10-11",
+              "status": "todo",
+              "note": "Après 9A et 9B."
+            },
+            {
+              "date": "2026-10-11",
+              "status": "doing",
+              "note": "Délégué le 2026-10-11 à OpenCode (deepseek) : tests de bout en bout automatisés (Django, Node) + test ignoré de suivi-taches à remettre sur une fixture."
+            },
+            {
+              "date": "2026-10-11",
+              "status": "done",
+              "note": "24 tests de bout en bout (Django et Node : dry-run, installation, detect, config, adaptateurs, ADR dans <code>paths.adr</code>, ci.sh, suivis, réinstallation, upgrade, désinstallation). Suites relancées par Claude Code : 147 tests, 0 échec, 0 ignoré. Limites : CLAUDE.md existant sans les spécificités Claude ; adaptateurs non retirés par --uninstall."
+            }
+          ],
+          "executor": "opencode",
+          "reviewer": "claude",
+          "review_iteration": 1,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "10.1",
+          "lot": "L10",
+          "title": "CLAUDE.md existant",
+          "text": "`CLAUDE.md` existant : bloc délimité `sdlc-claude` avec les consignes propres à Claude Code, inséré après `@AGENTS.md`, idempotent",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Vérifié par Claude Code : bloc <code>sdlc-claude</code> inséré après <code>@AGENTS.md</code>, contenu maison conservé, 2ᵉ passage : 0 écriture.",
+          "history": [
+            {
+              "date": "2026-10-11",
+              "status": "doing",
+              "note": "Délégué le 2026-10-11 à OpenCode (deepseek) ; spec § 13.2 complétée par Claude Code."
+            },
+            {
+              "date": "2026-10-11",
+              "status": "done",
+              "note": "Vérifié par Claude Code : bloc <code>sdlc-claude</code> inséré après <code>@AGENTS.md</code>, contenu maison conservé, 2ᵉ passage : 0 écriture."
+            }
+          ],
+          "executor": "opencode",
+          "reviewer": "claude",
+          "review_iteration": 1,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "10.2",
+          "lot": "L10",
+          "title": "Adaptateurs générés inscrits dans .sdlc/manifest.json",
+          "text": "Adaptateurs générés inscrits dans `.sdlc/manifest.json` (fichiers créés et entrées ajoutées aux fichiers fusionnés)",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "Section <code>adapters</code> du manifeste : fichiers créés (sha256) et entrées ajoutées aux fichiers fusionnés ; permissions maison conservées dans <code>settings.json</code>.",
+          "history": [
+            {
+              "date": "2026-10-11",
+              "status": "doing",
+              "note": "Délégué le 2026-10-11 à OpenCode (deepseek) ; spec § 13.2 complétée par Claude Code."
+            },
+            {
+              "date": "2026-10-11",
+              "status": "done",
+              "note": "Section <code>adapters</code> du manifeste : fichiers créés (sha256) et entrées ajoutées aux fichiers fusionnés ; permissions maison conservées dans <code>settings.json</code>."
+            }
+          ],
+          "executor": "opencode",
+          "reviewer": "claude",
+          "review_iteration": 1,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "10.3",
+          "lot": "L10",
+          "title": "--uninstall retire aussi les adaptateurs non modifiés, les entrées ajoutées, le bloc…",
+          "text": "`--uninstall` retire aussi les adaptateurs non modifiés, les entrées ajoutées, le bloc Claude et les dossiers vides ; tests d'installation et de bout en bout étendus",
+          "status": "done",
+          "updated": "2026-10-11",
+          "note": "<code>--uninstall</code> : <code>CLAUDE.md</code> et <code>settings.json</code> maison restaurés à l'identique (empreintes comparées), plus aucun fichier du framework. 162 tests OK sur 7 suites, 0 ignoré. Limite : fichier fusionné restauré au format JSON canonique (indentation 2).",
+          "history": [
+            {
+              "date": "2026-10-11",
+              "status": "doing",
+              "note": "Délégué le 2026-10-11 à OpenCode (deepseek) ; spec § 13.2 complétée par Claude Code."
+            },
+            {
+              "date": "2026-10-11",
+              "status": "done",
+              "note": "<code>--uninstall</code> : <code>CLAUDE.md</code> et <code>settings.json</code> maison restaurés à l'identique (empreintes comparées), plus aucun fichier du framework. 162 tests OK sur 7 suites, 0 ignoré. Limite : fichier fusionné restauré au format JSON canonique (indentation 2)."
+            }
+          ],
+          "executor": "opencode",
+          "reviewer": "claude",
+          "review_iteration": 1,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "11.1",
+          "lot": "L11",
+          "title": "Copier le plugin dans l'adaptateur OpenCode",
+          "text": "Copier le plugin dans l'adaptateur OpenCode",
+          "status": "doing",
+          "updated": "2026-10-20",
+          "note": "Copie rafraîchie le 2026-10-20 : version 0.2.1 (25 fichiers) avec garde d'isolation, timeouts, sdlc_doctor, baseline et CHANGELOG ; package-lock inclus pour que npm ci fonctionne chez le projet cible ; GUIDE.md conservé. En attente de relecture indépendante.",
+          "history": [
+            {
+              "date": "2026-10-19",
+              "status": "doing",
+              "note": "Copie réalisée : 19 fichiers sous templates/adapters/opencode/plugins/ai-sdlc-tracker/ (source + package.json + .gitignore + GUIDE.md), sans tests/ ni node_modules/ ; GUIDE.md documente la limite state.json ; en attente de relecture indépendante (règle AGENTS.md §6)."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Copie rafraîchie le 2026-10-20 : version 0.2.1 (25 fichiers) avec garde d'isolation, timeouts, sdlc_doctor, baseline et CHANGELOG ; package-lock inclus pour que npm ci fonctionne chez le projet cible ; GUIDE.md conservé. En attente de relecture indépendante."
+            }
+          ],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "11.2",
+          "lot": "L11",
+          "title": "Distribuer le plugin",
+          "text": "Distribuer le plugin : copie récursive des sous-dossiers d'adaptateur",
+          "status": "doing",
+          "updated": "2026-10-19",
+          "note": "Exercice réel : projet vide + sdlc.config.yaml avec opencode activé → render_adapters.py crée les 19 fichiers du plugin et les inscrit dans .sdlc/manifest.json ; 28 tests d'installation passent (dont le nouveau) ; en attente de relecture indépendante.",
+          "history": [
+            {
+              "date": "2026-10-19",
+              "status": "doing",
+              "note": "Exercice réel : projet vide + sdlc.config.yaml avec opencode activé → render_adapters.py crée les 19 fichiers du plugin et les inscrit dans .sdlc/manifest.json ; 28 tests d'installation passent (dont le nouveau) ; en attente de relecture indépendante."
+            }
+          ],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "11.3",
+          "lot": "L11",
+          "title": "Documenter l'adaptateur et la limite du plugin",
+          "text": "Documenter l'adaptateur et la limite du plugin",
+          "status": "doing",
+          "updated": "2026-10-19",
+          "note": "README de l'adaptateur : ligne de destination plugins/ai-sdlc-tracker/** ajoutée + encadré « limite connue » renvoyant au GUIDE (plugin inerte dans un projet du framework tant que l'adaptation state.json n'est pas faite) ; relecture indépendante à faire.",
+          "history": [
+            {
+              "date": "2026-10-19",
+              "status": "doing",
+              "note": "README de l'adaptateur : ligne de destination plugins/ai-sdlc-tracker/** ajoutée + encadré « limite connue » renvoyant au GUIDE (plugin inerte dans un projet du framework tant que l'adaptation state.json n'est pas faite) ; relecture indépendante à faire."
+            }
+          ],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        },
+        {
+          "id": "11.4",
+          "lot": "L11",
+          "title": "Adapter le plugin au modèle d'état du framework",
+          "text": "Adapter le plugin au modèle d'état du framework (`docs/suivi/state.json`)",
+          "status": "todo",
+          "updated": "",
+          "note": "",
+          "history": [],
+          "executor": null,
+          "reviewer": null,
+          "review_iteration": null,
+          "escalated": false,
+          "ready_to_commit": false,
+          "commit_message": null,
+          "files": [],
+          "acceptance": null,
+          "tests": null
+        }
+      ],
+      "recette": null,
+      "version": null,
+      "delivered": null,
+      "blocked": 0
+    }
+  ],
+  "actions": [],
+  "envs": []
+}

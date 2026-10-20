@@ -1,0 +1,32 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "exemple",
+          "informationUri": "https://exemple.test",
+          "rules": [
+            { "id": "R-SEC-1", "properties": { "security-severity": "9.8" } },
+            { "id": "R-SEC-2", "properties": { "security-severity": "7.1" } },
+            { "id": "R-SEC-3", "properties": { "security-severity": "5.0" } },
+            { "id": "R-SEC-4", "properties": { "security-severity": "2.0" } },
+            { "id": "R-LVL-1" },
+            { "id": "R-LVL-2" },
+            { "id": "R-LVL-3" }
+          ]
+        }
+      },
+      "results": [
+        { "ruleId": "R-SEC-1", "level": "error" },
+        { "ruleId": "R-SEC-2", "level": "warning" },
+        { "ruleId": "R-SEC-3", "level": "warning" },
+        { "ruleId": "R-SEC-4", "level": "note" },
+        { "ruleId": "R-LVL-1", "level": "error" },
+        { "ruleId": "R-LVL-2", "level": "warning" },
+        { "ruleId": "R-LVL-3", "level": "note" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+# Caches Python
+__pycache__/
+*.py[cod]
+
+# Dossiers temporaires des tests de l'installateur
+/tests/install/tmp/
+
+# Dossiers temporaires des tests de bout en bout
+/tests/e2e/tmp/
+
+# Sorties des contrôles (scripts/ci.sh), régénérées à chaque exécution
+/reports/

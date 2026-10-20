@@ -1,0 +1,3 @@
+{"ts":"2026-10-09T14:02:00+02:00","env":"preprod","component":"api","version":"v1.1.0-rc1","result":"success","duration_s":220,"by":"pipeline #42","note":"SSO en préproduction"}
+{"ts":"2026-10-02T18:40:00+02:00","env":"prod","component":"api","version":"v1.0.0","result":"success","duration_s":252,"by":"pipeline #40","note":"Feature Catalogue"}
+{"ts":"2026-09-28T10:15:00+02:00","env":"preprod","component":"api","version":"v1.0.0","result":"rollback","duration_s":365,"by":"pipeline #38","note":"Migration descendante rejouée"}

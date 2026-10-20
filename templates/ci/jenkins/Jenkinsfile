@@ -1,0 +1,81 @@
+// Jenkinsfile — gabarit déclaratif.
+//
+// Où copier : Jenkinsfile (à la racine du projet, ou chemin configuré dans le job).
+// Remplacez les marqueurs {{…}} par les valeurs du projet, puis supprimez ce
+// commentaire d'en-tête. Les contrôles sont définis une seule fois dans
+// scripts/ci.sh ; ce fichier ne fait que les appeler et archiver les rapports.
+pipeline {
+  agent { label '{{agent-label}}' }
+
+  options {
+    timestamps()
+    disableConcurrentBuilds()
+    buildDiscarder(logRotator(numToKeepStr: '30'))
+  }
+
+  environment {
+    SDLC_REPORTS_DIR = 'reports'
+    // Le jeton de déploiement vient des identifiants Jenkins (voir README).
+    DEPLOY_TOKEN = credentials('{{credential-id-deploiement}}')
+  }
+
+  stages {
+    // 1. Contrôles (lint, tests, couverture, analyse de code, dépendances, secrets).
+    stage('Contrôles') {
+      steps {
+        // {{commandes-d-installation-des-dependances}}
+        sh 'bash scripts/ci.sh'
+      }
+    }
+
+    // 2. Build de l'artefact déployable.
+    stage('Build') {
+      steps {
+        // {{commande-de-build}}
+        echo 'build {{version}}'
+      }
+    }
+
+    // 3. Déploiement en préproduction.
+    stage('Préproduction') {
+      steps {
+        // {{commande-de-deploiement-preproduction}}
+        echo 'déploiement préproduction'
+      }
+    }
+
+    // 4. Tests de bout en bout en préproduction.
+    stage('Tests de bout en bout') {
+      steps {
+        // {{commande-tests-bout-en-bout}}
+        echo 'tests de bout en bout'
+      }
+    }
+
+    // 5. Déploiement en production : manuel et protégé par une validation humaine.
+    stage('Production') {
+      when {
+        branch '{{branche-principale}}'
+      }
+      steps {
+        // input bloque le pipeline jusqu'à validation par un responsable.
+        input message: 'Déployer en production ?', ok: 'Déployer', submitter: '{{responsables-go-no-go}}'
+        // {{commande-de-deploiement-production}}
+        echo 'déploiement production'
+        // Journaliser ce déploiement dans docs/journal/deploys.jsonl (§ 12).
+      }
+    }
+  }
+
+  post {
+    always {
+      // Publier et archiver les rapports de contrôle.
+      junit allowEmptyResults: true, testResults: 'reports/junit/*.xml'
+      archiveArtifacts artifacts: 'reports/**', allowEmptyArchive: true, fingerprint: true
+      // {{archivage-des-rapports-de-recette}}
+    }
+    failure {
+      echo 'Pipeline en échec : consulter reports/summary.json.'
+    }
+  }
+}

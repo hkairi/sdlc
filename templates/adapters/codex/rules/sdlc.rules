@@ -1,0 +1,197 @@
+# Règles de commandes Codex — projet « {{nom-du-projet}} »
+#
+# Fichier Starlark généré par `sdlc-init` depuis `.sdlc/templates/adapters/codex/rules/sdlc.rules`.
+# Copié vers `.codex/rules/sdlc.rules` dans le projet.
+#
+# Rappel : ce fichier n'est chargé par Codex que si le projet est marqué « trusted ».
+#
+# Convention : `prefix_rule` associe un préfixe de commande à une décision
+# (`forbidden`, `allow`) et à une justification en français.
+
+# --- Lecture seule de git : autorisée -------------------------------------
+
+prefix_rule(
+    pattern = ["git", "status"],
+    decision = "allow",
+    justification = "Lecture seule de l'état du dépôt : autorisée.",
+)
+
+prefix_rule(
+    pattern = ["git", "diff"],
+    decision = "allow",
+    justification = "Lecture seule du diff : autorisée.",
+)
+
+prefix_rule(
+    pattern = ["git", "log"],
+    decision = "allow",
+    justification = "Lecture seule de l'historique : autorisée.",
+)
+
+prefix_rule(
+    pattern = ["git", "show"],
+    decision = "allow",
+    justification = "Lecture seule d'un objet git : autorisée.",
+)
+
+# --- Git en écriture : interdit -------------------------------------------
+# Git est réservé à l'humain ; les agents proposent un message de commit.
+
+prefix_rule(
+    pattern = ["git", "add"],
+    decision = "forbidden",
+    justification = "Git en écriture interdit : l'agent ne prépare pas d'index.",
+)
+
+prefix_rule(
+    pattern = ["git", "commit"],
+    decision = "forbidden",
+    justification = "Git en écriture interdit : l'humain valide et commite.",
+)
+
+prefix_rule(
+    pattern = ["git", "push"],
+    decision = "forbidden",
+    justification = "Git en écriture interdit : aucun agent ne pousse vers un dépôt distant.",
+)
+
+prefix_rule(
+    pattern = ["git", "pull"],
+    decision = "forbidden",
+    justification = "Git en écriture interdit : la mise à jour du dépôt revient à l'humain.",
+)
+
+prefix_rule(
+    pattern = ["git", "fetch"],
+    decision = "forbidden",
+    justification = "Git en écriture interdit : la récupération des références revient à l'humain.",
+)
+
+prefix_rule(
+    pattern = ["git", "merge"],
+    decision = "forbidden",
+    justification = "Git en écriture interdit : aucune fusion automatique.",
+)
+
+prefix_rule(
+    pattern = ["git", "rebase"],
+    decision = "forbidden",
+    justification = "Git en écriture interdit : aucun rebasage automatique.",
+)
+
+prefix_rule(
+    pattern = ["git", "reset"],
+    decision = "forbidden",
+    justification = "Git en écriture interdit : la réécriture de l'état revient à l'humain.",
+)
+
+prefix_rule(
+    pattern = ["git", "checkout"],
+    decision = "forbidden",
+    justification = "Git en écriture interdit : le changement de branche ou de fichier revient à l'humain.",
+)
+
+prefix_rule(
+    pattern = ["git", "switch"],
+    decision = "forbidden",
+    justification = "Git en écriture interdit : le changement de branche revient à l'humain.",
+)
+
+prefix_rule(
+    pattern = ["git", "restore"],
+    decision = "forbidden",
+    justification = "Git en écriture interdit : la restauration de fichiers revient à l'humain.",
+)
+
+prefix_rule(
+    pattern = ["git", "stash"],
+    decision = "forbidden",
+    justification = "Git en écriture interdit : la mise de côté de modifications revient à l'humain.",
+)
+
+prefix_rule(
+    pattern = ["git", "branch"],
+    decision = "forbidden",
+    justification = "Git en écriture interdit : la création ou suppression de branches revient à l'humain.",
+)
+
+prefix_rule(
+    pattern = ["git", "worktree"],
+    decision = "forbidden",
+    justification = "Git en écriture interdit : aucun arbre de travail supplémentaire créé par un agent.",
+)
+
+prefix_rule(
+    pattern = ["git", "tag"],
+    decision = "forbidden",
+    justification = "Git en écriture interdit : l'étiquetage des versions revient à l'humain.",
+)
+
+prefix_rule(
+    pattern = ["git", "clean"],
+    decision = "forbidden",
+    justification = "Git en écriture interdit : la suppression de fichiers non suivis revient à l'humain.",
+)
+
+prefix_rule(
+    pattern = ["git", "rm"],
+    decision = "forbidden",
+    justification = "Git en écriture interdit : la suppression suivie par git revient à l'humain.",
+)
+
+prefix_rule(
+    pattern = ["git", "revert"],
+    decision = "forbidden",
+    justification = "Git en écriture interdit : l'annulation d'un commit revient à l'humain.",
+)
+
+prefix_rule(
+    pattern = ["git", "cherry-pick"],
+    decision = "forbidden",
+    justification = "Git en écriture interdit : la sélection de commits revient à l'humain.",
+)
+
+prefix_rule(
+    pattern = ["git", "apply"],
+    decision = "forbidden",
+    justification = "Git en écriture interdit : l'application de patchs git revient à l'humain.",
+)
+
+prefix_rule(
+    pattern = ["git", "am"],
+    decision = "forbidden",
+    justification = "Git en écriture interdit : l'application de séries de patchs revient à l'humain.",
+)
+
+# --- Lancement des CLI des exécutants -------------------------------------
+# À activer par `sdlc-init` pour les exécutants retenus : décommenter les règles
+# correspondantes et remplacer les marqueurs. Ne conserver que les agents du projet.
+
+# prefix_rule(
+#     pattern = ["{{cli-claude}}"],
+#     decision = "allow",
+#     justification = "Autorise l'orchestrateur à lancer l'exécutant Claude Code en non interactif.",
+# )
+
+# prefix_rule(
+#     pattern = ["{{cli-codex}}"],
+#     decision = "allow",
+#     justification = "Autorise l'orchestrateur à lancer l'exécutant Codex en non interactif.",
+# )
+
+# prefix_rule(
+#     pattern = ["{{cli-opencode}}"],
+#     decision = "allow",
+#     justification = "Autorise l'orchestrateur à lancer l'exécutant OpenCode en non interactif.",
+# )
+
+# prefix_rule(
+#     pattern = ["{{commande-ci}}"],
+#     decision = "allow",
+#     justification = "Autorise l'exécution des contrôles locaux (scripts/ci.sh).",
+# )
+
+# --- Secrets : interdits en lecture ---------------------------------------
+# Les motifs de secrets se refusent par instruction ; les bloquer au niveau des
+# commandes (par exemple la lecture avec cat, head, less) est fragile. La règle de
+# référence reste : ne jamais lire .env* (sauf .env.example), *.pem, *.key, secrets/.

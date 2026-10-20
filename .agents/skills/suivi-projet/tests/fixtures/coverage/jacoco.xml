@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<report name="demo">
+  <package name="demo/api">
+    <counter type="INSTRUCTION" missed="10" covered="90"/>
+    <counter type="LINE" missed="5" covered="45"/>
+  </package>
+  <counter type="INSTRUCTION" missed="15" covered="185"/>
+  <counter type="LINE" missed="15" covered="85"/>
+</report>

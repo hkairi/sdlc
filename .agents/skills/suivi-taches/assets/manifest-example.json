@@ -1,0 +1,39 @@
+{
+  "title": "Suivi multi-chantiers — <Projet>",
+  "h1": "Chantiers en cours — fichier de suivi",
+  "eyebrow": "<Projet> · <Domaine> · Suivi multi-chantiers",
+  "subtitle": "3 chantiers · N tâches. Cochez un ou plusieurs chantiers dans le rail de gauche.",
+  "storage_key": "suivi-multi-<projet>-v1",
+  "lang": "fr",
+  "sources": {
+    "features": "docs/features.md"
+  },
+  "features": [
+    "openspec/changes/<change-a>/tasks.md",
+    {
+      "id": "paiement",
+      "tasks": "openspec/changes/<change-b>/tasks.md",
+      "name": "Nouveau moyen de paiement",
+      "change": "<change-b>",
+      "color": "#1379b0",
+      "objective": "Ajouter un moyen de paiement (markdown inline : `code`, **gras**).",
+      "updated": "2026-10-10",
+      "sources": {
+        "proposal": "openspec/changes/<change-b>/proposal.md",
+        "design": "openspec/changes/<change-b>/design.md",
+        "tasks": "openspec/changes/<change-b>/tasks.md"
+      },
+      "details": {
+        "0.1": {
+          "files": ["backend/config/paiement.yaml"],
+          "acceptance": "Identifiants de production reçus.",
+          "tests": "Appels sandbox manuels.",
+          "note": "En attente des identifiants opérateur.",
+          "history": [
+            {"date": "2026-10-09", "status": "doing", "note": "Demande envoyée à l'opérateur."}
+          ]
+        }
+      }
+    }
+  ]
+}

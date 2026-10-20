@@ -1,0 +1,6 @@
+project:
+  name: "Démo indicateurs"
+
+organisation:
+  max_review_iterations: 3
+  task_timeout_min: 30
