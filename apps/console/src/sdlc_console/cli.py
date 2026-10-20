@@ -5,6 +5,7 @@ Usage :
     sdlc-console init [--database sqlite:///data/sdlc.sqlite3]
     sdlc-console doctor [--config sdlc.config.yaml] [--database ...]
     sdlc-console schema status|migrate [--database ...]
+    sdlc-console task set <id> <statut> [--note "..."] [--project ...]
     sdlc-console serve [--host 127.0.0.2] [--port 8765] [--config ...] [--database ...]
 
 L'écoute par défaut est strictement locale. Aucune authentification n'est
@@ -16,6 +17,7 @@ from __future__ import annotations
 import argparse
 import sys
 from pathlib import Path
+from typing import Any, cast
 
 from alembic import command
 from alembic.config import Config
@@ -120,13 +122,156 @@ def build_parser() -> argparse.ArgumentParser:
         command = schema_sub.add_parser(name, help=help_text)
         command.add_argument("--database", default=None, help="URL SQLAlchemy de la base")
 
+    task = sub.add_parser("task", help="Gérer une tâche")
+    task_sub = task.add_subparsers(dest="task_command")
+    task_set = task_sub.add_parser("set", help="Changer le statut d'une tâche")
+    task_set.add_argument("task", help="ID numérique ou clé de tâche")
+    task_set.add_argument(
+        "status",
+        choices=["todo", "doing", "done", "blocked", "cancelled"],
+        help="Nouveau statut",
+    )
+    task_set.add_argument("--note", default=None, help="Note de fin de tâche")
+    task_set.add_argument("--project", default=None, help="Slug du projet")
+    task_set.add_argument("--config", default=DEFAULT_CONFIG, help="Chemin de sdlc.config.yaml")
+    task_set.add_argument("--database", default=None, help="URL SQLAlchemy de la base")
+    task_set.add_argument("--state", default=None, help="Chemin de state.json")
+    task_set.add_argument("--tasks", default=None, help="Chemin de tasks.md")
+    task_set.add_argument("--html", default=None, help="Chemin du suivi HTML")
+    task_set.add_argument("--json", default=None, help="Chemin du JSON généré")
+    task_set.add_argument("--root", default=None, help="Racine du projet (défaut : cwd)")
+
     return parser
+
+
+def _task_set(args: argparse.Namespace) -> int:
+    """Commande `task set` : met à jour les trois supports et la base."""
+    from sqlalchemy import select
+
+    from .config import ConfigError, load_config
+    from .db import make_engine, make_session_factory
+    from .models import Feature, Project, Task
+    from .services.task_update import TaskUpdateError, update_task_status
+
+    root = Path(args.root).resolve() if args.root else Path.cwd().resolve()
+    config = None
+    try:
+        config = load_config(args.config)
+    except ConfigError:
+        if Path(args.config).exists():
+            print(f"configuration invalide : {args.config}", file=sys.stderr)
+            return 2
+    database_url = _resolve_database_url(args.database, config)
+    engine = make_engine(database_url)
+    factory = make_session_factory(engine)
+    try:
+        with factory() as session:
+            if args.project:
+                project = session.scalar(
+                    select(Project).where(Project.slug == args.project)
+                )
+            else:
+                projects = list(session.scalars(select(Project)).all())
+                project = projects[0] if len(projects) == 1 else None
+            if project is None:
+                print(
+                    "projet introuvable ou ambigu : préciser --project <slug>",
+                    file=sys.stderr,
+                )
+                return 2
+
+            task: Task | None
+            if args.task.isdigit():
+                task = session.get(Task, int(args.task))
+                if task is not None and task.feature.project_id != project.id:
+                    task = None
+            elif ":" in args.task:
+                feature_key, task_key = args.task.split(":", 1)
+                task = session.scalar(
+                    select(Task)
+                    .join(Feature, Task.feature_id == Feature.id)
+                    .where(
+                        Feature.project_id == project.id,
+                        Feature.key == feature_key,
+                        Task.key == task_key,
+                    )
+                )
+            else:
+                candidates = list(
+                    session.scalars(
+                        select(Task)
+                        .join(Feature, Task.feature_id == Feature.id)
+                        .where(
+                            Feature.project_id == project.id,
+                            Task.key == args.task,
+                        )
+                    ).all()
+                )
+                task = candidates[0] if len(candidates) == 1 else None
+            if task is None:
+                print(f"tâche introuvable : {args.task}", file=sys.stderr)
+                return 2
+
+            docs_dir = None
+            state_path = Path(args.state) if args.state else None
+            html_path = Path(args.html) if args.html else None
+            data = config.data if config is not None and isinstance(config.data, dict) else {}
+            raw_paths = data.get("paths")
+            paths: dict[str, Any] = (
+                cast(dict[str, Any], raw_paths) if isinstance(raw_paths, dict) else {}
+            )
+            if state_path is None and paths.get("suivi"):
+                state_path = Path(str(paths["suivi"])) / f"{project.slug}.json"
+            if html_path is None:
+                raw_ui = data.get("ui")
+                ui: dict[str, Any] = (
+                    cast(dict[str, Any], raw_ui) if isinstance(raw_ui, dict) else {}
+                )
+                if ui.get("suivi_path"):
+                    html_path = Path(str(ui["suivi_path"]))
+            if paths.get("docs"):
+                docs_dir = Path(str(paths["docs"]))
+
+            try:
+                result = update_task_status(
+                    session,
+                    project,
+                    task,
+                    status=args.status,
+                    note=args.note,
+                    state_path=state_path,
+                    tasks_path=Path(args.tasks) if args.tasks else None,
+                    html_path=html_path,
+                    json_path=Path(args.json) if args.json else None,
+                    docs_dir=docs_dir,
+                    root=root,
+                )
+            except (TaskUpdateError, OSError) as exc:
+                print(f"mise à jour refusée : {exc}", file=sys.stderr)
+                return 1
+            print(
+                f"tâche {result.task.key} : {result.status}"
+                f" — {result.duration_ms} ms"
+            )
+            print(f"tasks.md  : {result.tasks_path}")
+            print(f"state.json: {result.state_path}")
+            print(f"HTML      : {result.html_path}")
+            print(f"JSON      : {result.json_path}")
+            return 0
+    finally:
+        engine.dispose()
 
 
 def main(argv: list[str] | None = None) -> int:
     """Exécute la commande et renvoie un code de sortie normalisé (0, 1, 2)."""
     parser = build_parser()
     args = parser.parse_args(argv)
+
+    if args.command == "task":
+        if args.task_command == "set":
+            return _task_set(args)
+        print("usage : sdlc-console task set <id> <statut> --note \"...\"", file=sys.stderr)
+        return 2
 
     if args.command == "init":
         database_url = _resolve_database_url(args.database)
@@ -176,10 +321,22 @@ def main(argv: list[str] | None = None) -> int:
 
         import uvicorn
 
-        if args.open_suivi:
-            print("ouverture du suivi demandée (implémentée à la tâche 3.5)", file=sys.stderr)
+        ui = config.data.get("ui") if isinstance(config.data, dict) else None
+        ui = ui if isinstance(ui, dict) else {}
+        open_on_ready = bool(args.open_suivi or ui.get("open_suivi_on_ready", True))
+        suivi_path = ui.get("suivi_path")
+        from .app import create_app
+        from .services.gates import config_fingerprint as gate_config_fingerprint
+
+        application = create_app(
+            database_url=database_url,
+            open_suivi_on_ready=open_on_ready,
+            suivi_html_path=str(suivi_path) if suivi_path else None,
+            config_fingerprint=gate_config_fingerprint(config.data),
+        )
         print(f"projet : {config.project_name} — confidentialité : {config.confidentiality}")
-        uvicorn.run("sdlc_console.app:app", host=args.host, port=args.port)
+        print(f"ouverture automatique du suivi : {'oui' if open_on_ready else 'non'}")
+        uvicorn.run(application, host=args.host, port=args.port)
         return 0
 
     if args.command == "doctor":

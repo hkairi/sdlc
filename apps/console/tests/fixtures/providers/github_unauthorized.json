@@ -1,0 +1,7 @@
+{
+  "status": 401,
+  "headers": {},
+  "json": {
+    "message": "Bad credentials"
+  }
+}

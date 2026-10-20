@@ -10,3 +10,8 @@ __pycache__/
 
 # Sorties des contrôles (scripts/ci.sh), régénérées à chaque exécution
 /reports/
+
+# Frontend Console (dépendances et build)
+/apps/console/web/node_modules/
+/apps/console/web/dist/
+/apps/console/web/tsconfig.tsbuildinfo

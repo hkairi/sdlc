@@ -806,10 +806,21 @@
           "lot": "L2",
           "title": "Implémenter persons et person_identities",
           "text": "Implémenter `persons` et `person_identities` (emails, comptes GitHub/GitLab, bots, fusion auditée)",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Modèles Person/PersonIdentity/PersonMerge/AuditEvent, migrations 0003-0004, résolution par email/compte, multi-emails, bots exclus des métriques d'équipe, fusion/dé-fusion auditée ; 82 tests OK, ruff/mypy verts.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Personnes canoniques, identités email/comptes, détection des bots, fusion et dé-fusion auditées."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Modèles Person/PersonIdentity/PersonMerge/AuditEvent, migrations 0003-0004, résolution par email/compte, multi-emails, bots exclus des métriques d'équipe, fusion/dé-fusion auditée ; 82 tests OK, ruff/mypy verts."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -825,10 +836,21 @@
           "lot": "L2",
           "title": "Implémenter l'ingestion Git incrémentale et idempotente",
           "text": "Implémenter l'ingestion Git incrémentale et idempotente (`git log --numstat`, trailers IA, `commit_fingerprint`)",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Modèles Commit/IngestionRun, migration 0005, ingestion Git incrémentale et idempotente (numstat, trailers IA, empreinte normative, reprise depuis la dernière ingestion, échec tracé) ; 90 tests OK, ruff/mypy verts.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Ingestion Git incrémentale et idempotente : commits, numstat, trailers IA, empreinte normative et runs d'ingestion."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Modèles Commit/IngestionRun, migration 0005, ingestion Git incrémentale et idempotente (numstat, trailers IA, empreinte normative, reprise depuis la dernière ingestion, échec tracé) ; 90 tests OK, ruff/mypy verts."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -844,10 +866,21 @@
           "lot": "L2",
           "title": "Implémenter les collecteurs GitHub et GitLab",
           "text": "Implémenter les collecteurs GitHub et GitLab (PR/MR, revues, approbations, ETag, pagination, backoff, mode fichier)",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Modèles MR/revues/approbations, migration 0006, collecteurs GitHub/GitLab normalisés (PR/MR, revues, approbations), ETag persistant, pagination, backoff quota, mode fichier et échecs tracés ; 100 tests OK, ruff/mypy verts.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Collecteurs GitHub/GitLab : PR/MR, revues, approbations, ETag, pagination, backoff et mode fichier."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Modèles MR/revues/approbations, migration 0006, collecteurs GitHub/GitLab normalisés (PR/MR, revues, approbations), ETag persistant, pagination, backoff quota, mode fichier et échecs tracés ; 100 tests OK, ruff/mypy verts."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -863,10 +896,16 @@
           "lot": "L2",
           "title": "Ajouter les fixtures hors réseau GitHub/GitLab/CI et les tests d'échec",
           "text": "Ajouter les fixtures hors réseau GitHub/GitLab/CI et les tests d'échec (quota, jeton, réseau)",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Fixtures hors réseau GitHub/GitLab/CI, tests de quota, jeton et coupure réseau, mode fichier sans appel réseau ; 106 tests OK, ruff/mypy verts.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Fixtures hors réseau GitHub/GitLab/CI, tests de quota, jeton et coupure réseau, mode fichier sans appel réseau ; 106 tests OK, ruff/mypy verts."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -882,10 +921,21 @@
           "lot": "L2",
           "title": "Implémenter la déduplication multi-dépôts, le badge « dédoublonnage appliqué » et…",
           "text": "Implémenter la déduplication multi-dépôts, le badge « dédoublonnage appliqué » et l'agrégation sans double comptage",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Agrégation multi-dépôts : déduplication par empreinte et dedup_group, origine principale, badge, doublons potentiels non déclarés, métriques par dépôt et filtre ; 115 tests OK, ruff/mypy verts.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Agrégation multi-dépôts : déduplication par empreinte et dedup_group, origine, badge et doublons potentiels."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Agrégation multi-dépôts : déduplication par empreinte et dedup_group, origine principale, badge, doublons potentiels non déclarés, métriques par dépôt et filtre ; 115 tests OK, ruff/mypy verts."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -901,10 +951,21 @@
           "lot": "L2",
           "title": "Implémenter l'archivage/suppression d'un dépôt et la réélection du dépôt principal",
           "text": "Implémenter l'archivage/suppression d'un dépôt et la réélection du dépôt principal",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Retrait audité avec historique conservé, suppression définitive confirmée, cascadée et auditée, réélection du principal et refus du dernier dépôt ; 121 tests OK, ruff/mypy verts.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Cycle de vie des dépôts : retrait audité, suppression définitive confirmée et cascadée, réélection du principal."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Retrait audité avec historique conservé, suppression définitive confirmée, cascadée et auditée, réélection du principal et refus du dernier dépôt ; 121 tests OK, ruff/mypy verts."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -920,10 +981,21 @@
           "lot": "L2",
           "title": "Ingérer runs.jsonl et deploys.jsonl",
           "text": "Ingérer `runs.jsonl` et `deploys.jsonl` (agents, déploiements, versions, statuts, rollbacks)",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Modèles TaskRun/Deployment, migration 0007, ingestion idempotente runs.jsonl/deploys.jsonl (statuts fermés, coûts/tokens, environnements, versions, rollback, origine ingérée/lancée) ; 130 tests OK, ruff/mypy verts.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Ingestion des journaux runs.jsonl et deploys.jsonl : runs d'agents, déploiements, versions, statuts et rollbacks."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Modèles TaskRun/Deployment, migration 0007, ingestion idempotente runs.jsonl/deploys.jsonl (statuts fermés, coûts/tokens, environnements, versions, rollback, origine ingérée/lancée) ; 130 tests OK, ruff/mypy verts."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -939,10 +1011,16 @@
           "lot": "L3",
           "title": "Implémenter features, tasks, feature_repositories et task_repositories",
           "text": "Implémenter `features`, `tasks`, `feature_repositories` et `task_repositories`",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Modèles Feature/Task/FeatureRepository/TaskRepository, migration 0008, services multi-dépôts (clés uniques, statuts, dépôt principal, remplacement des liaisons, filtres) ; 137 tests OK, ruff/mypy verts.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Modèles Feature/Task/FeatureRepository/TaskRepository, migration 0008, services multi-dépôts (clés uniques, statuts, dépôt principal, remplacement des liaisons, filtres) ; 137 tests OK, ruff/mypy verts."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -958,10 +1036,21 @@
           "lot": "L3",
           "title": "Ingérer docs/suivi/state.json et openspec/changes/*/tasks.md ; signaler les incohérences",
           "text": "Ingérer `docs/suivi/state.json` et `openspec/changes/*/tasks.md` ; signaler les incohérences",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Ingestion state.json et tasks.md (features/tâches, statuts dérivés, labels, fichiers, notes), comparaison case cochée/statut done et incohérences state-only/md-only, préservation des personnes et dépôts ; 146 tests OK, ruff/mypy verts, ingestion réelle 70 tâches/0 incohérence.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Ingestion de state.json et tasks.md : features, tâches et signalement des incohérences case cochée / statut done."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Ingestion state.json et tasks.md (features/tâches, statuts dérivés, labels, fichiers, notes), comparaison case cochée/statut done et incohérences state-only/md-only, préservation des personnes et dépôts ; 146 tests OK, ruff/mypy verts, ingestion réelle 70 tâches/0 incohérence."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -977,10 +1066,21 @@
           "lot": "L3",
           "title": "Implémenter la matrice de traçabilité exigence → scénario → test → tâche",
           "text": "Implémenter la matrice de traçabilité exigence → scénario → test → tâche",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Matrice de traçabilité depuis les specs et un manifeste explicite exigence→tests/tâches, scénarios liés, signalement des exigences sans test, export JSON ; 58 exigences, 107 scénarios, 14 couvertes, 44 signalées ; 151 tests OK, ruff/mypy verts.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Matrice de traçabilité exigence → scénario → test → tâche, manifeste explicite et signalement des exigences sans test."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Matrice de traçabilité depuis les specs et un manifeste explicite exigence→tests/tâches, scénarios liés, signalement des exigences sans test, export JSON ; 58 exigences, 107 scénarios, 14 couvertes, 44 signalées ; 151 tests OK, ruff/mypy verts."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -996,10 +1096,21 @@
           "lot": "L3",
           "title": "Générer le fichier de suivi",
           "text": "Générer le fichier de suivi (HTML/JSON) et les routes `/api/projects/{id}/suivi` et `/suivi/status`",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Génération du suivi HTML/JSON (résumé, features, tâches, progression, échappement, mention fichier généré), routes /api/projects/{id}/suivi et /suivi/status, détection de fraîcheur ; 156 tests OK, ruff/mypy verts.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Génération du suivi HTML/JSON depuis la base et routes /api/projects/{id}/suivi et /suivi/status."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Génération du suivi HTML/JSON (résumé, features, tâches, progression, échappement, mention fichier généré), routes /api/projects/{id}/suivi et /suivi/status, détection de fraîcheur ; 156 tests OK, ruff/mypy verts."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1015,10 +1126,21 @@
           "lot": "L3",
           "title": "Ouvrir automatiquement la vue Suivi dès qu'elle est prête, une seule fois, avec lien persistant",
           "text": "Ouvrir automatiquement la vue Suivi dès qu'elle est prête, une seule fois, avec lien persistant (`ui.open_suivi_on_ready`)",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Ouverture automatique du suivi une seule fois (stockage par génération, vue active et option désactivée), lien persistant, statut API open_on_ready/url, configuration CLI ui.open_suivi_on_ready et suivi_path, frontend React/Vitest ; 6 tests front, build OK, 157 tests Python.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Ouverture automatique du suivi une seule fois, lien persistant et option ui.open_suivi_on_ready (backend + frontend)."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Ouverture automatique du suivi une seule fois (stockage par génération, vue active et option désactivée), lien persistant, statut API open_on_ready/url, configuration CLI ui.open_suivi_on_ready et suivi_path, frontend React/Vitest ; 6 tests front, build OK, 157 tests Python."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1034,10 +1156,16 @@
           "lot": "L3",
           "title": "Ajouter le scénario de bout en bout « le suivi s'ouvre dès qu'il est prêt » et le test…",
           "text": "Ajouter le scénario de bout en bout « le suivi s'ouvre dès qu'il est prêt » et le test d'accessibilité",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Scénario de bout en bout du suivi (génération, statut prêt, URL HTML, lien persistant) et tests d'accessibilité (App React + HTML généré : lang, main, caption, th scope, progress, time, absence de script/CSS externe) ; 159 tests Python, 8 tests Vitest, build OK.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Scénario de bout en bout du suivi (génération, statut prêt, URL HTML, lien persistant) et tests d'accessibilité (App React + HTML généré : lang, main, caption, th scope, progress, time, absence de script/CSS externe) ; 159 tests Python, 8 tests Vitest, build OK."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1053,10 +1181,21 @@
           "lot": "L3",
           "title": "Vue d'ensemble",
           "text": "Vue d'ensemble : KPI avec source et « non mesuré », décisions en attente, pipeline, risques par catégorie",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Vue d'ensemble livrée : KPI avec source et non mesuré, décisions en attente triées par blocage, pipeline depuis state.json/tâches et risques par catégorie ; phases ingérées, migration 0009, API et écran React.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Vue d'ensemble : KPI avec source et non mesuré, décisions en attente, pipeline depuis state.json et risques par catégorie."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Vue d'ensemble livrée : KPI avec source et non mesuré, décisions en attente triées par blocage, pipeline depuis state.json/tâches et risques par catégorie ; phases ingérées, migration 0009, API et écran React."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1072,10 +1211,21 @@
           "lot": "L3",
           "title": "Liste et détail des features/tâches",
           "text": "Liste et détail des features/tâches : filtres, rapport de tâche, incohérences `tasks.md` ↔ `state.json`",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Liste et détail des features/tâches livrés : filtres phase/gate conservés dans l'URL, détail de tâche avec fichiers/critères/statut/rapport, incohérences persistées et affichées ; routes GET features, tasks, détail et rapport ; 168 tests Python, 13 tests Vitest, build OK.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Liste et détail des features/tâches : filtres phase/gate, rapport de tâche, incohérences tasks.md/state.json."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Liste et détail des features/tâches livrés : filtres phase/gate conservés dans l'URL, détail de tâche avec fichiers/critères/statut/rapport, incohérences persistées et affichées ; routes GET features, tasks, détail et rapport ; 168 tests Python, 13 tests Vitest, build OK."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1091,10 +1241,21 @@
           "lot": "L3",
           "title": "API PATCH /tasks/{task_id} et CLI task set",
           "text": "API `PATCH /tasks/{task_id}` et CLI `task set` : mise à jour atomique de `tasks.md`, `state.json` et HTML en < 2 s",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Mise à jour atomique livrée : PATCH /api/projects/{id}/tasks/{task_id} et CLI task set, écriture de tasks.md, state.json, HTML et JSON généré avec restauration en cas d'échec, durée mesurée < 2 s ; 174 tests Python, 13 tests Vitest, build OK.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Mise à jour atomique des statuts : API PATCH, CLI task set, écriture tasks.md/state.json/HTML/JSON avec rollback."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Mise à jour atomique livrée : PATCH /api/projects/{id}/tasks/{task_id} et CLI task set, écriture de tasks.md, state.json, HTML et JSON généré avec restauration en cas d'échec, durée mesurée < 2 s ; 174 tests Python, 13 tests Vitest, build OK."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1110,10 +1271,21 @@
           "lot": "L3",
           "title": "Watcher sur tasks.md et state.json",
           "text": "Watcher sur `tasks.md` et `state.json` : resynchronisation des modifications externes, détection de conflit, SSE `suivi.updated`",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Watcher livré : polling de state.json/tasks.md, resynchronisation par ingestion, détection des divergences et événement SSE suivi.updated (routes /api/events et /api/projects/{id}/events), démarrage/arrêt via le lifespan ; 180 tests Python, 13 tests Vitest, build OK.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Watcher state.json/tasks.md, resynchronisation, conflits et SSE suivi.updated."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Watcher livré : polling de state.json/tasks.md, resynchronisation par ingestion, détection des divergences et événement SSE suivi.updated (routes /api/events et /api/projects/{id}/events), démarrage/arrêt via le lifespan ; 180 tests Python, 13 tests Vitest, build OK."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1129,10 +1301,21 @@
           "lot": "L3",
           "title": "Tests de non-régression",
           "text": "Tests de non-régression : `done` ⇔ case cochée, pas de mode lot, échec d'écriture sans incohérence",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Tests de non-régression livrés : done ⇔ case cochée sur tous les statuts, mise à jour tâche par tâche sans mode lot (CLI multi-tâches refusée), échec d'écriture de state.json après tasks.md restauré sans incohérence ; 184 tests Python, 13 tests Vitest.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Tests de non-régression : done ⇔ case cochée, mise à jour tâche par tâche sans mode lot, échec d'écriture sans incohérence résiduelle."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Tests de non-régression livrés : done ⇔ case cochée sur tous les statuts, mise à jour tâche par tâche sans mode lot (CLI multi-tâches refusée), échec d'écriture de state.json après tasks.md restauré sans incohérence ; 184 tests Python, 13 tests Vitest."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1148,10 +1331,21 @@
           "lot": "L4",
           "title": "Implémenter le moteur de gates, les verdicts et reports/gates/*.json",
           "text": "Implémenter le moteur de gates, les verdicts et `reports/gates/*.json`",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Moteur de gates livré : verdicts pass/warn/fail/waived/not_applicable/not_run, refus d'un pass sans preuve, not_run attendu bloquant, dérogations datées, définitions/runs/findings en base, rapports stables et archivés reports/gates/*.json, API dernier verdict et historique ; KPI gates alimenté.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Moteur de gates : verdicts fondés sur preuves, définitions, runs, findings et rapports reports/gates/*.json."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Moteur de gates livré : verdicts pass/warn/fail/waived/not_applicable/not_run, refus d'un pass sans preuve, not_run attendu bloquant, dérogations datées, définitions/runs/findings en base, rapports stables et archivés reports/gates/*.json, API dernier verdict et historique ; KPI gates alimenté."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1167,10 +1361,21 @@
           "lot": "L4",
           "title": "Implémenter le gate tests",
           "text": "Implémenter le gate tests (JUnit, échecs, ignorés, instables, quarantaine)",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Gate de tests livré : parsing JUnit, échecs/erreurs bloquants, ignorés sur code modifié, détection des instables, quarantaine avec ticket et expiration, rapports de gate persistés.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Gate de tests : lecture JUnit, échecs, ignorés sur code modifié, instables et quarantaine."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Gate de tests livré : parsing JUnit, échecs/erreurs bloquants, ignorés sur code modifié, détection des instables, quarantaine avec ticket et expiration, rapports de gate persistés."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1186,10 +1391,21 @@
           "lot": "L4",
           "title": "Implémenter le gate couverture",
           "text": "Implémenter le gate couverture (global, lignes modifiées, fichier) et les preuves Cobertura/lcov/JaCoCo",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Gate de couverture livré : parsing Cobertura/lcov/JaCoCo, seuils global/lignes modifiées/fichier, findings par fichier, rapport de gate et KPI couverture alimenté.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Gate de couverture : seuils global, lignes modifiées et fichier, preuves Cobertura/lcov/JaCoCo."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Gate de couverture livré : parsing Cobertura/lcov/JaCoCo, seuils global/lignes modifiées/fichier, findings par fichier, rapport de gate et KPI couverture alimenté."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1205,10 +1421,21 @@
           "lot": "L4",
           "title": "Implémenter le gate sécurité",
           "text": "Implémenter le gate sécurité (SARIF, atteignabilité, secrets, conteneurs, IaC) et le SBOM",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Gate de sécurité livré : SARIF, atteignabilité, secrets, conteneurs/IaC, SBOM CycloneDX/SPDX, blocage critique/haut atteignable, avertissements non atteignables et KPI vulnérabilités alimenté.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Gate de sécurité : SARIF, atteignabilité, secrets, conteneurs, IaC et SBOM."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Gate de sécurité livré : SARIF, atteignabilité, secrets, conteneurs/IaC, SBOM CycloneDX/SPDX, blocage critique/haut atteignable, avertissements non atteignables et KPI vulnérabilités alimenté."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1224,10 +1451,21 @@
           "lot": "L4",
           "title": "Implémenter le gate performance",
           "text": "Implémenter le gate performance (budgets, `reports/perf/*.json`, signaux statiques)",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Gate de performance livré : budgets p95/p99, bundle/requêtes/mémoire, régressions par baseline, signaux statiques, rapports de gate et tests.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Gate de performance : budgets observés p95/p99, bundle/requêtes/mémoire, régressions et signaux statiques."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Gate de performance livré : budgets p95/p99, bundle/requêtes/mémoire, régressions par baseline, signaux statiques, rapports de gate et tests."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1243,10 +1481,21 @@
           "lot": "L4",
           "title": "Implémenter le gate données",
           "text": "Implémenter le gate données (migration destructive, PII, sauvegarde/restauration, rétention)",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Gate de données livré : migrations destructives, PII dans les logs, sauvegarde vérifiée et restauration testée, alertes rétention et chiffrement, rapport de gate persisté.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Gate de données : migrations destructives, PII dans les logs, sauvegarde/restauration testée, rétention, chiffrement."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Gate de données livré : migrations destructives, PII dans les logs, sauvegarde vérifiée et restauration testée, alertes rétention et chiffrement, rapport de gate persisté."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1262,10 +1511,21 @@
           "lot": "L4",
           "title": "Implémenter les gates i18n et support des langages par tier, avec not_run par contrôle attendu",
           "text": "Implémenter les gates i18n et support des langages par tier, avec `not_run` par contrôle attendu",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Gates i18n et langages livrés : parité/orphelines/chaînes en dur, détection des langages, adaptateurs et tiers depuis la config, unsupported_language bloquant, contrôles attendus par tier et couverture not_applicable pour tier 2.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Gates i18n et support des langages par tier, avec contrôles attendus et not_run explicites."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Gates i18n et langages livrés : parité/orphelines/chaînes en dur, détection des langages, adaptateurs et tiers depuis la config, unsupported_language bloquant, contrôles attendus par tier et couverture not_applicable pour tier 2."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1281,10 +1541,21 @@
           "lot": "L4",
           "title": "Implémenter les dérogations",
           "text": "Implémenter les dérogations (finding ou gate run, expiration, approbateur, audit)",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Dérogations livrées : cible gate/run/finding, motif, propriétaire, approbateur, expiration, audit chaîné, verdict effectif waived puis fail à expiration, routes GET/POST et migration 0012.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Dérogations datées : cible gate run ou finding, propriétaire, approbateur, expiration, audit et verdict effectif."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Dérogations livrées : cible gate/run/finding, motif, propriétaire, approbateur, expiration, audit chaîné, verdict effectif waived puis fail à expiration, routes GET/POST et migration 0012."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1300,10 +1571,21 @@
           "lot": "L4",
           "title": "Relier les seuils à sdlc.config.yaml, stocker config_fingerprint et invalider le cache",
           "text": "Relier les seuils à `sdlc.config.yaml`, stocker `config_fingerprint` et invalider le cache",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Seuils reliés à quality.* : couverture, performance, sécurité, données ; empreinte de configuration stockée sur gates/runs ; API gates et historique marquent recalculate_required quand l'empreinte change ; CLI serve transmet l'empreinte courante.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Source unique des seuils : lecture quality.*, config_fingerprint sur les runs et invalidation du cache des gates."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Seuils reliés à quality.* : couverture, performance, sécurité, données ; empreinte de configuration stockée sur gates/runs ; API gates et historique marquent recalculate_required quand l'empreinte change ; CLI serve transmet l'empreinte courante."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1319,10 +1601,21 @@
           "lot": "L5",
           "title": "Implémenter les métriques d'équipe par personne et par dépôt",
           "text": "Implémenter les métriques d'équipe par personne et par dépôt (commits, MR, revues, approbations, IA)",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-20",
+          "note": "Métriques d'équipe livrées : commits par dépôt et total dédupliqué, MR, revues, approbations, lignes, dernière activité, part IA depuis trailers avec non mesuré si absente, bots exclus, route /api/projects/{id}/team et filtre dépôt/all.",
+          "history": [
+            {
+              "date": "2026-10-20",
+              "status": "doing",
+              "note": "Métriques d'équipe par personne et dépôt : commits, MR, revues, approbations, lignes, activité, part IA dédupliquée."
+            },
+            {
+              "date": "2026-10-20",
+              "status": "done",
+              "note": "Métriques d'équipe livrées : commits par dépôt et total dédupliqué, MR, revues, approbations, lignes, dernière activité, part IA depuis trailers avec non mesuré si absente, bots exclus, route /api/projects/{id}/team et filtre dépôt/all."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -2001,7 +2294,7 @@
     },
     "openspec/changes/console-sdlc/tasks.md": {
       "title": "Tasks — console-sdlc",
-      "content": "# Tasks — console-sdlc\n\n## 1. Socle\n\n- [x] 1.1 Initialiser `apps/console/` (backend FastAPI, frontend React/Vite, `pyproject.toml`, `package.json`) et la commande `sdlc-console`\n- [x] 1.2 Écrire le schéma JSON de `sdlc.config.yaml` et la validation au démarrage\n- [x] 1.3 Créer la base SQLite, les réglages WAL/foreign_keys/busy_timeout et les migrations Alembic\n- [x] 1.4 Implémenter `init`, `serve`, `doctor` et `schema status|migrate` ; écoute `127.0.0.2` uniquement\n- [x] 1.5 Implémenter la validation `Host`/`Origin`/`Referer`, le refus de tout bind hors `127.0.0.0/8`, le jeton CSRF (`GET /api/csrf`, `X-SDLC-CSRF`), CORS désactivé et `Content-Type: application/json` obligatoire\n- [x] 1.6 Ajouter les tests de sécurité locale (bind, Host, Origin, Referer, CSRF, secrets), la matrice CI macOS/Linux/Windows-WSL et le test de joignabilité WSL2\n- [x] 1.7 **[1.2]** Confiner les chemins d'ingestion : résolution absolue, refus de `..` et de tout chemin hors périmètre, test de path traversal\n\n## 2. Projets, dépôts et ingestion\n\n- [ ] 2.1 **[1.3]** Implémenter `projects` et `repositories` (multi-dépôts, dépôt principal, `retired_at`, `dedup_group`)\n- [ ] 2.2 **[2.1]** Implémenter `persons` et `person_identities` (emails, comptes GitHub/GitLab, bots, fusion auditée)\n- [ ] 2.3 **[2.2]** Implémenter l'ingestion Git incrémentale et idempotente (`git log --numstat`, trailers IA, `commit_fingerprint`)\n- [ ] 2.4 **[2.1]** Implémenter les collecteurs GitHub et GitLab (PR/MR, revues, approbations, ETag, pagination, backoff, mode fichier)\n- [ ] 2.5 **[2.3, 2.4]** Ajouter les fixtures hors réseau GitHub/GitLab/CI et les tests d'échec (quota, jeton, réseau)\n- [ ] 2.6 **[2.2, 2.3]** Implémenter la déduplication multi-dépôts, le badge « dédoublonnage appliqué » et l'agrégation sans double comptage\n- [ ] 2.7 **[2.1]** Implémenter l'archivage/suppression d'un dépôt et la réélection du dépôt principal\n- [ ] 2.8 **[1.3]** Ingérer `runs.jsonl` et `deploys.jsonl` (agents, déploiements, versions, statuts, rollbacks)\n\n## 3. Features, tâches et suivi\n\n- [ ] 3.1 **[1.3]** Implémenter `features`, `tasks`, `feature_repositories` et `task_repositories`\n- [ ] 3.2 **[3.1]** Ingérer `docs/suivi/state.json` et `openspec/changes/*/tasks.md` ; signaler les incohérences\n- [ ] 3.3 **[3.1]** Implémenter la matrice de traçabilité exigence → scénario → test → tâche\n- [ ] 3.4 **[3.2]** Générer le fichier de suivi (HTML/JSON) et les routes `/api/projects/{id}/suivi` et `/suivi/status`\n- [ ] 3.5 **[3.4]** Ouvrir automatiquement la vue Suivi dès qu'elle est prête, une seule fois, avec lien persistant (`ui.open_suivi_on_ready`)\n- [ ] 3.6 **[3.5]** Ajouter le scénario de bout en bout « le suivi s'ouvre dès qu'il est prêt » et le test d'accessibilité\n- [ ] 3.7 **[3.1]** Vue d'ensemble : KPI avec source et « non mesuré », décisions en attente, pipeline, risques par catégorie\n- [ ] 3.8 **[3.1, 3.2]** Liste et détail des features/tâches : filtres, rapport de tâche, incohérences `tasks.md` ↔ `state.json`\n- [ ] 3.9 **[3.1, 3.4]** API `PATCH /tasks/{task_id}` et CLI `task set` : mise à jour atomique de `tasks.md`, `state.json` et HTML en < 2 s\n- [ ] 3.10 **[3.9]** Watcher sur `tasks.md` et `state.json` : resynchronisation des modifications externes, détection de conflit, SSE `suivi.updated`\n- [ ] 3.11 **[3.9, 3.10]** Tests de non-régression : `done` ⇔ case cochée, pas de mode lot, échec d'écriture sans incohérence\n\n## 4. Gates et qualité\n\n- [ ] 4.1 **[1.2, 1.3]** Implémenter le moteur de gates, les verdicts et `reports/gates/*.json`\n- [ ] 4.2 **[4.1]** Implémenter le gate tests (JUnit, échecs, ignorés, instables, quarantaine)\n- [ ] 4.3 **[4.1]** Implémenter le gate couverture (global, lignes modifiées, fichier) et les preuves Cobertura/lcov/JaCoCo\n- [ ] 4.4 **[4.1]** Implémenter le gate sécurité (SARIF, atteignabilité, secrets, conteneurs, IaC) et le SBOM\n- [ ] 4.5 **[4.1]** Implémenter le gate performance (budgets, `reports/perf/*.json`, signaux statiques)\n- [ ] 4.6 **[4.1]** Implémenter le gate données (migration destructive, PII, sauvegarde/restauration, rétention)\n- [ ] 4.7 **[4.1]** Implémenter les gates i18n et support des langages par tier, avec `not_run` par contrôle attendu\n- [ ] 4.8 **[4.1]** Implémenter les dérogations (finding ou gate run, expiration, approbateur, audit)\n- [ ] 4.9 **[4.1]** Relier les seuils à `sdlc.config.yaml`, stocker `config_fingerprint` et invalider le cache\n\n## 5. Équipe et processus\n\n- [ ] 5.1 **[2.2, 2.6]** Implémenter les métriques d'équipe par personne et par dépôt (commits, MR, revues, approbations, IA)\n- [ ] 5.2 **[5.1]** Implémenter le bus factor, la propriété par zone (CODEOWNERS) et les alertes\n- [ ] 5.3 **[5.1]** Implémenter la chaîne de validation auteur → relecteur agent → humain\n- [ ] 5.4 **[2.1, 2.4]** Implémenter la détection de processus (branches, merges, tags, protections, CI) et la confiance\n- [ ] 5.5 **[5.4]** Implémenter le profil par dépôt, l'agrégation projet et la surcharge auditée\n- [ ] 5.6 **[5.1, 5.4]** Implémenter les métriques DORA (lead time, fréquence, CFR, MTTR) avec sources et « non mesuré »\n- [ ] 5.7 **[5.4]** Ajouter le corpus étiqueté, la commande `process corpus` et le rapport de précision ≥ 80 %\n- [ ] 5.8 **[5.4]** Afficher le flux de processus avec ses gates (feature, release, hotfix, recette, go/no-go)\n\n## 6. Revue, décisions et agents\n\n- [ ] 6.1 **[3.3]** Implémenter la sélection du relecteur (agent, modèle, famille) et l'affichage de l'indépendance\n- [ ] 6.2 **[6.1]** Construire le paquet aveugle (spec, diff, preuves, ADR) et son empreinte\n- [ ] 6.3 **[6.2]** Implémenter le schéma `review.schema.json`, le rapport structuré et la fiche de décision\n- [ ] 6.4 **[6.3]** Implémenter la décision humaine (approuver, conditions, rejeter, info) et l'audit\n- [ ] 6.5 **[1.3]** Implémenter le runner d'agents : modèles de commande, préflight, concurrence, file\n- [ ] 6.6 **[6.5]** Implémenter le groupe de processus, l'annulation, le crash/timeout et la conservation des logs\n- [ ] 6.7 **[6.5]** Implémenter le budget (échantillonnage, arrêt au plafond, coût réel, dépassement signalé)\n- [ ] 6.8 **[6.5]** Purger l'environnement des jetons, appliquer la lecture seule et refuser Git en écriture\n- [ ] 6.9 **[6.3, 6.5]** Diffuser les logs en SSE, en texte échappé, avec `aria-live` et sans déplacement du focus\n- [ ] 6.10 **[6.4]** Escalade après `max_iterations` : tâche `blocked`, notification humaine, itérations conservées\n- [ ] 6.11 **[6.1, 6.5]** Journal des runs (agent, rôle, modèle, statut, durée, coût, tokens) et taux d'indépendance avec seuil 10 %\n- [ ] 6.12 **[6.3, 6.9]** Redaction étendue (exports, `stats_json`, journaux) et CSP vérifiée en revue\n\n## 7. Vues restantes\n\n- [ ] 7.1 **[4.4]** Vue Sécurité : findings, SBOM, licences, dérogations, surface agentique\n- [ ] 7.2 **[4.5, 4.6]** Vue Performance & données : budgets, signaux, PII, migrations, sauvegardes\n- [ ] 7.3 **[6.5]** Vue Agents IA : runs, coûts, escalades, indépendance, journal\n- [ ] 7.4 **[3.3]** Vue Documentation : fraîcheur, lecteur Markdown, mention « fichier généré, ne pas modifier », régénération, suivi\n- [ ] 7.5 **[1.2]** Vue Configuration : config effective, origine des données, validation\n- [ ] 7.6 **[3.8]** Pagination serveur (`limit`/`offset`/`total`, 50 par défaut) et dégradation gracieuse au-delà des volumes cibles\n- [ ] 7.7 **[2.8]** Vue Déploiements : dev/préprod/prod, historique, DORA, checklist go/no-go, rollback\n\n## 8. Finition et recette\n\n- [ ] 8.1 **[toutes]** Audit d'accessibilité RGAA 4.1 AA / WCAG 2.2 AA sur les 12 vues (clavier, contraste, équivalents textuels, `caption`, `prefers-reduced-motion`)\n- [ ] 8.2 **[toutes]** Tests de performance : vue d'ensemble < 1,5 s, multi-dépôts < 2 s, listes < 500 ms, ingestion 10 k commits < 60 s, démarrage < 2 s, mémoire < 512 Mo\n- [ ] 8.3 **[1.4]** Packaging `uv`/`pipx`, build frontend embarqué, commande unique `sdlc-console`\n- [ ] 8.4 **[1.3]** Sauvegarde/restauration globale vérifiée, âge affiché, procédure testée\n- [ ] 8.5 **[1.3, 2.3, 8.4]** Purge 12 mois (audit exclu, logs inclus), ancrage et contrôle d'intégrité\n- [ ] 8.6 **[toutes]** Jeu de démonstration `--demo`, documentation, runbook, ADR, guide d'installation et solution WSL2 (mode miroir ou navigateur dans WSL)\n- [ ] 8.7 **[toutes]** Recette complète, matrice de scénarios et rapport de recette\n- [ ] 8.8 **[1.6]** Câbler `scripts/ci.sh` pour `apps/console` : lint, typecheck, tests, couverture ≥ 80 %, SAST, dépendances, secrets, build\n\n### Critères d'acceptation par lot\n\nUne tâche est acceptée lorsque les scénarios des exigences associées passent, que\n`scripts/ci.sh` est vert et que la revue croisée (relecteur ≠ auteur) est faite.\n\n| Lot | Critères d'acceptation |\n|---|---|\n| 1. Socle | `sdlc-console doctor` vert ; base SQLite migrée ; bind `127.0.0.2` ; Host/Origin/CSRF testés ; path traversal refusé ; CI matrice verte |\n| 2. Projets et ingestion | Deux dépôts ingérés sans doublon ; identités multi-emails fusionnées ; fixtures GitHub/GitLab/CI ; déduplication vérifiée ; retrait de dépôt audité |\n| 3. Features et suivi | `state.json` et `tasks.md` cohérents ; traçabilité affichée ; features/tâches listées et détaillées ; suivi généré et ouvert une seule fois ; **suivi synchronisé < 2 s, watcher et `done` ⇔ case cochée** ; Vue d'ensemble alimentée |\n| 4. Gates | Chaque gate produit `reports/gates/*.json` ; un échec bloque ; `not_run` par tier ; dérogation expirée refusée ; config fingerprint |\n| 5. Équipe et processus | Métriques par dépôt et agrégées ; bus factor ; profil + confiance ; flux avec gates ; corpus ≥ 80 % |\n| 6. Revue et agents | Indépendance affichée ; paquet aveugle ; rapport valide ; fiche de décision ; décision auditée ; runner annulable et borné |\n| 7. Vues restantes | Sécurité, performance/données, agents, docs et configuration alimentées ; **Déploiements alimentés par `deploys.jsonl`** ; pagination et dégradation gracieuse ; mention « fichier généré » |\n| 8. Finition | Accessibilité AA ; cibles de performance ; packaging ; sauvegarde/restauration ; purge ; CI ; recette |\n"
+      "content": "# Tasks — console-sdlc\n\n## 1. Socle\n\n- [x] 1.1 Initialiser `apps/console/` (backend FastAPI, frontend React/Vite, `pyproject.toml`, `package.json`) et la commande `sdlc-console`\n- [x] 1.2 Écrire le schéma JSON de `sdlc.config.yaml` et la validation au démarrage\n- [x] 1.3 Créer la base SQLite, les réglages WAL/foreign_keys/busy_timeout et les migrations Alembic\n- [x] 1.4 Implémenter `init`, `serve`, `doctor` et `schema status|migrate` ; écoute `127.0.0.2` uniquement\n- [x] 1.5 Implémenter la validation `Host`/`Origin`/`Referer`, le refus de tout bind hors `127.0.0.0/8`, le jeton CSRF (`GET /api/csrf`, `X-SDLC-CSRF`), CORS désactivé et `Content-Type: application/json` obligatoire\n- [x] 1.6 Ajouter les tests de sécurité locale (bind, Host, Origin, Referer, CSRF, secrets), la matrice CI macOS/Linux/Windows-WSL et le test de joignabilité WSL2\n- [x] 1.7 **[1.2]** Confiner les chemins d'ingestion : résolution absolue, refus de `..` et de tout chemin hors périmètre, test de path traversal\n\n## 2. Projets, dépôts et ingestion\n\n- [x] 2.1 **[1.3]** Implémenter `projects` et `repositories` (multi-dépôts, dépôt principal, `retired_at`, `dedup_group`)\n- [x] 2.2 **[2.1]** Implémenter `persons` et `person_identities` (emails, comptes GitHub/GitLab, bots, fusion auditée)\n- [x] 2.3 **[2.2]** Implémenter l'ingestion Git incrémentale et idempotente (`git log --numstat`, trailers IA, `commit_fingerprint`)\n- [x] 2.4 **[2.1]** Implémenter les collecteurs GitHub et GitLab (PR/MR, revues, approbations, ETag, pagination, backoff, mode fichier)\n- [x] 2.5 **[2.3, 2.4]** Ajouter les fixtures hors réseau GitHub/GitLab/CI et les tests d'échec (quota, jeton, réseau)\n- [x] 2.6 **[2.2, 2.3]** Implémenter la déduplication multi-dépôts, le badge « dédoublonnage appliqué » et l'agrégation sans double comptage\n- [x] 2.7 **[2.1]** Implémenter l'archivage/suppression d'un dépôt et la réélection du dépôt principal\n- [x] 2.8 **[1.3]** Ingérer `runs.jsonl` et `deploys.jsonl` (agents, déploiements, versions, statuts, rollbacks)\n\n## 3. Features, tâches et suivi\n\n- [x] 3.1 **[1.3]** Implémenter `features`, `tasks`, `feature_repositories` et `task_repositories`\n- [x] 3.2 **[3.1]** Ingérer `docs/suivi/state.json` et `openspec/changes/*/tasks.md` ; signaler les incohérences\n- [x] 3.3 **[3.1]** Implémenter la matrice de traçabilité exigence → scénario → test → tâche\n- [x] 3.4 **[3.2]** Générer le fichier de suivi (HTML/JSON) et les routes `/api/projects/{id}/suivi` et `/suivi/status`\n- [x] 3.5 **[3.4]** Ouvrir automatiquement la vue Suivi dès qu'elle est prête, une seule fois, avec lien persistant (`ui.open_suivi_on_ready`)\n- [x] 3.6 **[3.5]** Ajouter le scénario de bout en bout « le suivi s'ouvre dès qu'il est prêt » et le test d'accessibilité\n- [x] 3.7 **[3.1]** Vue d'ensemble : KPI avec source et « non mesuré », décisions en attente, pipeline, risques par catégorie\n- [x] 3.8 **[3.1, 3.2]** Liste et détail des features/tâches : filtres, rapport de tâche, incohérences `tasks.md` ↔ `state.json`\n- [x] 3.9 **[3.1, 3.4]** API `PATCH /tasks/{task_id}` et CLI `task set` : mise à jour atomique de `tasks.md`, `state.json` et HTML en < 2 s\n- [x] 3.10 **[3.9]** Watcher sur `tasks.md` et `state.json` : resynchronisation des modifications externes, détection de conflit, SSE `suivi.updated`\n- [x] 3.11 **[3.9, 3.10]** Tests de non-régression : `done` ⇔ case cochée, pas de mode lot, échec d'écriture sans incohérence\n\n## 4. Gates et qualité\n\n- [x] 4.1 **[1.2, 1.3]** Implémenter le moteur de gates, les verdicts et `reports/gates/*.json`\n- [x] 4.2 **[4.1]** Implémenter le gate tests (JUnit, échecs, ignorés, instables, quarantaine)\n- [x] 4.3 **[4.1]** Implémenter le gate couverture (global, lignes modifiées, fichier) et les preuves Cobertura/lcov/JaCoCo\n- [x] 4.4 **[4.1]** Implémenter le gate sécurité (SARIF, atteignabilité, secrets, conteneurs, IaC) et le SBOM\n- [x] 4.5 **[4.1]** Implémenter le gate performance (budgets, `reports/perf/*.json`, signaux statiques)\n- [x] 4.6 **[4.1]** Implémenter le gate données (migration destructive, PII, sauvegarde/restauration, rétention)\n- [x] 4.7 **[4.1]** Implémenter les gates i18n et support des langages par tier, avec `not_run` par contrôle attendu\n- [x] 4.8 **[4.1]** Implémenter les dérogations (finding ou gate run, expiration, approbateur, audit)\n- [x] 4.9 **[4.1]** Relier les seuils à `sdlc.config.yaml`, stocker `config_fingerprint` et invalider le cache\n\n## 5. Équipe et processus\n\n- [ ] 5.1 **[2.2, 2.6]** Implémenter les métriques d'équipe par personne et par dépôt (commits, MR, revues, approbations, IA)\n- [ ] 5.2 **[5.1]** Implémenter le bus factor, la propriété par zone (CODEOWNERS) et les alertes\n- [ ] 5.3 **[5.1]** Implémenter la chaîne de validation auteur → relecteur agent → humain\n- [ ] 5.4 **[2.1, 2.4]** Implémenter la détection de processus (branches, merges, tags, protections, CI) et la confiance\n- [ ] 5.5 **[5.4]** Implémenter le profil par dépôt, l'agrégation projet et la surcharge auditée\n- [ ] 5.6 **[5.1, 5.4]** Implémenter les métriques DORA (lead time, fréquence, CFR, MTTR) avec sources et « non mesuré »\n- [ ] 5.7 **[5.4]** Ajouter le corpus étiqueté, la commande `process corpus` et le rapport de précision ≥ 80 %\n- [ ] 5.8 **[5.4]** Afficher le flux de processus avec ses gates (feature, release, hotfix, recette, go/no-go)\n\n## 6. Revue, décisions et agents\n\n- [ ] 6.1 **[3.3]** Implémenter la sélection du relecteur (agent, modèle, famille) et l'affichage de l'indépendance\n- [ ] 6.2 **[6.1]** Construire le paquet aveugle (spec, diff, preuves, ADR) et son empreinte\n- [ ] 6.3 **[6.2]** Implémenter le schéma `review.schema.json`, le rapport structuré et la fiche de décision\n- [ ] 6.4 **[6.3]** Implémenter la décision humaine (approuver, conditions, rejeter, info) et l'audit\n- [ ] 6.5 **[1.3]** Implémenter le runner d'agents : modèles de commande, préflight, concurrence, file\n- [ ] 6.6 **[6.5]** Implémenter le groupe de processus, l'annulation, le crash/timeout et la conservation des logs\n- [ ] 6.7 **[6.5]** Implémenter le budget (échantillonnage, arrêt au plafond, coût réel, dépassement signalé)\n- [ ] 6.8 **[6.5]** Purger l'environnement des jetons, appliquer la lecture seule et refuser Git en écriture\n- [ ] 6.9 **[6.3, 6.5]** Diffuser les logs en SSE, en texte échappé, avec `aria-live` et sans déplacement du focus\n- [ ] 6.10 **[6.4]** Escalade après `max_iterations` : tâche `blocked`, notification humaine, itérations conservées\n- [ ] 6.11 **[6.1, 6.5]** Journal des runs (agent, rôle, modèle, statut, durée, coût, tokens) et taux d'indépendance avec seuil 10 %\n- [ ] 6.12 **[6.3, 6.9]** Redaction étendue (exports, `stats_json`, journaux) et CSP vérifiée en revue\n\n## 7. Vues restantes\n\n- [ ] 7.1 **[4.4]** Vue Sécurité : findings, SBOM, licences, dérogations, surface agentique\n- [ ] 7.2 **[4.5, 4.6]** Vue Performance & données : budgets, signaux, PII, migrations, sauvegardes\n- [ ] 7.3 **[6.5]** Vue Agents IA : runs, coûts, escalades, indépendance, journal\n- [ ] 7.4 **[3.3]** Vue Documentation : fraîcheur, lecteur Markdown, mention « fichier généré, ne pas modifier », régénération, suivi\n- [ ] 7.5 **[1.2]** Vue Configuration : config effective, origine des données, validation\n- [ ] 7.6 **[3.8]** Pagination serveur (`limit`/`offset`/`total`, 50 par défaut) et dégradation gracieuse au-delà des volumes cibles\n- [ ] 7.7 **[2.8]** Vue Déploiements : dev/préprod/prod, historique, DORA, checklist go/no-go, rollback\n\n## 8. Finition et recette\n\n- [ ] 8.1 **[toutes]** Audit d'accessibilité RGAA 4.1 AA / WCAG 2.2 AA sur les 12 vues (clavier, contraste, équivalents textuels, `caption`, `prefers-reduced-motion`)\n- [ ] 8.2 **[toutes]** Tests de performance : vue d'ensemble < 1,5 s, multi-dépôts < 2 s, listes < 500 ms, ingestion 10 k commits < 60 s, démarrage < 2 s, mémoire < 512 Mo\n- [ ] 8.3 **[1.4]** Packaging `uv`/`pipx`, build frontend embarqué, commande unique `sdlc-console`\n- [ ] 8.4 **[1.3]** Sauvegarde/restauration globale vérifiée, âge affiché, procédure testée\n- [ ] 8.5 **[1.3, 2.3, 8.4]** Purge 12 mois (audit exclu, logs inclus), ancrage et contrôle d'intégrité\n- [ ] 8.6 **[toutes]** Jeu de démonstration `--demo`, documentation, runbook, ADR, guide d'installation et solution WSL2 (mode miroir ou navigateur dans WSL)\n- [ ] 8.7 **[toutes]** Recette complète, matrice de scénarios et rapport de recette\n- [ ] 8.8 **[1.6]** Câbler `scripts/ci.sh` pour `apps/console` : lint, typecheck, tests, couverture ≥ 80 %, SAST, dépendances, secrets, build\n\n### Critères d'acceptation par lot\n\nUne tâche est acceptée lorsque les scénarios des exigences associées passent, que\n`scripts/ci.sh` est vert et que la revue croisée (relecteur ≠ auteur) est faite.\n\n| Lot | Critères d'acceptation |\n|---|---|\n| 1. Socle | `sdlc-console doctor` vert ; base SQLite migrée ; bind `127.0.0.2` ; Host/Origin/CSRF testés ; path traversal refusé ; CI matrice verte |\n| 2. Projets et ingestion | Deux dépôts ingérés sans doublon ; identités multi-emails fusionnées ; fixtures GitHub/GitLab/CI ; déduplication vérifiée ; retrait de dépôt audité |\n| 3. Features et suivi | `state.json` et `tasks.md` cohérents ; traçabilité affichée ; features/tâches listées et détaillées ; suivi généré et ouvert une seule fois ; **suivi synchronisé < 2 s, watcher et `done` ⇔ case cochée** ; Vue d'ensemble alimentée |\n| 4. Gates | Chaque gate produit `reports/gates/*.json` ; un échec bloque ; `not_run` par tier ; dérogation expirée refusée ; config fingerprint |\n| 5. Équipe et processus | Métriques par dépôt et agrégées ; bus factor ; profil + confiance ; flux avec gates ; corpus ≥ 80 % |\n| 6. Revue et agents | Indépendance affichée ; paquet aveugle ; rapport valide ; fiche de décision ; décision auditée ; runner annulable et borné |\n| 7. Vues restantes | Sécurité, performance/données, agents, docs et configuration alimentées ; **Déploiements alimentés par `deploys.jsonl`** ; pagination et dégradation gracieuse ; mention « fichier généré » |\n| 8. Finition | Accessibilité AA ; cibles de performance ; packaging ; sauvegarde/restauration ; purge ; CI ; recette |\n"
     },
     "openspec/changes/console-sdlc/review.md": {
       "title": "Revue contradictoire — Change OpenSpec `console-sdlc` (itération 3)",

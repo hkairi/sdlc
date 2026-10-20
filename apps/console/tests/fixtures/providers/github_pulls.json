@@ -1,0 +1,74 @@
+{
+  "pull_requests": [
+    {
+      "number": 101,
+      "title": "feat: ingestion Git incrémentale",
+      "user": {"login": "alice", "email": "alice@example.com"},
+      "state": "open",
+      "draft": false,
+      "created_at": "2026-01-01T09:00:00Z",
+      "updated_at": "2026-01-02T11:00:00Z",
+      "merged_at": null,
+      "base": {"ref": "main"},
+      "head": {"ref": "feat/ingestion"},
+      "additions": 120,
+      "deletions": 8,
+      "html_url": "https://github.com/hm/atlas/pull/101"
+    },
+    {
+      "number": 102,
+      "title": "fix: corriger le quota fournisseur",
+      "user": {"login": "dave", "email": "dave@example.com"},
+      "state": "closed",
+      "draft": false,
+      "created_at": "2026-01-03T09:00:00Z",
+      "updated_at": "2026-01-04T12:00:00Z",
+      "merged_at": "2026-01-04T12:00:00Z",
+      "base": {"ref": "main"},
+      "head": {"ref": "fix/quota"},
+      "additions": 20,
+      "deletions": 1,
+      "html_url": "https://github.com/hm/atlas/pull/102"
+    },
+    {
+      "number": 103,
+      "title": "docs: préparer la recette",
+      "user": {"login": "frank"},
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-01-05T09:00:00Z",
+      "updated_at": "2026-01-05T09:30:00Z",
+      "merged_at": null,
+      "base": {"ref": "main"},
+      "head": {"ref": "docs/recette"},
+      "additions": 5,
+      "deletions": 0,
+      "html_url": "https://github.com/hm/atlas/pull/103"
+    }
+  ],
+  "reviews": {
+    "101": [
+      {
+        "id": 9001,
+        "user": {"login": "bob", "name": "Bob"},
+        "state": "APPROVED",
+        "submitted_at": "2026-01-02T09:00:00Z"
+      },
+      {
+        "id": 9002,
+        "user": {"login": "carol", "name": "Carol"},
+        "state": "CHANGES_REQUESTED",
+        "submitted_at": "2026-01-02T10:00:00Z"
+      }
+    ],
+    "102": [
+      {
+        "id": 9003,
+        "user": {"login": "erin", "name": "Erin"},
+        "state": "APPROVED",
+        "submitted_at": "2026-01-04T10:00:00Z"
+      }
+    ],
+    "103": []
+  }
+}

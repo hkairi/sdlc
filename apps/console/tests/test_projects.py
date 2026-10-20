@@ -101,7 +101,7 @@ class ProjectsTest(unittest.TestCase):
         first = self._add("api")
         second = self._add("web")
         self.session.commit()
-        delete_repository(self.session, first)
+        delete_repository(self.session, first, confirm=True)
         self.session.commit()
         self.assertTrue(second.is_primary)
         self.assertEqual([repo.id for repo in list_repositories(self.session, self.project)], [second.id])
@@ -110,7 +110,20 @@ class ProjectsTest(unittest.TestCase):
         self._add("api")
         self.session.commit()
         with self.assertRaises(RepositoryError):
-            delete_repository(self.session, get_primary_repository(self.session, self.project))
+            delete_repository(
+                self.session,
+                get_primary_repository(self.session, self.project),
+                confirm=True,
+            )
+
+    def test_refus_suppression_sans_confirmation(self) -> None:
+        first = self._add("api")
+        self._add("web")
+        self.session.commit()
+        with self.assertRaises(RepositoryError):
+            delete_repository(self.session, first)
+        self.session.commit()
+        self.assertEqual(len(list_repositories(self.session, self.project, include_retired=True)), 2)
 
     def test_doublon_nom(self) -> None:
         self._add("api")

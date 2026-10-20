@@ -1,0 +1,10 @@
+{
+  "status": 429,
+  "headers": {
+    "Retry-After": "0",
+    "X-RateLimit-Remaining": "0"
+  },
+  "json": {
+    "message": "API rate limit exceeded"
+  }
+}

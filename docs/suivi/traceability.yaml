@@ -1,0 +1,328 @@
+version: 1
+
+# Manifeste de traçabilité : les exigences et scénarios viennent des specs
+# OpenSpec ; les tests et tâches sont déclarés ici de façon explicite.
+requirements:
+  "Projet multi-dépôts":
+    tests:
+      - apps/console/tests/test_projects.py
+      - apps/console/tests/test_repository_lifecycle.py
+    tasks: ["2.1", "2.7"]
+    scenarios:
+      "Retrait d'un dépôt":
+        - "apps/console/tests/test_repository_lifecycle.py::RepositoryLifecycleTest.test_retrait_audite_et_historique_conserve"
+
+  "Ingestion Git":
+    tests:
+      - apps/console/tests/test_ingestion.py
+    tasks: ["2.3"]
+    scenarios:
+      "Ingestion idempotente":
+        - "apps/console/tests/test_ingestion.py::GitIngestionTest.test_ingestion_de_base_et_idempotence"
+
+  "Collecteurs GitHub et GitLab":
+    tests:
+      - apps/console/tests/test_providers.py
+      - apps/console/tests/test_provider_fixtures.py
+    tasks: ["2.4", "2.5"]
+    scenarios:
+      "Normalisation des deux fournisseurs":
+        - "apps/console/tests/test_providers.py::ProvidersTest.test_github_normalisation_et_idempotence"
+        - "apps/console/tests/test_providers.py::ProvidersTest.test_gitlab_normalisation"
+      "Quota fournisseur épuisé":
+        - "apps/console/tests/test_providers.py::ProvidersTest.test_quota_epuise_trace_un_echec_sans_donnees"
+        - "apps/console/tests/test_provider_fixtures.py::ProviderFixturesTest.test_echec_quota_depuis_fixture"
+
+  "Ingestion des runs et déploiements":
+    tests:
+      - apps/console/tests/test_journals.py
+    tasks: ["2.8"]
+    scenarios:
+      "Déploiement ingéré":
+        - "apps/console/tests/test_journals.py::JournalIngestionTest.test_ingestion_deploys_et_rollback"
+      "Run ingéré":
+        - "apps/console/tests/test_journals.py::JournalIngestionTest.test_ingestion_runs_et_idempotence"
+
+  "Identités canoniques":
+    tests:
+      - apps/console/tests/test_people.py
+    tasks: ["2.2"]
+    scenarios:
+      "Contributeur multi-emails":
+        - "apps/console/tests/test_people.py::PeopleTest.test_contributeur_multi_emails_et_comptes"
+      "Fusion auditée":
+        - "apps/console/tests/test_people.py::PeopleTest.test_fusion_ecrit_un_evenement_d_audit"
+      "Même email dans deux projets":
+        - "apps/console/tests/test_people.py::PeopleTest.test_meme_email_dans_deux_projets"
+
+  "Agrégation multi-dépôts sans double comptage":
+    tests:
+      - apps/console/tests/test_aggregation.py
+    tasks: ["2.6"]
+    scenarios:
+      "Commit présent dans deux dépôts":
+        - "apps/console/tests/test_aggregation.py::AggregationTest.test_meme_empreinte_dedupliquee_et_origine"
+
+  "Features et tâches multi-dépôts":
+    tests:
+      - apps/console/tests/test_features.py
+    tasks: ["3.1"]
+    scenarios:
+      "Feature sur deux dépôts":
+        - "apps/console/tests/test_features.py::FeaturesTasksTest.test_feature_et_tache_multi_depots"
+
+  "Chemins d'ingestion confinés":
+    tests:
+      - apps/console/tests/test_paths.py
+    tasks: ["1.7"]
+    scenarios:
+      "Path traversal":
+        - "apps/console/tests/test_paths.py::ResolveWithinTest.test_traversee_parent_refusee"
+
+  "Configuration validée":
+    tests:
+      - apps/console/tests/test_config.py
+    tasks: ["1.2"]
+    scenarios:
+      "Configuration invalide":
+        - "apps/console/tests/test_config.py::SchemaTest.test_config_sans_project_echoue"
+
+  "Migration de schéma":
+    tests:
+      - apps/console/tests/test_db.py
+    tasks: ["1.3"]
+
+  "Diagnostic et observabilité":
+    tests:
+      - apps/console/tests/test_health.py
+      - apps/console/tests/test_cli.py
+    tasks: ["1.4"]
+    scenarios:
+      "Diagnostic complet":
+        - "apps/console/tests/test_cli.py::CliTest.test_doctor_config_valide_et_schema_a_jour"
+
+  "Sécurité locale":
+    tests:
+      - apps/console/tests/test_security.py
+      - apps/console/tests/test_cli.py
+    tasks: ["1.5", "1.6"]
+    scenarios:
+      "Bind non loopback":
+        - "apps/console/tests/test_cli.py::CliTest.test_serve_refuse_un_bind_non_loopback"
+      "Requête CSRF absente":
+        - "apps/console/tests/test_security.py::SecurityMiddlewareTest.test_csrf_absent"
+      "DNS rebinding":
+        - "apps/console/tests/test_security.py::SecurityMiddlewareTest.test_origine_externe"
+        - "apps/console/tests/test_security.py::SecurityMiddlewareTest.test_referer_externe"
+      "Content-Type non JSON":
+        - "apps/console/tests/test_security.py::SecurityMiddlewareTest.test_content_type_non_json"
+
+  "Redaction étendue":
+    tests:
+      - apps/console/tests/test_redaction.py
+    tasks: ["1.6"]
+
+  "En-têtes de sécurité et CSP":
+    tests:
+      - apps/console/tests/test_security.py
+    tasks: ["1.5"]
+    scenarios:
+      "CSP active":
+        - "apps/console/tests/test_security.py::SecurityMiddlewareTest.test_host_valide_et_entetes"
+
+  "Audit chaîné par projet":
+    tasks: ["2.2", "2.7"]
+
+  "Fichier de suivi ouvert dès qu'il est prêt":
+    tests:
+      - apps/console/tests/test_suivi_e2e.py
+      - apps/console/web/src/App.test.tsx
+    tasks: ["3.4", "3.5"]
+    scenarios:
+      "Ouverture automatique du suivi":
+        - "apps/console/web/src/App.test.tsx::ouvre le suivi une seule fois quand la génération est prête"
+
+  "Suivi synchrone tâche par tâche":
+    tests:
+      - apps/console/tests/test_task_update.py
+      - apps/console/tests/test_suivi_watcher.py
+    tasks: ["3.9", "3.10", "3.11"]
+    scenarios:
+      "Changement de statut":
+        - "apps/console/tests/test_task_update.py::TaskUpdateTest.test_mise_a_jour_des_trois_supports"
+        - "apps/console/tests/test_task_update.py::TaskUpdateTest.test_api_patch_avec_csrf"
+        - "apps/console/tests/test_task_update.py::TaskUpdateTest.test_cli_task_set"
+        - "apps/console/tests/test_task_update.py::TaskUpdateTest.test_done_equivaut_a_case_cochee_pour_tous_les_statuts"
+        - "apps/console/tests/test_task_update.py::TaskUpdateTest.test_mise_a_jour_tache_par_tache_sans_mode_lot"
+      "Modification externe":
+        - "apps/console/tests/test_suivi_watcher.py::SuiviWatcherTest.test_premier_scan_sans_evenement_puis_conflit"
+        - "apps/console/tests/test_suivi_watcher.py::SuiviWatcherTest.test_modification_externe_de_state_resynchronise"
+        - "apps/console/tests/test_suivi_watcher.py::SuiviWatcherTest.test_route_sse_emet_suivi_updated"
+      "Échec d'écriture":
+        - "apps/console/tests/test_task_update.py::TaskUpdateTest.test_echec_ecriture_restaure_les_sources"
+        - "apps/console/tests/test_task_update.py::TaskUpdateTest.test_echec_ecriture_state_apres_tasks_md"
+
+  "Vue d'ensemble":
+    tests:
+      - apps/console/tests/test_overview.py
+      - apps/console/web/src/Overview.test.tsx
+    tasks: ["3.7"]
+    scenarios:
+      "KPI avec source et non mesuré":
+        - "apps/console/tests/test_overview.py::OverviewTest.test_kpis_avec_source_et_non_mesure"
+        - "apps/console/web/src/Overview.test.tsx::affiche les KPI avec leur source et les mesures absentes"
+      "Décisions en attente":
+        - "apps/console/tests/test_overview.py::OverviewTest.test_decisions_pipeline_et_risques"
+      "Pipeline et risques":
+        - "apps/console/tests/test_overview.py::OverviewTest.test_decisions_pipeline_et_risques"
+        - "apps/console/web/src/Overview.test.tsx::trie les décisions bloquantes, affiche le pipeline et les risques"
+      "Vue vide sans donnée inventée":
+        - "apps/console/tests/test_overview.py::OverviewTest.test_projet_vide"
+
+  "Liste et détail des features et tâches":
+    tests:
+      - apps/console/tests/test_features_view.py
+      - apps/console/web/src/Features.test.tsx
+    tasks: ["3.8"]
+    scenarios:
+      "Liste filtrée":
+        - "apps/console/tests/test_features_view.py::FeaturesViewTest.test_filtres_phase_et_gate"
+        - "apps/console/web/src/Features.test.tsx::conserve les filtres phase et gate dans l'URL"
+      "Détail d'une tâche":
+        - "apps/console/tests/test_features_view.py::FeaturesViewTest.test_detail_feature_et_tache"
+        - "apps/console/web/src/Features.test.tsx::ouvre le détail d'une tâche avec fichiers, critères et rapport"
+      "Incohérence de suivi":
+        - "apps/console/tests/test_features_view.py::FeaturesViewTest.test_liste_avec_phase_gate_et_incoherences"
+        - "apps/console/web/src/Features.test.tsx::affiche les features, les incohérences et les filtres depuis l'URL"
+      "Traçabilité":
+        - "apps/console/tests/test_traceability.py::TraceabilityTest.test_matrice_des_fichiers_reels"
+
+  "Verdict de gate fondé sur des preuves":
+    tests:
+      - apps/console/tests/test_gates.py
+    tasks: ["4.1"]
+    scenarios:
+      "Gate vert avec preuve":
+        - "apps/console/tests/test_gates.py::GatesTest.test_pass_avec_preuve_et_rapport"
+      "Gate sans preuve":
+        - "apps/console/tests/test_gates.py::GatesTest.test_pass_sans_preuve_devient_not_run_et_bloque"
+
+  "Gate de tests":
+    tests:
+      - apps/console/tests/test_gate_tests.py
+    tasks: ["4.2"]
+    scenarios:
+      "Échec de test":
+        - "apps/console/tests/test_gate_tests.py::GateTestsTest.test_echec_de_test_bloque"
+      "Test instable":
+        - "apps/console/tests/test_gate_tests.py::GateTestsTest.test_quarantaine_active_et_expiree"
+        - "apps/console/tests/test_gate_tests.py::GateTestsTest.test_test_instable_sans_quarantaine_alerte"
+
+  "Gate de couverture à trois seuils":
+    tests:
+      - apps/console/tests/test_gate_coverage.py
+    tasks: ["4.3"]
+    scenarios:
+      "Couverture globale insuffisante":
+        - "apps/console/tests/test_gate_coverage.py::GateCoverageTest.test_couverture_globale_insuffisante"
+      "Lignes modifiées insuffisantes":
+        - "apps/console/tests/test_gate_coverage.py::GateCoverageTest.test_couverture_lignes_modifiees_insuffisante"
+
+  "Gate de sécurité":
+    tests:
+      - apps/console/tests/test_gate_security.py
+    tasks: ["4.4"]
+    scenarios:
+      "Vulnérabilité haute atteignable":
+        - "apps/console/tests/test_gate_security.py::GateSecurityTest.test_vulnerabilite_haute_atteignable_bloque"
+      "Vulnérabilité non atteignable":
+        - "apps/console/tests/test_gate_security.py::GateSecurityTest.test_vulnerabilite_non_atteignable_alerte"
+
+  "Gate de performance":
+    tests:
+      - apps/console/tests/test_gate_performance.py
+    tasks: ["4.5"]
+    scenarios:
+      "Régression observée":
+        - "apps/console/tests/test_gate_performance.py::GatePerformanceTest.test_regression_observee_bloque"
+        - "apps/console/tests/test_gate_performance.py::GatePerformanceTest.test_regression_par_rapport_au_baseline"
+      "Signal statique":
+        - "apps/console/tests/test_gate_performance.py::GatePerformanceTest.test_signal_statique_alerte_sans_bloquer"
+        - "apps/console/tests/test_gate_performance.py::GatePerformanceTest.test_signal_statique_sans_preuve_observee"
+
+  "Gate de données":
+    tests:
+      - apps/console/tests/test_gate_data.py
+    tasks: ["4.6"]
+    scenarios:
+      "Migration destructive":
+        - "apps/console/tests/test_gate_data.py::GateDataTest.test_migration_destructive_bloque"
+      "PII dans les logs":
+        - "apps/console/tests/test_gate_data.py::GateDataTest.test_pii_dans_les_logs_bloque"
+
+  "Gate i18n":
+    tests:
+      - apps/console/tests/test_gate_languages_i18n.py
+    tasks: ["4.7"]
+    scenarios:
+      "Clés manquantes":
+        - "apps/console/tests/test_gate_languages_i18n.py::GateLanguagesI18nTest.test_parite_i18n_manquante_et_orpheline"
+
+  "Support des langages par tiers":
+    tests:
+      - apps/console/tests/test_gate_languages_i18n.py
+    tasks: ["4.7"]
+    scenarios:
+      "Langage sans adaptateur":
+        - "apps/console/tests/test_gate_languages_i18n.py::GateLanguagesI18nTest.test_langage_sans_adaptateur_bloque"
+      "Tier 2 sans couverture":
+        - "apps/console/tests/test_gate_languages_i18n.py::GateLanguagesI18nTest.test_couverture_not_applicable_pour_tier_2"
+
+  "Dérogations datées":
+    tests:
+      - apps/console/tests/test_waivers.py
+    tasks: ["4.8"]
+    scenarios:
+      "Dérogation expirée":
+        - "apps/console/tests/test_waivers.py::WaiversTest.test_derogation_active_puis_expiree"
+
+  "Source unique des seuils":
+    tests:
+      - apps/console/tests/test_gate_config.py
+    tasks: ["4.9"]
+    scenarios:
+      "Changement de seuil":
+        - "apps/console/tests/test_gate_config.py::GateConfigTest.test_fingerprint_change_marque_recalcul"
+        - "apps/console/tests/test_gate_config.py::GateConfigTest.test_api_expose_recalcul_requis"
+
+  "Métriques d'équipe":
+    tests:
+      - apps/console/tests/test_team_metrics.py
+    tasks: ["5.1"]
+    scenarios:
+      "Métriques d'un contributeur":
+        - "apps/console/tests/test_team_metrics.py::TeamMetricsTest.test_metriques_par_personne_et_depot"
+        - "apps/console/tests/test_team_metrics.py::TeamMetricsTest.test_filtre_par_depot"
+      "Donnée absente":
+        - "apps/console/tests/test_team_metrics.py::TeamMetricsTest.test_metriques_par_personne_et_depot"
+
+  "Pagination serveur":
+    tasks: ["7.6"]
+
+  "Accessibilité et navigation":
+    tasks: ["8.1"]
+
+  "Dégradation gracieuse":
+    tasks: ["7.6"]
+
+  "Déploiements et go/no-go":
+    tasks: ["7.7"]
+
+  "Documentation et fraîcheur":
+    tasks: ["7.4"]
+
+  "Rétention et purge":
+    tasks: ["8.5"]
+
+  "Sauvegarde et restauration globales":
+    tasks: ["8.4"]

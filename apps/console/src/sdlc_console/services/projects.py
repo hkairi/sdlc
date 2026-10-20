@@ -8,6 +8,7 @@ from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from ..models import Project, Repository, utc_now
+from .audit import append_audit
 
 PROVIDERS = frozenset({"github", "gitlab"})
 
@@ -130,27 +131,100 @@ def set_primary_repository(session: Session, repository: Repository) -> Reposito
     return repository
 
 
-def retire_repository(session: Session, repository: Repository) -> Repository:
-    """Archive un dépôt. Réélit un principal si nécessaire ; refuse le dernier."""
+def retire_repository(
+    session: Session,
+    repository: Repository,
+    *,
+    actor_label: str = "système",
+    reason: str | None = None,
+) -> Repository:
+    """Archive un dépôt, réélit un principal si nécessaire et l'audite.
+
+    Le dernier dépôt actif ne peut pas être retiré : un projet conserve toujours
+    un dépôt principal.
+    """
     if repository.retired_at is not None:
         return repository
-    active = [item for item in list_repositories(session, repository.project) if item.id != repository.id]
-    if repository.is_primary:
+    project_id = repository.project_id
+    repository_id = repository.id
+    repository_name = repository.name
+    was_primary = repository.is_primary
+    active = [
+        item
+        for item in list_repositories(session, repository.project)
+        if item.id != repository_id
+    ]
+    new_primary_id: int | None = None
+    if was_primary:
         if not active:
             raise RepositoryError("impossible de retirer le dernier dépôt du projet")
         _promote(session, active[0])
+        new_primary_id = active[0].id
     repository.is_primary = False
     repository.retired_at = utc_now()
     session.flush()
+    append_audit(
+        session,
+        project_id=project_id,
+        action="repository.retire",
+        object_type="repository",
+        object_id=repository_id,
+        actor_label=actor_label,
+        payload={
+            "repository_id": repository_id,
+            "name": repository_name,
+            "was_primary": was_primary,
+            "new_primary_repository_id": new_primary_id,
+            "reason": reason,
+        },
+    )
     return repository
 
 
-def delete_repository(session: Session, repository: Repository) -> None:
-    """Supprime définitivement un dépôt. Réélit un principal si nécessaire."""
-    active = [item for item in list_repositories(session, repository.project) if item.id != repository.id]
-    if repository.is_primary:
+def delete_repository(
+    session: Session,
+    repository: Repository,
+    *,
+    confirm: bool = False,
+    actor_label: str = "système",
+    reason: str | None = None,
+) -> None:
+    """Supprime définitivement un dépôt, après confirmation explicite.
+
+    La suppression est cascadée et auditée. Un dépôt principal est remplacé
+    automatiquement ; le dernier dépôt actif ne peut pas être supprimé.
+    """
+    if not confirm:
+        raise RepositoryError("suppression définitive non confirmée")
+    project_id = repository.project_id
+    repository_id = repository.id
+    repository_name = repository.name
+    was_primary = repository.is_primary
+    active = [
+        item
+        for item in list_repositories(session, repository.project)
+        if item.id != repository_id
+    ]
+    new_primary_id: int | None = None
+    if was_primary:
         if not active:
             raise RepositoryError("impossible de supprimer le dernier dépôt du projet")
         _promote(session, active[0])
+        new_primary_id = active[0].id
     session.delete(repository)
     session.flush()
+    append_audit(
+        session,
+        project_id=project_id,
+        action="repository.delete",
+        object_type="repository",
+        object_id=repository_id,
+        actor_label=actor_label,
+        payload={
+            "repository_id": repository_id,
+            "name": repository_name,
+            "was_primary": was_primary,
+            "new_primary_repository_id": new_primary_id,
+            "reason": reason,
+        },
+    )

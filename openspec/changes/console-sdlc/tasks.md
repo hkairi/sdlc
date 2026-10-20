@@ -13,43 +13,43 @@
 ## 2. Projets, dépôts et ingestion
 
 - [x] 2.1 **[1.3]** Implémenter `projects` et `repositories` (multi-dépôts, dépôt principal, `retired_at`, `dedup_group`)
-- [ ] 2.2 **[2.1]** Implémenter `persons` et `person_identities` (emails, comptes GitHub/GitLab, bots, fusion auditée)
-- [ ] 2.3 **[2.2]** Implémenter l'ingestion Git incrémentale et idempotente (`git log --numstat`, trailers IA, `commit_fingerprint`)
-- [ ] 2.4 **[2.1]** Implémenter les collecteurs GitHub et GitLab (PR/MR, revues, approbations, ETag, pagination, backoff, mode fichier)
-- [ ] 2.5 **[2.3, 2.4]** Ajouter les fixtures hors réseau GitHub/GitLab/CI et les tests d'échec (quota, jeton, réseau)
-- [ ] 2.6 **[2.2, 2.3]** Implémenter la déduplication multi-dépôts, le badge « dédoublonnage appliqué » et l'agrégation sans double comptage
-- [ ] 2.7 **[2.1]** Implémenter l'archivage/suppression d'un dépôt et la réélection du dépôt principal
-- [ ] 2.8 **[1.3]** Ingérer `runs.jsonl` et `deploys.jsonl` (agents, déploiements, versions, statuts, rollbacks)
+- [x] 2.2 **[2.1]** Implémenter `persons` et `person_identities` (emails, comptes GitHub/GitLab, bots, fusion auditée)
+- [x] 2.3 **[2.2]** Implémenter l'ingestion Git incrémentale et idempotente (`git log --numstat`, trailers IA, `commit_fingerprint`)
+- [x] 2.4 **[2.1]** Implémenter les collecteurs GitHub et GitLab (PR/MR, revues, approbations, ETag, pagination, backoff, mode fichier)
+- [x] 2.5 **[2.3, 2.4]** Ajouter les fixtures hors réseau GitHub/GitLab/CI et les tests d'échec (quota, jeton, réseau)
+- [x] 2.6 **[2.2, 2.3]** Implémenter la déduplication multi-dépôts, le badge « dédoublonnage appliqué » et l'agrégation sans double comptage
+- [x] 2.7 **[2.1]** Implémenter l'archivage/suppression d'un dépôt et la réélection du dépôt principal
+- [x] 2.8 **[1.3]** Ingérer `runs.jsonl` et `deploys.jsonl` (agents, déploiements, versions, statuts, rollbacks)
 
 ## 3. Features, tâches et suivi
 
-- [ ] 3.1 **[1.3]** Implémenter `features`, `tasks`, `feature_repositories` et `task_repositories`
-- [ ] 3.2 **[3.1]** Ingérer `docs/suivi/state.json` et `openspec/changes/*/tasks.md` ; signaler les incohérences
-- [ ] 3.3 **[3.1]** Implémenter la matrice de traçabilité exigence → scénario → test → tâche
-- [ ] 3.4 **[3.2]** Générer le fichier de suivi (HTML/JSON) et les routes `/api/projects/{id}/suivi` et `/suivi/status`
-- [ ] 3.5 **[3.4]** Ouvrir automatiquement la vue Suivi dès qu'elle est prête, une seule fois, avec lien persistant (`ui.open_suivi_on_ready`)
-- [ ] 3.6 **[3.5]** Ajouter le scénario de bout en bout « le suivi s'ouvre dès qu'il est prêt » et le test d'accessibilité
-- [ ] 3.7 **[3.1]** Vue d'ensemble : KPI avec source et « non mesuré », décisions en attente, pipeline, risques par catégorie
-- [ ] 3.8 **[3.1, 3.2]** Liste et détail des features/tâches : filtres, rapport de tâche, incohérences `tasks.md` ↔ `state.json`
-- [ ] 3.9 **[3.1, 3.4]** API `PATCH /tasks/{task_id}` et CLI `task set` : mise à jour atomique de `tasks.md`, `state.json` et HTML en < 2 s
-- [ ] 3.10 **[3.9]** Watcher sur `tasks.md` et `state.json` : resynchronisation des modifications externes, détection de conflit, SSE `suivi.updated`
-- [ ] 3.11 **[3.9, 3.10]** Tests de non-régression : `done` ⇔ case cochée, pas de mode lot, échec d'écriture sans incohérence
+- [x] 3.1 **[1.3]** Implémenter `features`, `tasks`, `feature_repositories` et `task_repositories`
+- [x] 3.2 **[3.1]** Ingérer `docs/suivi/state.json` et `openspec/changes/*/tasks.md` ; signaler les incohérences
+- [x] 3.3 **[3.1]** Implémenter la matrice de traçabilité exigence → scénario → test → tâche
+- [x] 3.4 **[3.2]** Générer le fichier de suivi (HTML/JSON) et les routes `/api/projects/{id}/suivi` et `/suivi/status`
+- [x] 3.5 **[3.4]** Ouvrir automatiquement la vue Suivi dès qu'elle est prête, une seule fois, avec lien persistant (`ui.open_suivi_on_ready`)
+- [x] 3.6 **[3.5]** Ajouter le scénario de bout en bout « le suivi s'ouvre dès qu'il est prêt » et le test d'accessibilité
+- [x] 3.7 **[3.1]** Vue d'ensemble : KPI avec source et « non mesuré », décisions en attente, pipeline, risques par catégorie
+- [x] 3.8 **[3.1, 3.2]** Liste et détail des features/tâches : filtres, rapport de tâche, incohérences `tasks.md` ↔ `state.json`
+- [x] 3.9 **[3.1, 3.4]** API `PATCH /tasks/{task_id}` et CLI `task set` : mise à jour atomique de `tasks.md`, `state.json` et HTML en < 2 s
+- [x] 3.10 **[3.9]** Watcher sur `tasks.md` et `state.json` : resynchronisation des modifications externes, détection de conflit, SSE `suivi.updated`
+- [x] 3.11 **[3.9, 3.10]** Tests de non-régression : `done` ⇔ case cochée, pas de mode lot, échec d'écriture sans incohérence
 
 ## 4. Gates et qualité
 
-- [ ] 4.1 **[1.2, 1.3]** Implémenter le moteur de gates, les verdicts et `reports/gates/*.json`
-- [ ] 4.2 **[4.1]** Implémenter le gate tests (JUnit, échecs, ignorés, instables, quarantaine)
-- [ ] 4.3 **[4.1]** Implémenter le gate couverture (global, lignes modifiées, fichier) et les preuves Cobertura/lcov/JaCoCo
-- [ ] 4.4 **[4.1]** Implémenter le gate sécurité (SARIF, atteignabilité, secrets, conteneurs, IaC) et le SBOM
-- [ ] 4.5 **[4.1]** Implémenter le gate performance (budgets, `reports/perf/*.json`, signaux statiques)
-- [ ] 4.6 **[4.1]** Implémenter le gate données (migration destructive, PII, sauvegarde/restauration, rétention)
-- [ ] 4.7 **[4.1]** Implémenter les gates i18n et support des langages par tier, avec `not_run` par contrôle attendu
-- [ ] 4.8 **[4.1]** Implémenter les dérogations (finding ou gate run, expiration, approbateur, audit)
-- [ ] 4.9 **[4.1]** Relier les seuils à `sdlc.config.yaml`, stocker `config_fingerprint` et invalider le cache
+- [x] 4.1 **[1.2, 1.3]** Implémenter le moteur de gates, les verdicts et `reports/gates/*.json`
+- [x] 4.2 **[4.1]** Implémenter le gate tests (JUnit, échecs, ignorés, instables, quarantaine)
+- [x] 4.3 **[4.1]** Implémenter le gate couverture (global, lignes modifiées, fichier) et les preuves Cobertura/lcov/JaCoCo
+- [x] 4.4 **[4.1]** Implémenter le gate sécurité (SARIF, atteignabilité, secrets, conteneurs, IaC) et le SBOM
+- [x] 4.5 **[4.1]** Implémenter le gate performance (budgets, `reports/perf/*.json`, signaux statiques)
+- [x] 4.6 **[4.1]** Implémenter le gate données (migration destructive, PII, sauvegarde/restauration, rétention)
+- [x] 4.7 **[4.1]** Implémenter les gates i18n et support des langages par tier, avec `not_run` par contrôle attendu
+- [x] 4.8 **[4.1]** Implémenter les dérogations (finding ou gate run, expiration, approbateur, audit)
+- [x] 4.9 **[4.1]** Relier les seuils à `sdlc.config.yaml`, stocker `config_fingerprint` et invalider le cache
 
 ## 5. Équipe et processus
 
-- [ ] 5.1 **[2.2, 2.6]** Implémenter les métriques d'équipe par personne et par dépôt (commits, MR, revues, approbations, IA)
+- [x] 5.1 **[2.2, 2.6]** Implémenter les métriques d'équipe par personne et par dépôt (commits, MR, revues, approbations, IA)
 - [ ] 5.2 **[5.1]** Implémenter le bus factor, la propriété par zone (CODEOWNERS) et les alertes
 - [ ] 5.3 **[5.1]** Implémenter la chaîne de validation auteur → relecteur agent → humain
 - [ ] 5.4 **[2.1, 2.4]** Implémenter la détection de processus (branches, merges, tags, protections, CI) et la confiance
