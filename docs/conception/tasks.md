@@ -97,3 +97,22 @@ Référence : [workflow-sdlc.md](workflow-sdlc.md). Exécutant : OpenCode. Orche
     - la règle « relecteur ≠ auteur » du framework est appliquée
     - les tests du plugin passent dans un projet du framework
   - Tests : `node --test` dans le dossier du plugin + scénario dans un projet jetable
+
+- [ ] 11.5 Faire du gabarit le foyer unique (tests, CI, fixtures autonomes)
+  - Technique : tests déplacés dans le gabarit avec des fixtures locales (`tests/fixtures/repo/` : `check_sync.py`, `scripts/suivi/`, change `add-x`, suivis mono et multi, baseline) pour ne dépendre d'aucun dépôt hôte ; `sdlc_doctor` lit son propre `package.json` ; workflow CI (Node 22/24/26) déplacé dans le framework ; `render_adapters.py` exclut `tests/`.
+  - Fichiers : `templates/adapters/opencode/plugins/ai-sdlc-tracker/{tests,tsconfig.json,package.json,README.md}`, `.github/workflows/ai-sdlc-tracker.yml`, `.agents/skills/sdlc-init/scripts/render_adapters.py`
+  - Acceptation :
+    - `npm test` dans le gabarit : 77 tests, 0 échec, sans accès au dépôt `engagements`
+    - `npm run typecheck` : exit 0
+    - une installation ne reçoit ni `tests/` ni `node_modules/`
+    - le workflow CI pointe sur le dossier du gabarit
+  - Tests : `npm test`, `npm run typecheck`, `render_adapters.py` dans un projet vide
+
+- [ ] 11.6 Contrôler la dérive gabarit → installation
+  - Technique : `bin/plugin-sync-check` compare les empreintes en ignorant `node_modules/`, `tests/`, `README.md` et `GUIDE.md` ; l'installation d'`engagements` est resynchronisée ; le contrôle a détecté une divergence réelle (`tools/doctor.ts`) avant correction.
+  - Fichiers : `bin/plugin-sync-check`, installation `engagements/.opencode/plugins/ai-sdlc-tracker/`
+  - Acceptation :
+    - le contrôle renvoie 0 sur une installation synchronisée (24 fichiers)
+    - il renvoie 1 en nommant le fichier divergent (constaté sur `doctor.ts`)
+    - l'installation ne contient ni `tests/` ni workflow CI
+  - Tests : `bin/plugin-sync-check --target …`

@@ -1,0 +1,1722 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atlas — Maquette du tableau de bord SDLC</title>
+<!--
+  MAQUETTE de travail du tableau de bord du framework SDLC.
+  TOUTES LES DONNÉES SONT FICTIVES : elles valident la structure, la hiérarchie
+  et les parcours (équipe, processus, gates, revue), pas des mesures réelles.
+  Fichier autonome : aucun appel réseau, aucune dépendance externe.
+  Charte reprise de docs/mockup-dashboard-sdlc.html : bleu #0f4c81, cartes blanches,
+  thème clair/sombre, navigation latérale, SVG inline, JS vanilla.
+-->
+<meta name="color-scheme" content="light dark">
+<style>
+  :root{
+    color-scheme: light;
+    --bg:#eef1f6; --panel:#fff; --ink:#1b2430; --muted:#5c6b7a; --line:#e2e8f0; --line2:#eef2f8; --soft:#f7f9fc;
+    --brand:#0f4c81; --brand2:#1379b0; --brandbg:#e8f1fb; --brandline:#c7dcf3;
+    --done:#1f9d55; --donebg:#e6f6ec; --doing:#2b6cb0; --doingbg:#e6effa;
+    --warn:#b7791f; --warnbg:#fdf3e0; --bad:#c0392b; --badbg:#fdecea;
+    --review:#6b4fbb; --reviewbg:#f0ecfb;
+    --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#7a5cc4; --s5:#94a3b3;
+    --nav:#0f4c81; --nav2:#0a2c4d; --grid:#e9edf3;
+    --shadow:0 1px 3px rgba(16,24,40,.08),0 8px 24px rgba(16,24,40,.05);
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --bg:#121417; --panel:#1a1d21; --ink:#e8ebef; --muted:#a3adb8; --line:#2c3138; --line2:#24282e; --soft:#20242a;
+      --brand:#3b82c4; --brand2:#4b9ad6; --brandbg:#1d2a38; --brandline:#2f4a63;
+      --done:#3cc479; --donebg:#16281e; --doing:#5b9be0; --doingbg:#182636;
+      --warn:#e0b25c; --warnbg:#2b2414; --bad:#e66767; --badbg:#2e1b19;
+      --review:#a48be8; --reviewbg:#241d3a;
+      --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#9a7ce0; --s5:#6b7684;
+      --nav:#12293f; --nav2:#0d1a26; --grid:#2a2f36;
+      --shadow:0 1px 3px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#121417; --panel:#1a1d21; --ink:#e8ebef; --muted:#a3adb8; --line:#2c3138; --line2:#24282e; --soft:#20242a;
+    --brand:#3b82c4; --brand2:#4b9ad6; --brandbg:#1d2a38; --brandline:#2f4a63;
+    --done:#3cc479; --donebg:#16281e; --doing:#5b9be0; --doingbg:#182636;
+    --warn:#e0b25c; --warnbg:#2b2414; --bad:#e66767; --badbg:#2e1b19;
+    --review:#a48be8; --reviewbg:#241d3a;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#9a7ce0; --s5:#6b7684;
+    --nav:#12293f; --nav2:#0d1a26; --grid:#2a2f36;
+    --shadow:0 1px 3px rgba(0,0,0,.4);
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--brand2)}
+  code,.mono{font-family:var(--mono)}
+  code{font-size:.88em;background:var(--soft);border:1px solid var(--line2);padding:0 5px;border-radius:5px}
+  :focus-visible{outline:3px solid var(--brand2);outline-offset:2px;border-radius:6px}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .skip{position:absolute;left:-999px;top:8px;z-index:100;background:var(--panel);color:var(--ink);
+    padding:10px 14px;border-radius:8px;box-shadow:var(--shadow);font-weight:700}
+  .skip:focus{left:12px}
+  svg.icon{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;
+    stroke-linecap:round;stroke-linejoin:round}
+  .spark{width:100%;height:38px;fill:none;stroke:var(--brand2);stroke-width:2}
+
+  /* ================= Ossature ================= */
+  .app{display:grid;grid-template-columns:264px minmax(0,1fr);min-height:100vh}
+  .shell{min-width:0;display:flex;flex-direction:column}
+  .main{width:100%;max-width:1480px;margin:0 auto;padding:22px 24px 48px}
+
+  /* ================= Barre latérale ================= */
+  .side{background:linear-gradient(180deg,var(--nav),var(--nav2));color:#dce9f7;
+    display:flex;flex-direction:column;gap:3px;padding:16px 13px 18px;
+    position:sticky;top:0;height:100vh;overflow:auto}
+  .brand{display:flex;align-items:center;gap:11px;padding:4px 6px 14px;margin-bottom:4px;
+    border-bottom:1px solid rgba(255,255,255,.14)}
+  .brand .mark{flex:none;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
+    background:linear-gradient(140deg,#7fc4ee,#ffffff1a);color:#0a2c4d;font-weight:900;font-size:15px}
+  .brand .nm{font-weight:800;font-size:14.5px;color:#fff;line-height:1.15}
+  .brand .pl{font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:#9dc2e4;font-weight:700}
+  .org{display:flex;align-items:center;gap:9px;width:100%;text-align:left;font:inherit;cursor:default;
+    background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.17);border-radius:11px;
+    padding:8px 10px;color:#fff;margin:10px 0 4px}
+  .org .mk{width:27px;height:27px;border-radius:8px;flex:none;display:grid;place-items:center;
+    background:rgba(255,255,255,.2);font-size:11px;font-weight:800}
+  .org .t1{display:block;font-size:12.5px;font-weight:700;line-height:1.2}
+  .org .t2{display:block;font-size:10.5px;color:#9dc2e4;font-weight:600}
+  .sect-t{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#8bb0d4;
+    font-weight:800;margin:14px 8px 4px}
+  .nav{display:flex;flex-direction:column;gap:2px}
+  .nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;font:inherit;
+    font-size:12.8px;font-weight:600;color:#c6dbf0;background:none;border:0;
+    padding:7px 9px;border-radius:9px;cursor:pointer}
+  .nav button:hover{background:rgba(255,255,255,.08);color:#fff}
+  .nav button[aria-current="page"]{background:rgba(255,255,255,.17);color:#fff;
+    box-shadow:inset 3px 0 0 #7fc4ee}
+  .nav .tag{margin-left:auto;font-size:9.5px;font-weight:800;padding:1px 6px;border-radius:999px;
+    background:#7fc4ee;color:#0a2c4d;text-transform:uppercase;letter-spacing:.04em}
+  .side .foot{margin-top:auto;padding:12px 9px 0;border-top:1px solid rgba(255,255,255,.14)}
+  .side .foot .lbl{font-size:11px;color:#9dc2e4;font-weight:700;display:flex;justify-content:space-between}
+  .side .foot .q{height:7px;border-radius:999px;background:rgba(255,255,255,.16);overflow:hidden;margin:7px 0 5px}
+  .side .foot .q>span{display:block;height:100%;background:linear-gradient(90deg,#7fc4ee,#c9ecff)}
+  .side .foot small{font-size:10.5px;color:#8bb0d4}
+
+  /* ================= Barre supérieure ================= */
+  .topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;
+    gap:14px;padding:10px 24px;background:var(--bg);
+    background:color-mix(in srgb,var(--bg) 92%,transparent);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .crumbs{font-size:12.5px;color:var(--muted);display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+  .crumbs b{color:var(--ink)}
+  .top-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .iconbtn{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--panel);
+    color:var(--ink);display:grid;place-items:center;cursor:pointer}
+  .iconbtn:hover{background:var(--soft)}
+
+  /* ================= Bandeau maquette ================= */
+  .banner{margin:14px 24px 0;max-width:1480px;background:var(--warnbg);border:1px solid #e8c98a;
+    border-left:5px solid var(--warn);border-radius:10px;padding:10px 14px;font-size:12.5px;color:var(--ink)}
+  @media (min-width:1520px){.banner{margin-left:auto;margin-right:auto}}
+
+  /* ================= Vues ================= */
+  .view{animation:fade .16s ease-out}
+  @keyframes fade{from{opacity:.4;transform:translateY(3px)}to{opacity:1;transform:none}}
+  .phead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+    margin:4px 0 16px;flex-wrap:wrap}
+  .phead h1{font-size:23px;line-height:1.2;margin:2px 0 4px}
+  .phead .sub{margin:0;color:var(--muted);font-size:13px}
+  .phead-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .eyebrow{margin:0;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);font-weight:800}
+
+  /* ================= Grilles et cartes ================= */
+  .grid{display:grid;gap:14px;margin-bottom:14px;align-items:start}
+  .c1{grid-template-columns:1fr}
+  .c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .c4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .c6{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:15px 17px;
+    box-shadow:var(--shadow);min-width:0}
+  .card h2{font-size:14.5px;margin:0 0 2px}
+  .card .sub{margin:0 0 12px;color:var(--muted);font-size:12.5px}
+  .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+  .card-head h2{margin:0}
+  .card-head .sub{margin:2px 0 0}
+  .mt{margin-top:14px}
+  .muted{color:var(--muted)}
+  .small{font-size:12px}
+  .right{text-align:right}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .bars{display:grid;gap:0}
+
+  /* ================= KPI ================= */
+  .kpi .l{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:800}
+  .kpi .v{font-size:25px;font-weight:800;line-height:1.15;margin:5px 0 1px;font-variant-numeric:tabular-nums}
+  .kpi .v small{font-size:12px;font-weight:600;color:var(--muted);margin-left:2px}
+  .kpi .d{font-size:11.5px;color:var(--muted)}
+  .kpi .d.up{color:var(--done);font-weight:700}
+  .kpi .d.down{color:var(--bad);font-weight:700}
+
+  /* ================= Badges, boutons, notes ================= */
+  .badge{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:800;
+    padding:2px 8px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+  .badge.ok{background:var(--donebg);color:var(--done);border-color:var(--done)}
+  .badge.warn{background:var(--warnbg);color:var(--warn);border-color:#e8c98a}
+  .badge.bad{background:var(--badbg);color:var(--bad);border-color:var(--bad)}
+  .badge.info{background:var(--doingbg);color:var(--doing);border-color:var(--doing)}
+  .badge.review{background:var(--reviewbg);color:var(--review);border-color:var(--review)}
+  .badge.neutral{background:var(--soft);color:var(--muted);border-color:var(--line)}
+  .badge .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+  .btn{font:inherit;font-size:12.5px;font-weight:700;padding:7px 11px;border-radius:8px;
+    border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+  .btn:hover{background:var(--soft)}
+  .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .btn.primary:hover{background:var(--brand2)}
+  .btn.ghost{background:transparent}
+  .btn.small{font-size:11.5px;padding:5px 9px}
+  .note{background:var(--brandbg);border:1px solid var(--brandline);border-left:4px solid var(--brand2);
+    border-radius:10px;padding:10px 14px;font-size:12.5px}
+  .note.warn{background:var(--warnbg);border-color:#e8c98a;border-left-color:var(--warn)}
+  .note.bad{background:var(--badbg);border-color:#efb4ad;border-left-color:var(--bad)}
+  .note.review{background:var(--reviewbg);border-color:#d7caf5;border-left-color:var(--review)}
+  .note.ok{background:var(--donebg);border-color:#b7e2c7;border-left-color:var(--done)}
+  .note p{margin:0}
+  .note p+p{margin-top:6px}
+
+  /* ================= Tableaux ================= */
+  .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+  table{width:100%;border-collapse:collapse;font-size:12.3px}
+  caption{text-align:left;font-weight:800;font-size:12px;padding:0 0 7px;color:var(--muted)}
+  thead th{background:var(--soft);text-align:left;font-size:10.5px;text-transform:uppercase;
+    letter-spacing:.06em;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+  tbody td{padding:8px 10px;border-bottom:1px solid var(--line2);vertical-align:top}
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:hover{background:var(--soft)}
+  .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .nowrap{white-space:nowrap}
+
+  /* ================= Barres, jauges, donut ================= */
+  .bar{height:8px;border-radius:999px;background:var(--line2);overflow:hidden}
+  .bar>span{display:block;height:100%;border-radius:999px;background:var(--brand2);width:var(--v,0%)}
+  .bar.done>span{background:var(--done)} .bar.warn>span{background:var(--warn)} .bar.bad>span{background:var(--bad)}
+  .bar.lg{height:10px}
+  .donut{--p:84.2;width:132px;height:132px;border-radius:50%;display:grid;place-items:center;position:relative;
+    background:conic-gradient(var(--done) 0 calc(var(--p)*1%),var(--line2) calc(var(--p)*1%) 100%);flex:none}
+  .donut::before{content:"";position:absolute;inset:15px;border-radius:50%;background:var(--panel)}
+  .donut .ctr{position:relative;text-align:center;line-height:1.1}
+  .donut b{font-size:23px;display:block}
+  .donut small{font-size:10px;color:var(--muted);display:block}
+  .sparkline{display:flex;align-items:center;gap:12px}
+  .sparkline .v{font-size:18px;font-weight:800;white-space:nowrap}
+
+  /* ================= Décisions ================= */
+  .decision{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;
+    padding:11px 0;border-top:1px solid var(--line2)}
+  .decision:first-of-type{border-top:0;padding-top:0}
+  .decision .ico{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-weight:900;font-size:14px}
+  .decision .ico.bad{background:var(--badbg);color:var(--bad)}
+  .decision .ico.warn{background:var(--warnbg);color:var(--warn)}
+  .decision .ico.review{background:var(--reviewbg);color:var(--review)}
+  .decision b{font-size:12.8px}
+  .decision p{margin:2px 0 0;font-size:12px;color:var(--muted)}
+
+  /* ================= Pipeline ================= */
+  .pipeline{display:flex;flex-wrap:wrap;gap:6px;overflow-x:auto;padding-bottom:4px}
+  .step{flex:1 1 86px;border:1px solid var(--line);border-radius:10px;padding:7px 8px;background:var(--soft)}
+  .step b{display:block;font-size:10.5px;line-height:1.25}
+  .step small{display:block;font-size:10px;color:var(--muted);margin-top:2px}
+  .step.done{border-color:var(--done);background:var(--donebg)}
+  .step.doing{border-color:var(--doing);background:var(--doingbg)}
+  .step.bad{border-color:var(--bad);background:var(--badbg)}
+  .step.warn{border-color:var(--warn);background:var(--warnbg)}
+  .step.todo{opacity:.72}
+
+  /* ================= Timeline ================= */
+  .tl{list-style:none;margin:0;padding:0}
+  .tl li{position:relative;padding:0 0 13px 20px;border-left:2px solid var(--line);margin-left:6px}
+  .tl li:last-child{border-left-color:transparent;padding-bottom:0}
+  .tl li::before{content:"";position:absolute;left:-6px;top:3px;width:10px;height:10px;border-radius:50%;
+    background:var(--brand2);box-shadow:0 0 0 3px var(--panel)}
+  .tl b{font-size:12.5px}
+  .tl p{margin:1px 0 0;font-size:11.8px;color:var(--muted)}
+  .tl time{font-size:10.5px;color:var(--muted);font-family:var(--mono)}
+
+  /* ================= Gates ================= */
+  .gate{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--line);
+    border-radius:12px;padding:12px 14px;min-width:0}
+  .gate.ok{border-left-color:var(--done)} .gate.warn{border-left-color:var(--warn)}
+  .gate.bad{border-left-color:var(--bad)} .gate.review{border-left-color:var(--review)}
+  .gate .head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .gate h3{font-size:13px;margin:0}
+  .gate .row{display:flex;justify-content:space-between;gap:8px;font-size:11.8px;margin-top:6px}
+  .gate .row span:first-child{color:var(--muted)}
+  .gate .foot{margin-top:9px;font-size:11px;color:var(--muted)}
+
+  /* ================= Findings / revue ================= */
+  .finding{border:1px solid var(--line);border-left:4px solid var(--bad);border-radius:10px;
+    padding:12px 14px;background:var(--panel)}
+  .finding.major{border-left-color:var(--warn)}
+  .finding.minor{border-left-color:var(--doing)}
+  .finding h3{font-size:13px;margin:0}
+  .finding .meta{display:flex;gap:6px;flex-wrap:wrap;margin:5px 0 7px}
+  .finding p{margin:5px 0}
+  .finding .fix{background:var(--soft);border:1px solid var(--line2);border-radius:8px;padding:7px 9px;
+    font-size:12px;margin-top:7px}
+  .person{display:flex;align-items:center;gap:10px}
+  .avatar{width:32px;height:32px;border-radius:50%;display:inline-grid;place-items:center;flex:none;
+    font-size:11px;font-weight:800;background:var(--brandbg);color:var(--brand);border:1px solid var(--brandline)}
+  .person b{display:block;font-size:12.8px}
+  .person small{display:block;color:var(--muted);font-size:11px}
+  .matrix{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .mcell{border:1px solid var(--line);border-radius:8px;padding:7px;min-height:58px;font-size:10.8px}
+  .mcell b{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+  .mcell.low{background:var(--donebg)} .mcell.med{background:var(--warnbg)} .mcell.high{background:var(--badbg)}
+  .decision-box{border:1px solid var(--review);background:var(--reviewbg);border-radius:12px;padding:14px}
+  .decision-box h3{margin:0 0 4px;font-size:13.5px;color:var(--review)}
+  .decision-box .opts{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}
+  .decision-box textarea{width:100%;min-height:56px;border:1px solid var(--line);border-radius:8px;
+    background:var(--panel);color:var(--ink);padding:8px;font:inherit;font-size:12px;resize:vertical}
+
+  /* ================= Flux de processus ================= */
+  .flow{display:grid;gap:9px}
+  .frow{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;overflow-x:auto;padding:6px 7px;border-radius:10px;background:var(--soft);border:1px solid var(--line2)}
+  .frow .lbl{font-size:9.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);width:62px;flex:none}
+  .fnode{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:4px 7px;
+    font-size:11px;font-weight:700;white-space:nowrap}
+  .fnode.main{background:var(--brandbg);border-color:var(--brandline);color:var(--brand)}
+  .fnode.gate{border-style:dashed;border-color:var(--warn);background:var(--warnbg);color:var(--warn)}
+  .fnode.ok{border-color:var(--done);background:var(--donebg);color:var(--done)}
+  .farrow{color:var(--muted);font-weight:800;font-size:12px}
+
+  /* ================= Heatmap ================= */
+  .heat{display:grid;grid-template-columns:repeat(12,16px);grid-auto-rows:16px;gap:3px;justify-content:start;margin-top:6px}
+  .heat span{width:16px;height:16px;aspect-ratio:auto;border-radius:3px;background:var(--brand2);opacity:.12}
+  .heat .l1{opacity:.3} .heat .l2{opacity:.48} .heat .l3{opacity:.7} .heat .l4{opacity:.94}
+  .heat-legend{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--muted);margin-top:7px}
+  .heat-legend i{width:11px;height:11px;border-radius:3px;background:var(--brand2);display:inline-block}
+  .heat-wrap{display:flex;gap:30px;align-items:flex-start;flex-wrap:wrap}
+  .heat-side{flex:1;min-width:220px;border-left:1px solid var(--line);padding-left:20px}
+  @media (max-width:620px){.heat-side{border-left:0;padding-left:0}}
+
+  /* ================= Divers ================= */
+  pre{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:12px 14px;
+    overflow:auto;font-size:11.8px;line-height:1.55;margin:0}
+  pre code{background:none;border:0;padding:0}
+  details{border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:var(--soft);margin-top:10px}
+  summary{cursor:pointer;font-weight:700;font-size:12px}
+  details[open] summary{margin-bottom:8px}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:12px}
+  .kv dt{color:var(--muted)} .kv dd{margin:0}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--soft);
+    border:1px solid var(--line);color:var(--muted)}
+  .divider{height:1px;background:var(--line);margin:13px 0}
+  .list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+  .list li{display:flex;gap:8px;align-items:flex-start;font-size:12.3px}
+  .list li .b{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;
+    font-size:10px;font-weight:900;background:var(--soft);border:1px solid var(--line)}
+  .list li .b.ok{background:var(--donebg);color:var(--done);border-color:var(--done)}
+  .list li .b.bad{background:var(--badbg);color:var(--bad);border-color:var(--bad)}
+  .list li .b.warn{background:var(--warnbg);color:var(--warn);border-color:var(--warn)}
+  .mono-sm{font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+  /* ================= Responsive ================= */
+  @media (max-width:1220px){
+    .c6{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .c4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  @media (max-width:1080px){
+    .app{grid-template-columns:1fr}
+    .side{position:static;height:auto;padding:10px 12px 8px;gap:0}
+    .brand{padding:0 2px 8px;margin:0;border-bottom:0}
+    .brand .mark{width:30px;height:30px;border-radius:8px;font-size:12px}
+    .brand .nm{font-size:13px}
+    .brand .pl{font-size:9.5px}
+    .org{display:none}
+    .nav{display:flex;flex-direction:row;gap:4px;overflow-x:auto;padding-bottom:4px}
+    .nav .sect-t{display:none}
+    .nav button{width:auto;flex:none;white-space:nowrap;font-size:12px;padding:6px 9px}
+    .side .foot{display:none}
+    .banner{margin:10px 14px 0}
+    .topbar{padding:8px 14px}
+    .main{padding:14px 14px 32px}
+  }
+  @media (max-width:820px){
+    .c3,.c4,.c6{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .phead{align-items:flex-start}
+  }
+  @media (max-width:620px){
+    .c2,.c3,.c4{grid-template-columns:1fr}
+    .c6{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .topbar{flex-wrap:wrap}
+    .decision{grid-template-columns:auto 1fr}
+    .decision .btn{grid-column:2}
+  }
+  @media print{
+    .side,.topbar,.banner,.phead-actions{display:none!important}
+    .app{display:block}
+    .main{max-width:none;padding:0}
+    .card{break-inside:avoid;box-shadow:none}
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Aller au contenu</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4 14a8 8 0 1 1 16 0"/><path d="M12 14l3-3"/><circle cx="12" cy="14" r="1.4"/></symbol>
+  <symbol id="i-review" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M7 9h10M7 13h6"/><path d="M15 21l2-3 2 3"/></symbol>
+  <symbol id="i-rocket" viewBox="0 0 24 24"><path d="M5 15l-2 6 6-2 9-9a4 4 0 0 0-5-5l-8 10z"/><circle cx="14" cy="10" r="1.5"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.5c2.8.3 5 2.7 5 5.5"/></symbol>
+  <symbol id="i-branch" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="8" r="2"/><path d="M6 8v8"/><path d="M8 6h5a5 5 0 0 1 5 5"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/></symbol>
+  <symbol id="i-bot" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V4"/><circle cx="9" cy="14" r="1"/><circle cx="15" cy="14" r="1"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2V5z"/><path d="M4 17h14"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3l9 16H3L12 3z"/><path d="M12 9v4M12 17h.01"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+</svg>
+
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <div class="mark">A</div>
+      <div>
+        <div class="nm">Atlas</div>
+        <div class="pl">Framework SDLC</div>
+      </div>
+    </div>
+
+    <div class="org">
+      <div class="mk">HM</div>
+      <div>
+        <span class="t1">HMConsulting</span>
+        <span class="t2">Projet Atlas · client</span>
+      </div>
+    </div>
+
+    <nav class="nav" aria-label="Vues du tableau de bord">
+      <p class="sect-t">Pilotage</p>
+      <button data-view="overview" aria-current="page"><svg class="icon"><use href="#i-grid"/></svg>Vue d'ensemble</button>
+      <button data-view="features"><svg class="icon"><use href="#i-list"/></svg>Features &amp; tâches</button>
+      <button data-view="gates"><svg class="icon"><use href="#i-gauge"/></svg>Gates &amp; qualité<span class="tag">2</span></button>
+      <button data-view="review"><svg class="icon"><use href="#i-review"/></svg>Revue indépendante</button>
+      <button data-view="deploys"><svg class="icon"><use href="#i-rocket"/></svg>Déploiements</button>
+
+      <p class="sect-t">Organisation</p>
+      <button data-view="team"><svg class="icon"><use href="#i-users"/></svg>Équipe<span class="tag">new</span></button>
+      <button data-view="process"><svg class="icon"><use href="#i-branch"/></svg>Processus<span class="tag">new</span></button>
+
+      <p class="sect-t">Analyse</p>
+      <button data-view="security"><svg class="icon"><use href="#i-shield"/></svg>Sécurité<span class="tag">2</span></button>
+      <button data-view="perf"><svg class="icon"><use href="#i-pulse"/></svg>Performance &amp; données</button>
+      <button data-view="agents"><svg class="icon"><use href="#i-bot"/></svg>Agents IA</button>
+
+      <p class="sect-t">Référence</p>
+      <button data-view="docs"><svg class="icon"><use href="#i-book"/></svg>Documentation</button>
+      <button data-view="config"><svg class="icon"><use href="#i-settings"/></svg>Configuration</button>
+    </nav>
+
+    <div class="foot">
+      <div class="lbl"><span>Gates du dernier run</span><span>5 / 7</span></div>
+      <div class="q"><span style="width:71%"></span></div>
+      <small>2 bloquants · analyse 20/10 11:42</small>
+    </div>
+  </aside>
+
+  <div class="shell">
+    <header class="topbar">
+      <div class="crumbs">
+        <span>HMConsulting</span><span>/</span><span>Atlas</span><span>/</span><b>main</b>
+        <span class="badge neutral">v1.8.0-rc2</span>
+      </div>
+      <div class="top-actions">
+        <span class="badge warn"><span class="dot"></span>Maquette · données fictives</span>
+        <button class="btn small" title="Ouvrir le fichier de suivi dès qu'il est prêt">Suivi</button>
+        <button class="iconbtn" id="theme" aria-pressed="false" aria-label="Basculer le thème clair/sombre">
+          <svg class="icon"><use href="#i-moon"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="banner">
+      <b>Maquette de travail.</b> Les chiffres, noms, statuts et journaux sont <b>fictifs</b>.
+      L'objectif est de valider la structure, les menus et les parcours — notamment
+      <b>Équipe</b> (répartition déduite de l'historique) et <b>Processus</b> (git flow détecté).
+    </div>
+
+    <main id="main" class="main" tabindex="-1">
+
+      <!-- ============================================================ -->
+      <!-- VUE D'ENSEMBLE                                               -->
+      <!-- ============================================================ -->
+      <section class="view" id="view-overview" aria-labelledby="ov-title">
+        <div class="phead">
+          <div>
+            <p class="eyebrow">Atlas · Framework SDLC</p>
+            <h1 id="ov-title">Vue d'ensemble</h1>
+            <p class="sub">Rails 7.2 + Angular 18 · PostgreSQL · Docker Compose / Hetzner · GitLab CI</p>
+          </div>
+          <div class="phead-actions">
+            <span class="badge ok"><span class="dot"></span>main protégée</span>
+            <span class="badge neutral">8 contributeurs</span>
+            <button class="btn primary">Lancer les contrôles</button>
+          </div>
+        </div>
+
+        <div class="grid c6">
+          <div class="card kpi"><div class="l">Avancement</div><div class="v">68<small>%</small></div><div class="d up">+3 pts cette semaine</div></div>
+          <div class="card kpi"><div class="l">Gates</div><div class="v">5<small>/7</small></div><div class="d down">2 bloquants</div></div>
+          <div class="card kpi"><div class="l">Couverture</div><div class="v">84,2<small>%</small></div><div class="d up">seuil 80 %</div></div>
+          <div class="card kpi"><div class="l">Vulnérabilités</div><div class="v">2</div><div class="d down">hautes atteignables</div></div>
+          <div class="card kpi"><div class="l">Coût IA</div><div class="v">142,80<small>€</small></div><div class="d">budget 300 €</div></div>
+          <div class="card kpi"><div class="l">Spec → prod</div><div class="v">9,2<small>j</small></div><div class="d">médiane · 4 features</div></div>
+        </div>
+
+        <div class="grid c2">
+          <div class="card">
+            <div class="card-head">
+              <div><h2>À décider maintenant</h2><p class="sub">Ce qui bloque ou demande un arbitrage humain.</p></div>
+              <span class="badge warn">3 items</span>
+            </div>
+            <div class="decision">
+              <div class="ico bad">!</div>
+              <div><b>Migration <code>invoices.status</code> bloquée</b>
+                <p>Ajout <code>NOT NULL</code> sans défaut sur 2,1 M de lignes. Gate <b>data</b> en échec, sauvegarde non testée sur ce run.</p></div>
+              <button class="btn small">Ouvrir</button>
+            </div>
+            <div class="decision">
+              <div class="ico warn">!</div>
+              <div><b>IDOR potentiel sur <code>/api/v1/exports/:id</code></b>
+                <p>Finding majeur de la revue : absence de scoping tenant. Preuve et correctif proposés.</p></div>
+              <button class="btn small">Voir</button>
+            </div>
+            <div class="decision">
+              <div class="ico review">?</div>
+              <div><b>Dérogation performance sur <code>/search</code></b>
+                <p>p95 à 312 ms (budget 300 ms), dérogation existante qui expire dans 6 jours.</p></div>
+              <button class="btn small">Trancher</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Pipeline SDLC</h2>
+            <p class="sub">État des étapes pour la vague 1.8.</p>
+            <div class="pipeline">
+              <div class="step done"><b>Cadrage</b><small>validé</small></div>
+              <div class="step done"><b>Conception</b><small>ADR acceptés</small></div>
+              <div class="step done"><b>Specs</b><small>gelées 12/10</small></div>
+              <div class="step done"><b>Planification</b><small>46 tâches</small></div>
+              <div class="step doing"><b>Implémentation</b><small>32/46</small></div>
+              <div class="step bad"><b>Contrôles</b><small>5/7</small></div>
+              <div class="step warn"><b>Revue</b><small>conditionnelle</small></div>
+              <div class="step todo"><b>Recette</b><small>64 %</small></div>
+              <div class="step todo"><b>Déploiement</b><small>préprod</small></div>
+              <div class="step todo"><b>Runbook</b><small>à jour</small></div>
+              <div class="step todo"><b>Clôture</b><small>—</small></div>
+            </div>
+            <div class="note warn mt"><p><b>Prochain gate :</b> contrôles automatiques. Deux échecs bloquants doivent être levés avant la recette.</p></div>
+          </div>
+        </div>
+
+        <div class="grid c3">
+          <div class="card">
+            <div class="card-head"><h2>Risques ouverts</h2><span class="badge bad">4</span></div>
+            <div class="table-wrap">
+              <table>
+                <caption class="sr">Risques ouverts</caption>
+                <thead><tr><th>Catégorie</th><th>Finding</th><th>Sévérité</th></tr></thead>
+                <tbody>
+                  <tr><td>Données</td><td>Migration destructive</td><td><span class="badge bad">bloquant</span></td></tr>
+                  <tr><td>Sécurité</td><td>IDOR exports</td><td><span class="badge bad">haute</span></td></tr>
+                  <tr><td>Performance</td><td>p95 /search +12 %</td><td><span class="badge warn">moyenne</span></td></tr>
+                  <tr><td>Tests</td><td>3 échecs, 2 instables</td><td><span class="badge warn">moyenne</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Activité récente</h2>
+            <ul class="tl">
+              <li><b>Gate data en échec</b><p>migration <code>20261018123000</code> · <time>11:42</time></p></li>
+              <li><b>Revue de la tâche 5.3</b><p>claude-opus-4.6 · 3 findings · <time>11:18</time></p></li>
+              <li><b>MR !214 mergée</b><p>feat/gates-ui · squash · <time>10:02</time></p></li>
+              <li><b>Déploiement préprod</b><p>v1.8.0-rc2 · succès · <time>09:41</time></p></li>
+              <li><b>Spec gelée</b><p>export-comptable · 19 exigences · <time>hier</time></p></li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h2>Équipe &amp; processus</h2>
+            <p class="sub">Deux vues déduites de l'historique et de la configuration.</p>
+            <div class="kv">
+              <dt>Contributeurs</dt><dd><b>8</b> · bus factor <b>2</b></dd>
+              <dt>Revue médiane</dt><dd><b>4,2 h</b> · p90 19 h</dd>
+              <dt>Processus</dt><dd><b>GitHub Flow</b> + releases</dd>
+              <dt>Confiance</dt><dd><b>78 %</b> · 6 signaux</dd>
+              <dt>Cadence</dt><dd><b>2 semaines</b> · 14 releases/an</dd>
+            </div>
+            <div class="divider"></div>
+            <div class="chips">
+              <span class="chip">squash 82 %</span><span class="chip">2 approbations</span><span class="chip">main protégée</span>
+            </div>
+            <div class="mt"><button class="btn small" data-view="team">Voir l'équipe</button> <button class="btn small" data-view="process">Voir le processus</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- FEATURES & TÂCHES                                            -->
+      <!-- ============================================================ -->
+      <section class="view" id="view-features" aria-labelledby="ft-title" hidden>
+        <div class="phead">
+          <div><p class="eyebrow">Pilotage</p><h1 id="ft-title">Features &amp; tâches</h1>
+            <p class="sub">Source : <code>docs/suivi/state.json</code> et <code>openspec/changes/&lt;id&gt;/tasks.md</code>.</p></div>
+          <div class="phead-actions"><span class="badge ok">12 features</span><span class="badge neutral">46 tâches</span></div>
+        </div>
+
+        <div class="grid c4">
+          <div class="card kpi"><div class="l">Livrées</div><div class="v">4</div><div class="d">sur 12</div></div>
+          <div class="card kpi"><div class="l">En cours</div><div class="v">6</div><div class="d">dont 3 en revue</div></div>
+          <div class="card kpi"><div class="l">Bloquées</div><div class="v">2</div><div class="d down">data · mobile</div></div>
+          <div class="card kpi"><div class="l">Tâches</div><div class="v">32<small>/46</small></div><div class="d up">+5 cette semaine</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h2>Portefeuille de features</h2><span class="badge neutral">vague 1.8</span></div>
+          <div class="table-wrap">
+            <table>
+              <caption class="sr">Portefeuille de features</caption>
+              <thead><tr><th>ID</th><th>Feature</th><th>Phase</th><th>Tâches</th><th>Couverture</th><th>Gate</th><th>Exécutant</th><th>Relecteur</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">F-01</td><td>Auth SSO</td><td><span class="badge ok">livrée</span></td><td class="num">12/12</td><td class="num">91 %</td><td><span class="badge ok">pass</span></td><td>Camille</td><td>Malik</td></tr>
+                <tr><td class="mono">F-02</td><td>Billing v2</td><td><span class="badge info">en cours</span></td><td class="num">8/14</td><td class="num">86 %</td><td><span class="badge bad">data</span></td><td>Malik</td><td>Camille</td></tr>
+                <tr><td class="mono">F-03</td><td>Export comptable</td><td><span class="badge review">en revue</span></td><td class="num">6/7</td><td class="num">92 %</td><td><span class="badge review">conditionnel</span></td><td>Sofia</td><td>Inès</td></tr>
+                <tr><td class="mono">F-04</td><td>Search perf</td><td><span class="badge info">en cours</span></td><td class="num">4/9</td><td class="num">78 %</td><td><span class="badge warn">perf</span></td><td>Hugo</td><td>Yanis</td></tr>
+                <tr><td class="mono">F-05</td><td>i18n EN</td><td><span class="badge info">en cours</span></td><td class="num">7/10</td><td class="num">88 %</td><td><span class="badge warn">i18n</span></td><td>Léa</td><td>Sofia</td></tr>
+                <tr><td class="mono">F-06</td><td>Audit log</td><td><span class="badge neutral">planifiée</span></td><td class="num">0/8</td><td class="num">—</td><td><span class="badge neutral">à venir</span></td><td>Yanis</td><td>Thomas</td></tr>
+                <tr><td class="mono">F-07</td><td>Mobile push</td><td><span class="badge bad">bloquée</span></td><td class="num">2/11</td><td class="num">64 %</td><td><span class="badge bad">tests</span></td><td>Thomas</td><td>Camille</td></tr>
+                <tr><td class="mono">F-08</td><td>Data retention</td><td><span class="badge neutral">planifiée</span></td><td class="num">0/6</td><td class="num">—</td><td><span class="badge neutral">à venir</span></td><td>Inès</td><td>Léa</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid c2">
+          <div class="card">
+            <h2>Tâches en cours</h2>
+            <p class="sub">Une tâche à la fois par exécutant ; relecteur ≠ auteur.</p>
+            <ul class="list">
+              <li><span class="b warn">5.3</span><div><b>Export comptable — scoping tenant</b><div class="mono-sm">app/controllers/api/v1/exports_controller.rb · 2 fichiers</div></div></li>
+              <li><span class="b ok">4.2</span><div><b>Billing — migration expand/contract</b><div class="mono-sm">db/migrate/ · 3 fichiers</div></div></li>
+              <li><span class="b warn">6.1</span><div><b>Search — index trigram</b><div class="mono-sm">db/migrate/ · app/models/search.rb</div></div></li>
+              <li><span class="b ok">7.4</span><div><b>i18n — clés EN manquantes</b><div class="mono-sm">config/locales/en.yml · 7 clés</div></div></li>
+              <li><span class="b bad">8.2</span><div><b>Mobile push — tests instables</b><div class="mono-sm">spec/requests/push_spec.rb · 2 flaky</div></div></li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h2>Traçabilité</h2>
+            <p class="sub">Exigence → scénario → test → tâche.</p>
+            <div class="table-wrap">
+              <table>
+                <caption class="sr">Matrice de traçabilité</caption>
+                <thead><tr><th>Exigence</th><th>Scénario</th><th>Test</th><th>Tâche</th><th>État</th></tr></thead>
+                <tbody>
+                  <tr><td class="mono">REQ-EXP-01</td><td>Export cloisonné</td><td><code>exports_spec:42</code></td><td>5.3</td><td><span class="badge bad">manquant</span></td></tr>
+                  <tr><td class="mono">REQ-EXP-02</td><td>Refund partiel</td><td><code>billing_spec:88</code></td><td>4.2</td><td><span class="badge warn">à compléter</span></td></tr>
+                  <tr><td class="mono">REQ-EXP-03</td><td>Idempotence</td><td><code>exports_spec:61</code></td><td>5.3</td><td><span class="badge ok">couvert</span></td></tr>
+                  <tr><td class="mono">REQ-I18N-01</td><td>Parité FR/EN</td><td><code>i18n_spec:12</code></td><td>7.4</td><td><span class="badge warn">7 clés</span></td></tr>
+                  <tr><td class="mono">REQ-SRCH-02</td><td>p95 &lt; 300 ms</td><td><code>perf_spec:31</code></td><td>6.1</td><td><span class="badge bad">312 ms</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- GATES & QUALITÉ                                              -->
+      <!-- ============================================================ -->
+      <section class="view" id="view-gates" aria-labelledby="gt-title" hidden>
+        <div class="phead">
+          <div><p class="eyebrow">Qualité</p><h1 id="gt-title">Gates &amp; qualité</h1>
+            <p class="sub">Six gates calculés à partir de preuves, plus la revue indépendante.</p></div>
+          <div class="phead-actions"><span class="badge bad">verdict : FAIL</span><span class="badge neutral">run 20/10 11:42</span></div>
+        </div>
+
+        <div class="note bad">
+          <p><b>Verdict : FAIL.</b> Deux gates bloquants — <b>tests</b> (3 échecs) et <b>données</b> (migration destructive, PII dans les logs).
+          Un gate en alerte — <b>performance</b> (régression p95 sur <code>/search</code>). La revue est <b>conditionnelle</b>.</p>
+        </div>
+
+        <div class="grid c3 mt">
+          <div class="gate bad"><div class="head"><h3>Tests</h3><span class="badge bad">FAIL</span></div>
+            <div class="row"><span>1 284 passés · 3 échoués</span><span>2 instables</span></div><div class="foot">Preuve : <code>reports/gates/tests.json</code></div></div>
+          <div class="gate ok"><div class="head"><h3>Couverture</h3><span class="badge ok">PASS</span></div>
+            <div class="row"><span>Global</span><span><b>84,2 %</b> / 80</span></div><div class="foot">Lignes modifiées 92 % / 90 · fichier min 61 % / 60</div></div>
+          <div class="gate bad"><div class="head"><h3>Sécurité</h3><span class="badge bad">FAIL</span></div>
+            <div class="row"><span>Hautes atteignables</span><span><b>2</b></span></div><div class="foot">0 critique · 5 moyennes · SBOM 214 deps</div></div>
+          <div class="gate warn"><div class="head"><h3>Performance</h3><span class="badge warn">WARN</span></div>
+            <div class="row"><span>p95 /search</span><span><b>312 ms</b> / 300</span></div><div class="foot">4 findings statiques · 1 régression</div></div>
+          <div class="gate bad"><div class="head"><h3>Données</h3><span class="badge bad">FAIL</span></div>
+            <div class="row"><span>Migration destructive</span><span><b>1</b></span></div><div class="foot">PII logs 1 · sauvegarde non testée</div></div>
+          <div class="gate warn"><div class="head"><h3>i18n</h3><span class="badge warn">WARN</span></div>
+            <div class="row"><span>FR / EN</span><span><b>100 %</b> / 97,4 %</span></div><div class="foot">7 clés manquantes · 3 chaînes en dur</div></div>
+          <div class="gate review"><div class="head"><h3>Revue</h3><span class="badge review">CONDITIONNEL</span></div>
+            <div class="row"><span>Findings bloquants</span><span><b>3</b></span></div><div class="foot">Indépendance : complète · modèle différent</div></div>
+        </div>
+
+        <div class="card mt">
+          <div class="card-head"><div><h2>Support des langages</h2><p class="sub">Un langage détecté sans adaptateur fait échouer le gate — jamais de « not_run » silencieux.</p></div><span class="badge ok">aucun langage orphelin</span></div>
+          <div class="table-wrap">
+            <table>
+              <caption class="sr">Matrice de support des langages</caption>
+              <thead><tr><th>Langage</th><th>Fichiers</th><th>Adaptateur</th><th>Niveau</th><th>Tests</th><th>Couverture</th><th>SCA / SAST</th><th>État</th></tr></thead>
+              <tbody>
+                <tr><td>Ruby</td><td class="num">1 284</td><td><code>ruby</code></td><td><span class="badge ok">tier 1</span></td><td>RSpec</td><td>SimpleCov</td><td>Trivy · Semgrep</td><td><span class="badge ok">complet</span></td></tr>
+                <tr><td>TypeScript</td><td class="num">612</td><td><code>typescript</code></td><td><span class="badge ok">tier 1</span></td><td>Vitest</td><td>Istanbul</td><td>Trivy · Semgrep</td><td><span class="badge ok">complet</span></td></tr>
+                <tr><td>Python</td><td class="num">48</td><td><code>python</code></td><td><span class="badge ok">tier 1</span></td><td>pytest</td><td>coverage.py</td><td>Trivy · Semgrep</td><td><span class="badge ok">complet</span></td></tr>
+                <tr><td>SQL</td><td class="num">96</td><td><code>sql</code></td><td><span class="badge warn">tier 2</span></td><td>squawk</td><td>—</td><td>Semgrep</td><td><span class="badge warn">partiel</span></td></tr>
+                <tr><td>Shell</td><td class="num">22</td><td><code>shell</code></td><td><span class="badge warn">tier 2</span></td><td>bats</td><td>—</td><td>ShellCheck</td><td><span class="badge warn">partiel</span></td></tr>
+                <tr><td>YAML</td><td class="num">41</td><td><code>yaml</code></td><td><span class="badge ok">tier 1</span></td><td>yamllint</td><td>—</td><td>Checkov</td><td><span class="badge ok">complet</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="small muted mt">Tier 2 = tests + SCA, sans couverture. Un tier 3 (non supporté) bloquerait le gate.</p>
+        </div>
+
+        <div class="grid c2 mt">
+          <div class="card">
+            <h2>Couverture</h2>
+            <p class="sub">Trois seuils pour éviter la couverture de façade.</p>
+            <div class="sparkline">
+              <div class="donut" style="--p:84.2"><div class="ctr"><b>84,2 %</b><small>global</small></div></div>
+              <div style="flex:1">
+                <div class="row small"><span>Lignes modifiées</span><b>92 % / 90</b></div>
+                <div class="bar done lg" style="--v:92"><span></span></div>
+                <div class="row small mt"><span>Fichier le plus faible</span><b>61 % / 60</b></div>
+                <div class="bar warn lg" style="--v:61"><span></span></div>
+                <div class="row small mt"><span>Global</span><b>84,2 % / 80</b></div>
+                <div class="bar done lg" style="--v:84"><span></span></div>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="kv small">
+              <dt>Modules sous 70 %</dt><dd>Billing (68 %), Search (64 %)</dd>
+              <dt>Mutation score</dt><dd>non mesuré (option)</dd>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Tests</h2>
+            <p class="sub">1 284 passés · 3 échoués · 12 ignorés · 2 instables.</p>
+            <div class="table-wrap">
+              <table>
+                <caption class="sr">Tests échoués</caption>
+                <thead><tr><th>Suite</th><th>Test</th><th>Cause</th><th>Propriétaire</th></tr></thead>
+                <tbody>
+                  <tr><td>exports</td><td><code>scopes to tenant</code></td><td>IDOR — assertion absente</td><td>Sofia</td></tr>
+                  <tr><td>billing</td><td><code>partial refund</code></td><td>branche non couverte</td><td>Malik</td></tr>
+                  <tr><td>search</td><td><code>p95 &lt; 300ms</code></td><td>312 ms · régression</td><td>Hugo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="note warn mt"><p><b>2 tests instables</b> en quarantaine avec ticket <code>QA-318</code>, expiration 7 jours.</p></div>
+          </div>
+        </div>
+
+        <div class="grid c2">
+          <div class="card">
+            <h2>Sécurité</h2>
+            <p class="sub">Priorité à l'exploitabilité, pas au compteur de CVE.</p>
+            <div class="table-wrap">
+              <table>
+                <caption class="sr">Vulnérabilités</caption>
+                <thead><tr><th>ID</th><th>Sévérité</th><th>Atteignable</th><th>Composant</th><th>Correctif</th></tr></thead>
+                <tbody>
+                  <tr><td class="mono">CVE-2026-3187</td><td><span class="badge bad">haute</span></td><td>oui</td><td>nokogiri 1.18.2</td><td>≥ 1.18.4</td></tr>
+                  <tr><td class="mono">CVE-2026-4021</td><td><span class="badge bad">haute</span></td><td>oui</td><td>rack 3.1.1</td><td>≥ 3.1.3</td></tr>
+                  <tr><td class="mono">CVE-2026-1177</td><td><span class="badge warn">moyenne</span></td><td>non</td><td>redis-client</td><td>≥ 0.24</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="small muted mt">SBOM : 214 dépendances · 2 dérogations actives · 0 secret détecté.</p>
+          </div>
+
+          <div class="card">
+            <h2>Performance &amp; données</h2>
+            <p class="sub">Budgets observés et signaux statiques.</p>
+            <div class="kv small">
+              <dt>p95</dt><dd><b>240 ms</b> / 300 · <span class="badge ok">OK</span></dd>
+              <dt>p95 /search</dt><dd><b>312 ms</b> / 300 · <span class="badge warn">+12 %</span></dd>
+              <dt>Bundle web</dt><dd><b>218 Ko</b> / 250 · <span class="badge ok">OK</span></dd>
+              <dt>Requêtes / requête</dt><dd><b>17</b> / 20 · <span class="badge ok">OK</span></dd>
+            </div>
+            <div class="divider"></div>
+            <ul class="list">
+              <li><span class="b bad">!</span><div><b>Migration destructive</b><div class="mono-sm">ajout NOT NULL sans défaut · 2,1 M lignes</div></div></li>
+              <li><span class="b bad">!</span><div><b>PII dans les logs</b><div class="mono-sm">email en clair · app/services/export.rb:61</div></div></li>
+              <li><span class="b warn">!</span><div><b>Sauvegarde non testée</b><div class="mono-sm">dernière restauration : 18/10 (2 j)</div></div></li>
+            </ul>
+          </div>
+        </div>
+
+        <details>
+          <summary>Preuves et contrat de sortie (extrait)</summary>
+          <pre><code>{
+  "gate": "data",
+  "status": "fail",
+  "threshold": "aucune migration destructive",
+  "actual": "1 migration destructive, 1 PII",
+  "findings": [
+    {"id": "MIG-20261018123000", "severity": "blocking", "evidence": "db/migrate/...:8"},
+    {"id": "PII-LOG-61", "severity": "blocking", "evidence": "app/services/export.rb:61"}
+  ],
+  "tool": {"name": "sdlc", "version": "0.2.0"},
+  "waiver": null
+}</code></pre>
+        </details>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- REVUE INDÉPENDANTE                                           -->
+      <!-- ============================================================ -->
+      <section class="view" id="view-review" aria-labelledby="rv-title" hidden>
+        <div class="phead">
+          <div><p class="eyebrow">Qualité · tâche 5.3</p><h1 id="rv-title">Revue indépendante</h1>
+            <p class="sub">Un autre agent, si possible un autre modèle, en lecture seule, avec un rapport orienté décision.</p></div>
+          <div class="phead-actions"><span class="badge review">approve_with_conditions</span><span class="badge ok">indépendance complète</span></div>
+        </div>
+
+        <div class="grid c3">
+          <div class="card">
+            <h3 class="small muted" style="margin:0 0 8px">Auteur</h3>
+            <div class="person"><span class="avatar">OP</span><div><b>OpenCode</b><small>deepseek-v4.1-flash · exécutant</small></div></div>
+            <div class="kv small mt"><dt>Tâche</dt><dd>5.3 — Export comptable</dd><dt>Durée</dt><dd>42 min</dd><dt>Coût</dt><dd>0,31 €</dd></div>
+          </div>
+          <div class="card">
+            <h3 class="small muted" style="margin:0 0 8px">Relecteur</h3>
+            <div class="person"><span class="avatar">CL</span><div><b>Claude Code</b><small>claude-opus-4.6 · lecture seule</small></div></div>
+            <div class="kv small mt"><dt>Mode</dt><dd>aveugle (sans rapport auteur)</dd><dt>Durée</dt><dd>18 min</dd><dt>Coût</dt><dd>0,42 €</dd></div>
+          </div>
+          <div class="card">
+            <h3 class="small muted" style="margin:0 0 8px">Indépendance</h3>
+            <div class="chips"><span class="badge ok">agent ≠</span><span class="badge ok">modèle ≠</span><span class="badge ok">famille ≠</span></div>
+            <p class="small muted mt">Politique : <code>different_agent_and_model</code>. Vérifié dans <code>runs.jsonl</code>.</p>
+            <div class="bar done mt" style="--v:100"><span></span></div>
+            <p class="small muted">100 % des revues de cette vague ont un modèle différent.</p>
+          </div>
+        </div>
+
+        <div class="card mt">
+          <div class="card-head">
+            <div><h2>Fiche de décision</h2><p class="sub">Synthèse pour l'humain — pas un verdict à sa place.</p></div>
+            <span class="badge review">confiance haute</span>
+          </div>
+          <div class="note review"><p><b>Recommandation :</b> corriger les trois findings ci-dessous, puis merger. Le scoping tenant est le seul point qui justifierait un hotfix séparé si le temps manque.</p></div>
+
+          <div class="grid c1 mt" style="display:grid;gap:10px">
+            <div class="finding">
+              <div class="meta"><span class="badge bad">bloquant</span><span class="badge neutral">données</span><span class="badge neutral">confiance haute</span></div>
+              <h3>Migration <code>invoices.status</code> non sûre</h3>
+              <p>Ajout d'une colonne <code>NOT NULL</code> sans valeur par défaut sur une table de 2,1 M de lignes. Le déploiement échouera ou verrouillera la table.</p>
+              <p class="mono-sm">db/migrate/20261018123000_add_status_to_invoices.rb:8</p>
+              <div class="fix"><b>Correctif minimal :</b> ajouter la colonne nullable, backfill par lots, puis contrainte <code>NOT NULL</code> dans une migration séparée. Tester la restauration avant.</div>
+            </div>
+            <div class="finding major">
+              <div class="meta"><span class="badge warn">majeur</span><span class="badge neutral">sécurité</span><span class="badge neutral">confiance haute</span></div>
+              <h3>Absence de scoping tenant sur <code>/api/v1/exports/:id</code></h3>
+              <p>Un utilisateur authentifié peut lire l'export d'un autre tenant en changeant l'identifiant. C'est un IDOR classique.</p>
+              <p class="mono-sm">app/controllers/api/v1/exports_controller.rb:24</p>
+              <div class="fix"><b>Correctif minimal :</b> <code>current_tenant.exports.find(params[:id])</code> + test de non-régression avec deux tenants.</div>
+            </div>
+            <div class="finding major">
+              <div class="meta"><span class="badge warn">majeur</span><span class="badge neutral">tests</span><span class="badge neutral">confiance moyenne</span></div>
+              <h3>Branche « refund partiel » non testée</h3>
+              <p>La couverture des lignes modifiées est à 92 %, mais la branche de remboursement partiel n'a aucun scénario. Le risque est un calcul de TVA faux.</p>
+              <p class="mono-sm">app/services/billing/refund.rb:44 · reports/coverage/cobertura.xml</p>
+              <div class="fix"><b>Correctif minimal :</b> ajouter un scénario GIVEN/WHEN/THEN avec un remboursement de 30 % et vérifier le net et la TVA.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid c2">
+          <div class="card">
+            <h2>Matrice de risque</h2>
+            <p class="sub">Sévérité × probabilité, à dire d'expert.</p>
+            <div class="matrix">
+              <div class="mcell med"><b>Moyen</b>Tests instables</div>
+              <div class="mcell high"><b>Élevé</b>IDOR exports</div>
+              <div class="mcell high"><b>Élevé</b>Migration destructive</div>
+              <div class="mcell low"><b>Faible</b>Style / lint</div>
+              <div class="mcell med"><b>Moyen</b>Perf /search</div>
+              <div class="mcell med"><b>Moyen</b>i18n EN</div>
+              <div class="mcell low"><b>Faible</b>Docs</div>
+              <div class="mcell low"><b>Faible</b>Logs</div>
+              <div class="mcell low"><b>Faible</b>Nommage</div>
+            </div>
+            <div class="divider"></div>
+            <h3 class="small" style="margin:0 0 6px">Non vérifié</h3>
+            <ul class="list">
+              <li><span class="b warn">?</span><div>Comportement sous 3× la charge nominale</div></li>
+              <li><span class="b warn">?</span><div>Rejeu des webhooks Stripe</div></li>
+              <li><span class="b warn">?</span><div>Pluriels EN sur les montants</div></li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h2>Options</h2>
+            <p class="sub">Coût, risque et effet de chaque trajectoire.</p>
+            <div class="table-wrap">
+              <table>
+                <caption class="sr">Options de décision</caption>
+                <thead><tr><th>Option</th><th>Contenu</th><th>Effort</th><th>Risque</th></tr></thead>
+                <tbody>
+                  <tr><td><b>A</b> <span class="badge ok">recommandée</span></td><td>Corriger les 3 findings puis merger</td><td>2 h</td><td><span class="badge ok">faible</span></td></tr>
+                  <tr><td><b>B</b></td><td>Merger avec dérogation migration, hotfix IDOR</td><td>30 min</td><td><span class="badge bad">élevé</span></td></tr>
+                  <tr><td><b>C</b></td><td>Scinder la MR : export seul, billing ensuite</td><td>4 h</td><td><span class="badge warn">moyen</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="decision-box mt">
+              <h3>Décision humaine requise</h3>
+              <p class="small">La gate est bloquante ; la review éclaire le choix. Toute dérogation est enregistrée avec expiration.</p>
+              <div class="opts">
+                <button class="btn primary small">Approuver A</button>
+                <button class="btn small">Approuver avec conditions</button>
+                <button class="btn small">Rejeter</button>
+                <button class="btn ghost small">Demander une info</button>
+              </div>
+              <textarea placeholder="Motif, arbitrage, portée de la dérogation… (maquette, non fonctionnel)"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mt">
+          <h2>Historique des revues</h2>
+          <div class="table-wrap">
+            <table>
+              <caption class="sr">Historique des revues</caption>
+              <thead><tr><th>Itération</th><th>Relecteur</th><th>Modèle</th><th>Verdict</th><th>Findings</th><th>Durée</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Claude Code</td><td class="mono">claude-opus-4.6</td><td><span class="badge bad">reject</span></td><td>5</td><td>21 min</td></tr>
+                <tr><td>2</td><td>Claude Code</td><td class="mono">claude-opus-4.6</td><td><span class="badge warn">conditions</span></td><td>3</td><td>18 min</td></tr>
+                <tr><td>3</td><td>—</td><td>—</td><td><span class="badge neutral">en attente</span></td><td>—</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="note mt"><p><b>Règles appliquées :</b> relecteur ≠ auteur · modèle différent si disponible · lecture seule · aucune commande git en écriture · preuve obligatoire · 3 itérations maximum avant escalade.</p></div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- DÉPLOIEMENTS                                                 -->
+      <!-- ============================================================ -->
+      <section class="view" id="view-deploys" aria-labelledby="dp-title" hidden>
+        <div class="phead">
+          <div><p class="eyebrow">Exploitation</p><h1 id="dp-title">Déploiements</h1>
+            <p class="sub">Préprod et production, avec gate go/no-go et rollback documenté.</p></div>
+          <div class="phead-actions"><span class="badge warn">préprod : recette 64 %</span><span class="badge ok">prod stable</span></div>
+        </div>
+
+        <div class="grid c3">
+          <div class="card"><div class="card-head"><h2>Développement</h2><span class="badge ok">à jour</span></div>
+            <div class="v" style="font-size:20px;font-weight:800">v1.8.0-dev.42</div>
+            <p class="small muted">déployé il y a 2 h · 42 commits</p>
+            <div class="bar done mt" style="--v:100"><span></span></div></div>
+          <div class="card"><div class="card-head"><h2>Préproduction</h2><span class="badge warn">recette</span></div>
+            <div class="v" style="font-size:20px;font-weight:800">v1.8.0-rc2</div>
+            <p class="small muted">déployé il y a 5 h · 18/28 scénarios</p>
+            <div class="bar warn mt" style="--v:64"><span></span></div></div>
+          <div class="card"><div class="card-head"><h2>Production</h2><span class="badge ok">stable</span></div>
+            <div class="v" style="font-size:20px;font-weight:800">v1.7.3</div>
+            <p class="small muted">déployé il y a 3 j · CFR 8,3 %</p>
+            <div class="bar done mt" style="--v:92"><span></span></div></div>
+        </div>
+
+        <div class="grid c4 mt">
+          <div class="card kpi"><div class="l">Lead time</div><div class="v">3,4<small>j</small></div><div class="d">médiane</div></div>
+          <div class="card kpi"><div class="l">Fréquence</div><div class="v">7,2<small>/sem.</small></div><div class="d up">+1,4</div></div>
+          <div class="card kpi"><div class="l">Change failure</div><div class="v">8,3<small>%</small></div><div class="d">seuil 10 %</div></div>
+          <div class="card kpi"><div class="l">MTTR</div><div class="v">42<small>min</small></div><div class="d up">-11 min</div></div>
+        </div>
+
+        <div class="grid c2">
+          <div class="card">
+            <h2>Historique</h2>
+            <div class="table-wrap">
+              <table>
+                <caption class="sr">Historique des déploiements</caption>
+                <thead><tr><th>Date</th><th>Env.</th><th>Version</th><th>Résultat</th><th>Durée</th><th>Par</th></tr></thead>
+                <tbody>
+                  <tr><td>20/10 09:41</td><td>preprod</td><td class="mono">v1.8.0-rc2</td><td><span class="badge ok">succès</span></td><td>3 min</td><td>pipeline #482</td></tr>
+                  <tr><td>19/10 17:12</td><td>preprod</td><td class="mono">v1.8.0-rc1</td><td><span class="badge ok">succès</span></td><td>4 min</td><td>pipeline #479</td></tr>
+                  <tr><td>17/10 14:02</td><td>prod</td><td class="mono">v1.7.3</td><td><span class="badge ok">succès</span></td><td>6 min</td><td>pipeline #476</td></tr>
+                  <tr><td>16/10 11:20</td><td>prod</td><td class="mono">v1.7.2</td><td><span class="badge warn">rollback</span></td><td>9 min</td><td>pipeline #474</td></tr>
+                  <tr><td>14/10 16:45</td><td>preprod</td><td class="mono">v1.8.0-beta.3</td><td><span class="badge ok">succès</span></td><td>4 min</td><td>pipeline #471</td></tr>
+                  <tr><td>11/10 10:05</td><td>prod</td><td class="mono">v1.7.1</td><td><span class="badge ok">succès</span></td><td>5 min</td><td>pipeline #468</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Go / no-go</h2>
+            <p class="sub">Checklist avant production.</p>
+            <ul class="list">
+              <li><span class="b ok">✓</span><div>Spec gelée et archivée</div></li>
+              <li><span class="b bad">✕</span><div>Gates tests et données au vert</div></li>
+              <li><span class="b warn">!</span><div>Recette préprod ≥ 95 % (64 %)</div></li>
+              <li><span class="b ok">✓</span><div>Sauvegarde chiffrée et restauration testée</div></li>
+              <li><span class="b ok">✓</span><div>Rollback documenté et testé</div></li>
+              <li><span class="b ok">✓</span><div>Runbook et astreinte à jour</div></li>
+            </ul>
+            <div class="note warn mt"><p><b>Verdict :</b> no-go. Deux conditions bloquantes restent ouvertes.</p></div>
+            <details><summary>Procédure de rollback (extrait)</summary>
+              <pre><code>docker compose pull app:v1.7.3
+docker compose up -d app
+# si migration : restaurer le dump chiffré du 17/10
+./scripts/restore.sh --date 2026-10-17</code></pre>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- ÉQUIPE                                                       -->
+      <!-- ============================================================ -->
+      <section class="view" id="view-team" aria-labelledby="tm-title" hidden>
+        <div class="phead">
+          <div><p class="eyebrow">Organisation · menu demandé</p><h1 id="tm-title">Équipe</h1>
+            <p class="sub">Répartition déduite de l'historique de commits, des merge requests, des revues et des validations.</p></div>
+          <div class="phead-actions"><span class="badge neutral">90 derniers jours</span><span class="badge ok">8 contributeurs</span><button class="btn small">Exporter</button></div>
+        </div>
+
+        <div class="grid c6">
+          <div class="card kpi"><div class="l">Contributeurs</div><div class="v">8</div><div class="d">hors bots</div></div>
+          <div class="card kpi"><div class="l">Commits</div><div class="v">412</div><div class="d up">+8 % vs 90 j préc.</div></div>
+          <div class="card kpi"><div class="l">Merge requests</div><div class="v">96</div><div class="d">82 % squash</div></div>
+          <div class="card kpi"><div class="l">Revues</div><div class="v">214</div><div class="d">dont 52 % agent</div></div>
+          <div class="card kpi"><div class="l">Bus factor</div><div class="v">2</div><div class="d down">Billing = 1</div></div>
+          <div class="card kpi"><div class="l">Revue médiane</div><div class="v">4,2<small>h</small></div><div class="d">p90 19 h</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><div><h2>Composition et contribution</h2><p class="sub">Commits, MR ouvertes, revues, approbations et surface de code.</p></div><span class="badge neutral">mesuré</span></div>
+          <div class="table-wrap">
+            <table>
+              <caption class="sr">Répartition de l'équipe</caption>
+              <thead><tr><th>Membre</th><th>Rôle</th><th>Commits</th><th>MR</th><th>Revues</th><th>Approbations</th><th>Lignes</th><th>Features</th><th>Dernière activité</th><th>Assisté IA</th></tr></thead>
+              <tbody>
+                <tr><td><div class="person"><span class="avatar">CR</span><b>Camille Roux</b></div></td><td>Tech lead</td><td class="num">78</td><td class="num">14</td><td class="num">41</td><td class="num">22</td><td class="num">12,4 k</td><td>Auth, Billing</td><td>2 h</td><td class="num">46 %</td></tr>
+                <tr><td><div class="person"><span class="avatar">MB</span><b>Malik Benali</b></div></td><td>Backend</td><td class="num">92</td><td class="num">21</td><td class="num">27</td><td class="num">15</td><td class="num">18,2 k</td><td>API, Billing</td><td>1 h</td><td class="num">61 %</td></tr>
+                <tr><td><div class="person"><span class="avatar">SM</span><b>Sofia Martins</b></div></td><td>Frontend</td><td class="num">84</td><td class="num">19</td><td class="num">31</td><td class="num">18</td><td class="num">15,8 k</td><td>Web, Export</td><td>3 h</td><td class="num">58 %</td></tr>
+                <tr><td><div class="person"><span class="avatar">TL</span><b>Thomas Lefèvre</b></div></td><td>DevOps</td><td class="num">41</td><td class="num">9</td><td class="num">18</td><td class="num">12</td><td class="num">6,1 k</td><td>Infra, Mobile</td><td>5 h</td><td class="num">37 %</td></tr>
+                <tr><td><div class="person"><span class="avatar">ID</span><b>Inès Dubois</b></div></td><td>QA</td><td class="num">23</td><td class="num">6</td><td class="num">44</td><td class="num">38</td><td class="num">3,2 k</td><td>Recette</td><td>1 h</td><td class="num">22 %</td></tr>
+                <tr><td><div class="person"><span class="avatar">HP</span><b>Hugo Petit</b></div></td><td>Backend</td><td class="num">38</td><td class="num">11</td><td class="num">14</td><td class="num">9</td><td class="num">7,4 k</td><td>Search</td><td>1 j</td><td class="num">55 %</td></tr>
+                <tr><td><div class="person"><span class="avatar">LG</span><b>Léa Garnier</b></div></td><td>Product / PO</td><td class="num">6</td><td class="num">3</td><td class="num">12</td><td class="num">9</td><td class="num">0,8 k</td><td>Specs, i18n</td><td>4 h</td><td class="num">18 %</td></tr>
+                <tr><td><div class="person"><span class="avatar">YH</span><b>Yanis Haddad</b></div></td><td>Data</td><td class="num">50</td><td class="num">13</td><td class="num">27</td><td class="num">14</td><td class="num">9,6 k</td><td>Data, Audit</td><td>2 j</td><td class="num">49 %</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid c2 mt">
+          <div class="card">
+            <h2>Part des commits</h2>
+            <p class="sub">90 jours · 412 commits · bots exclus.</p>
+            <div class="bars">
+              <div class="row small"><span>Malik</span><b>22 %</b></div><div class="bar" style="--v:22"><span></span></div>
+              <div class="row small mt"><span>Sofia</span><b>20 %</b></div><div class="bar" style="--v:20"><span></span></div>
+              <div class="row small mt"><span>Camille</span><b>19 %</b></div><div class="bar" style="--v:19"><span></span></div>
+              <div class="row small mt"><span>Yanis</span><b>12 %</b></div><div class="bar" style="--v:12"><span></span></div>
+              <div class="row small mt"><span>Thomas</span><b>10 %</b></div><div class="bar" style="--v:10"><span></span></div>
+              <div class="row small mt"><span>Hugo</span><b>9 %</b></div><div class="bar" style="--v:9"><span></span></div>
+              <div class="row small mt"><span>Inès</span><b>6 %</b></div><div class="bar" style="--v:6"><span></span></div>
+              <div class="row small mt"><span>Léa</span><b>2 %</b></div><div class="bar" style="--v:2"><span></span></div>
+            </div>
+          </div>
+          <div class="card">
+            <h2>Charge de revue</h2>
+            <p class="sub">214 revues · la concentration est un risque.</p>
+            <div class="bars">
+              <div class="row small"><span>Inès</span><b>44</b></div><div class="bar" style="--v:100"><span></span></div>
+              <div class="row small mt"><span>Camille</span><b>41</b></div><div class="bar warn" style="--v:93"><span></span></div>
+              <div class="row small mt"><span>Sofia</span><b>31</b></div><div class="bar" style="--v:70"><span></span></div>
+              <div class="row small mt"><span>Malik</span><b>27</b></div><div class="bar" style="--v:61"><span></span></div>
+              <div class="row small mt"><span>Yanis</span><b>27</b></div><div class="bar" style="--v:61"><span></span></div>
+              <div class="row small mt"><span>Thomas</span><b>18</b></div><div class="bar" style="--v:41"><span></span></div>
+              <div class="row small mt"><span>Hugo</span><b>14</b></div><div class="bar" style="--v:32"><span></span></div>
+              <div class="row small mt"><span>Léa</span><b>12</b></div><div class="bar" style="--v:27"><span></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mt">
+          <div class="card-head"><div><h2>Activité</h2><p class="sub">12 semaines · intensité relative par jour.</p></div><span class="badge neutral">git log</span></div>
+          <div class="heat-wrap">
+            <div>
+              <div id="heat" class="heat" aria-label="Carte d'activité des 12 dernières semaines"></div>
+              <div class="heat-legend"><span>moins</span><i style="opacity:.12"></i><i style="opacity:.3"></i><i style="opacity:.48"></i><i style="opacity:.7"></i><i style="opacity:.94"></i><span>plus</span></div>
+            </div>
+            <div class="heat-side">
+              <div class="kv small">
+                <dt>Semaines actives</dt><dd><b>11 / 12</b></dd>
+                <dt>Jour le plus actif</dt><dd>mardi</dd>
+                <dt>Pic</dt><dd>18 commits (sem. 8)</dd>
+                <dt>Semaine calme</dt><dd>3 commits (sem. 12)</dd>
+                <dt>Total</dt><dd>412 commits</dd>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid c2 mt">
+          <div class="card">
+            <h2>Propriété par zone</h2>
+            <p class="sub">CODEOWNERS + derniers 90 jours.</p>
+            <div class="table-wrap">
+              <table>
+                <caption class="sr">Propriété par zone</caption>
+                <thead><tr><th>Zone</th><th>Principal</th><th>Secondaire</th><th>Bus factor</th><th>Alerte</th></tr></thead>
+                <tbody>
+                  <tr><td>API</td><td>Malik</td><td>Hugo</td><td class="num">2</td><td><span class="badge ok">ok</span></td></tr>
+                  <tr><td>Web</td><td>Sofia</td><td>Camille</td><td class="num">2</td><td><span class="badge ok">ok</span></td></tr>
+                  <tr><td>Billing</td><td>Malik</td><td>—</td><td class="num">1</td><td><span class="badge bad">risque</span></td></tr>
+                  <tr><td>Infra</td><td>Thomas</td><td>Camille</td><td class="num">2</td><td><span class="badge ok">ok</span></td></tr>
+                  <tr><td>Data</td><td>Yanis</td><td>Malik</td><td class="num">2</td><td><span class="badge warn">surveiller</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Chaîne de validation</h2>
+            <p class="sub">Qui écrit, qui relit, qui approuve.</p>
+            <div class="kv small">
+              <dt>Auteur → relecteur agent</dt><dd><b>96</b> MR · 100 % relues</dd>
+              <dt>Relecteur agent → humain</dt><dd><b>96</b> · 100 % approuvées</dd>
+              <dt>Revues par un agent</dt><dd><b>52 %</b> · 8 % indépendance dégradée</dd>
+              <dt>Approbations humaines en prod</dt><dd><b>100 %</b></dd>
+              <dt>Revue médiane</dt><dd><b>4,2 h</b> · p90 19 h</dd>
+            </div>
+            <div class="divider"></div>
+            <h3 class="small" style="margin:0 0 6px">Signaux</h3>
+            <ul class="list">
+              <li><span class="b bad">!</span><div><b>Bus factor 1 sur Billing</b> — une absence bloque les migrations.</div></li>
+              <li><span class="b warn">!</span><div><b>Camille concentre 41 % des approbations</b> de la zone Billing.</div></li>
+              <li><span class="b warn">!</span><div><b>2 MR en attente &gt; 48 h</b> — dont une revue de sécurité.</div></li>
+            </ul>
+          </div>
+        </div>
+
+        <details class="mt">
+          <summary>Sources, méthode et limites</summary>
+          <div class="kv small">
+            <dt>Commits</dt><dd><code>git log --since=90.days --numstat</code>, merge commits exclus, bots exclus</dd>
+            <dt>MR / revues</dt><dd>API GitLab : événements de revue et approbations</dd>
+            <dt>Features</dt><dd>association MR ↔ <code>openspec/changes/&lt;id&gt;</code> via la clé de commit</dd>
+            <dt>Assisté IA</dt><dd>trailer <code>Assisted-by:</code> ou <code>Co-authored-by:</code> ; absent = non mesuré</dd>
+            <dt>Limites</dt><dd>squash → topologie de branches masquée ; auteur ≠ propriétaire du code</dd>
+          </div>
+        </details>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- PROCESSUS                                                    -->
+      <!-- ============================================================ -->
+      <section class="view" id="view-process" aria-labelledby="pr-title" hidden>
+        <div class="phead">
+          <div><p class="eyebrow">Organisation · menu demandé</p><h1 id="pr-title">Processus</h1>
+            <p class="sub">Processus de développement détecté depuis le code, la configuration, les branches et les MR.</p></div>
+          <div class="phead-actions"><span class="badge ok">GitHub Flow + releases</span><span class="badge warn">confiance 78 %</span></div>
+        </div>
+
+        <div class="grid c2">
+          <div class="card">
+            <h2>Ce qui a été détecté</h2>
+            <p class="sub">Six signaux concordants, aucun signe de Git Flow complet.</p>
+            <div class="table-wrap">
+              <table>
+                <caption class="sr">Signaux de détection du processus</caption>
+                <thead><tr><th>Signal</th><th>Observé</th><th>Interprétation</th><th>Confiance</th></tr></thead>
+                <tbody>
+                  <tr><td>Branche principale</td><td><code>main</code> protégée</td><td>2 approbations, pipeline requis</td><td><span class="badge ok">fort</span></td></tr>
+                  <tr><td>Branche develop</td><td>absente</td><td>pas de Git Flow classique</td><td><span class="badge ok">fort</span></td></tr>
+                  <tr><td>Branches</td><td><code>feat/*</code>, <code>fix/*</code>, <code>release/*</code>, <code>hotfix/*</code></td><td>flow par feature + releases</td><td><span class="badge ok">fort</span></td></tr>
+                  <tr><td>Merges</td><td>82 % squash, 11 % merge, 7 % rebase</td><td>historique linéaire volontaire</td><td><span class="badge ok">fort</span></td></tr>
+                  <tr><td>Tags</td><td><code>v1.7.0</code>, <code>v1.8.0-rc2</code></td><td>semver, releases datées</td><td><span class="badge ok">fort</span></td></tr>
+                  <tr><td>CI</td><td><code>.gitlab-ci.yml</code> + <code>CODEOWNERS</code></td><td>gates sur MR, propriétaires par zone</td><td><span class="badge warn">moyen</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Flux</h2>
+            <p class="sub">Du ticket à la production, avec les gates.</p>
+            <div class="flow">
+              <div class="frow"><span class="lbl">Feature</span>
+                <span class="fnode">feat/*</span><span class="farrow">→</span><span class="fnode">MR</span><span class="farrow">→</span>
+                <span class="fnode">revue</span><span class="farrow">→</span><span class="fnode main">main</span>
+              </div>
+              <div class="frow"><span class="lbl">Release</span>
+                <span class="fnode">release/1.8</span><span class="farrow">→</span><span class="fnode">tag v1.8</span><span class="farrow">→</span>
+                <span class="fnode">préprod</span><span class="farrow">→</span><span class="fnode gate">recette</span><span class="farrow">→</span>
+                <span class="fnode gate">go/no-go</span><span class="farrow">→</span><span class="fnode ok">prod</span>
+              </div>
+              <div class="frow"><span class="lbl">Hotfix</span>
+                <span class="fnode">hotfix/*</span><span class="farrow">→</span><span class="fnode">MR</span><span class="farrow">→</span>
+                <span class="fnode gate">tests + sécu</span><span class="farrow">→</span><span class="fnode">tag patch</span><span class="farrow">→</span>
+                <span class="fnode ok">prod</span>
+              </div>
+              <div class="frow"><span class="lbl">Gates</span>
+                <span class="fnode gate">tests</span><span class="fnode gate">coverage</span><span class="fnode gate">security</span>
+                <span class="fnode gate">performance</span><span class="fnode gate">data</span><span class="fnode gate">review</span>
+              </div>
+            </div>
+            <div class="note mt"><p><b>Point de contrôle :</b> les gates s'appliquent à chaque MR avant merge ; aucune écriture directe sur <code>main</code> ; la revue humaine reste obligatoire pour la production.</p></div>
+          </div>
+        </div>
+
+        <div class="card mt">
+          <h2>Branches actives</h2>
+          <div class="table-wrap">
+            <table>
+              <caption class="sr">Branches actives</caption>
+              <thead><tr><th>Branche</th><th>Type</th><th>Âge</th><th>Avance / retard</th><th>Propriétaire</th><th>État</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">main</td><td>principale</td><td>—</td><td>—</td><td>—</td><td><span class="badge ok">protégée</span></td></tr>
+                <tr><td class="mono">release/1.8</td><td>release</td><td>6 j</td><td>+14 / -0</td><td>Thomas</td><td><span class="badge warn">stabilisation</span></td></tr>
+                <tr><td class="mono">feat/gates-ui</td><td>feature</td><td>2 j</td><td>+6 / -2</td><td>Camille</td><td><span class="badge info">en revue</span></td></tr>
+                <tr><td class="mono">fix/pii-log</td><td>fix</td><td>1 j</td><td>+2 / -0</td><td>Sofia</td><td><span class="badge bad">gate data</span></td></tr>
+                <tr><td class="mono">hotfix/1.7.3</td><td>hotfix</td><td>3 j</td><td>+1 / -0</td><td>Malik</td><td><span class="badge ok">mergée</span></td></tr>
+                <tr><td class="mono">chore/deps</td><td>maintenance</td><td>5 j</td><td>+9 / -3</td><td>Thomas</td><td><span class="badge neutral">en attente</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid c4 mt">
+          <div class="card kpi"><div class="l">Lead time</div><div class="v">3,4<small>j</small></div><div class="d">médiane</div></div>
+          <div class="card kpi"><div class="l">Cycle time</div><div class="v">1,8<small>j</small></div><div class="d">MR ouverte → merge</div></div>
+          <div class="card kpi"><div class="l">Taille MR</div><div class="v">180<small>lignes</small></div><div class="d">p50 · p90 620</div></div>
+          <div class="card kpi"><div class="l">Hotfix</div><div class="v">12<small>%</small></div><div class="d">des releases</div></div>
+        </div>
+
+        <div class="grid c2 mt">
+          <div class="card">
+            <h2>Détection et surcharge</h2>
+            <p class="sub">Le processus est déduit ; il peut être déclaré ou corrigé.</p>
+            <pre><code>process:
+  detected: github-flow-releases
+  confidence: 0.78
+  evidence:
+    - main_protected
+    - no_develop_branch
+    - squash_82
+    - semver_tags
+  override: null      # ex. "git-flow" si la détection se trompe
+  cadence_days: 14</code></pre>
+            <p class="small muted mt">Si la détection est impossible (historique squashé, dépôt miroir), le menu affiche « non identifiable » et propose une déclaration manuelle.</p>
+          </div>
+
+          <div class="card">
+            <h2>Limites</h2>
+            <ul class="list">
+              <li><span class="b warn">?</span><div>Squash à 82 % : la topologie réelle des branches est partiellement masquée.</div></li>
+              <li><span class="b warn">?</span><div>Pas de <code>develop</code> : Git Flow complet écarté, mais un flow interne peut exister.</div></li>
+              <li><span class="b warn">?</span><div>Les règles de protection sont lues via l'API ; un dépôt miroir les perd.</div></li>
+              <li><span class="b ok">✓</span><div>Les tags et la cadence sont fiables (annotés, semver).</div></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- SÉCURITÉ                                                     -->
+      <!-- ============================================================ -->
+      <section class="view" id="view-security" aria-labelledby="sc-title" hidden>
+        <div class="phead">
+          <div><p class="eyebrow">Analyse</p><h1 id="sc-title">Sécurité</h1>
+            <p class="sub">Dépendances, code, secrets, conteneurs, IaC et surface agentique.</p></div>
+          <div class="phead-actions"><span class="badge bad">2 hautes atteignables</span><span class="badge neutral">SBOM 214 deps</span></div>
+        </div>
+
+        <div class="grid c4">
+          <div class="card kpi"><div class="l">Critiques</div><div class="v">0</div><div class="d up">aucune</div></div>
+          <div class="card kpi"><div class="l">Hautes</div><div class="v">2</div><div class="d down">atteignables</div></div>
+          <div class="card kpi"><div class="l">Moyennes</div><div class="v">5</div><div class="d">dont 3 non atteignables</div></div>
+          <div class="card kpi"><div class="l">Secrets</div><div class="v">0</div><div class="d up">0 dans l'historique</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h2>Findings</h2><span class="badge bad">2 bloquants</span></div>
+          <div class="table-wrap">
+            <table>
+              <caption class="sr">Findings de sécurité</caption>
+              <thead><tr><th>ID</th><th>Sévérité</th><th>Atteignable</th><th>Composant</th><th>Preuve</th><th>Correctif</th><th>Propriétaire</th><th>SLA</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">CVE-2026-3187</td><td><span class="badge bad">haute</span></td><td>oui</td><td>nokogiri 1.18.2</td><td><code>Gemfile.lock:88</code></td><td>≥ 1.18.4</td><td>Malik</td><td>3 j</td></tr>
+                <tr><td class="mono">CVE-2026-4021</td><td><span class="badge bad">haute</span></td><td>oui</td><td>rack 3.1.1</td><td><code>Gemfile.lock:102</code></td><td>≥ 3.1.3</td><td>Thomas</td><td>3 j</td></tr>
+                <tr><td class="mono">SEMGREP-441</td><td><span class="badge warn">moyenne</span></td><td>non</td><td>redirect non validé</td><td><code>app/controllers/sessions_controller.rb:31</code></td><td>allowlist</td><td>Sofia</td><td>14 j</td></tr>
+                <tr><td class="mono">CVE-2026-1177</td><td><span class="badge warn">moyenne</span></td><td>non</td><td>redis-client</td><td><code>Gemfile.lock:141</code></td><td>≥ 0.24</td><td>Thomas</td><td>30 j</td></tr>
+                <tr><td class="mono">PII-LOG-61</td><td><span class="badge bad">haute</span></td><td>—</td><td>email en clair</td><td><code>app/services/export.rb:61</code></td><td>masquer</td><td>Sofia</td><td>1 j</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid c2 mt">
+          <div class="card">
+            <h2>SBOM &amp; licences</h2>
+            <div class="kv small">
+              <dt>Format</dt><dd>CycloneDX 1.6</dd>
+              <dt>Composants</dt><dd>214 · 6 écosystèmes</dd>
+              <dt>Licences à risque</dt><dd><b>1</b> (GPL-3.0 en dépendance transitive)</dd>
+              <dt>Dépendances obsolètes</dt><dd>12 majeures, 31 mineures</dd>
+              <dt>Images conteneur</dt><dd>2 scannées · 0 critique</dd>
+            </div>
+            <div class="note warn mt"><p>La GPL-3.0 transitive est compatible avec l'usage interne, mais doit être validée pour une distribution client.</p></div>
+          </div>
+
+          <div class="card">
+            <h2>Dérogations</h2>
+            <div class="table-wrap">
+              <table>
+                <caption class="sr">Dérogations de sécurité</caption>
+                <thead><tr><th>ID</th><th>Motif</th><th>Propriétaire</th><th>Expire</th></tr></thead>
+                <tbody>
+                  <tr><td class="mono">CVE-2026-1177</td><td>non atteignable, correctif en attente</td><td>Thomas</td><td>12/11</td></tr>
+                  <tr><td class="mono">SEMGREP-441</td><td>faux positif documenté</td><td>Sofia</td><td>03/11</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="small muted mt">Toute dérogation est datée, motivée et expire. Sans renouvellement, le gate repasse en échec.</p>
+          </div>
+        </div>
+
+        <div class="card mt">
+          <h2>Surface agentique</h2>
+          <p class="sub">Les risques propres aux agents, mappés sur OWASP Agentic 2026.</p>
+          <div class="grid c4">
+            <div class="gate warn"><div class="head"><h3>Détournement d'objectif</h3><span class="badge warn">surveillé</span></div><p class="small muted">Contenu externe traité comme données ; pas d'instruction issue d'un fichier.</p></div>
+            <div class="gate ok"><div class="head"><h3>Mauvais usage d'outil</h3><span class="badge ok">contrôlé</span></div><p class="small muted">Allowlist de commandes, git en écriture refusé, egress limité.</p></div>
+            <div class="gate warn"><div class="head"><h3>Chaîne d'approvisionnement</h3><span class="badge warn">partiel</span></div><p class="small muted">Skills épinglées ; signature des skills pas encore en place.</p></div>
+            <div class="gate bad"><div class="head"><h3>Exfiltration</h3><span class="badge bad">à traiter</span></div><p class="small muted">Un finding PII en log ; webfetch autorisé sans allowlist de domaines.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- PERFORMANCE & DONNÉES                                        -->
+      <!-- ============================================================ -->
+      <section class="view" id="view-perf" aria-labelledby="pf-title" hidden>
+        <div class="phead">
+          <div><p class="eyebrow">Analyse</p><h1 id="pf-title">Performance &amp; données</h1>
+            <p class="sub">Budgets observés, signaux statiques et risques de perte ou de fuite.</p></div>
+          <div class="phead-actions"><span class="badge warn">1 régression</span><span class="badge bad">1 risque données</span></div>
+        </div>
+
+        <div class="card">
+          <h2>Budgets</h2>
+          <p class="sub">Le dépassement d'un budget observé bloque ; un signal statique alerte.</p>
+          <div class="table-wrap">
+            <table>
+              <caption class="sr">Budgets de performance</caption>
+              <thead><tr><th>Indicateur</th><th>Actuel</th><th>Budget</th><th>Tendance</th><th>État</th></tr></thead>
+              <tbody>
+                <tr><td>Latence p95</td><td class="num">240 ms</td><td class="num">300 ms</td><td><span class="badge ok">stable</span></td><td><span class="badge ok">ok</span></td></tr>
+                <tr><td>Latence p95 /search</td><td class="num">312 ms</td><td class="num">300 ms</td><td><span class="badge warn">+12 %</span></td><td><span class="badge warn">régression</span></td></tr>
+                <tr><td>Bundle web</td><td class="num">218 Ko</td><td class="num">250 Ko</td><td><span class="badge ok">-4 %</span></td><td><span class="badge ok">ok</span></td></tr>
+                <tr><td>Requêtes / requête HTTP</td><td class="num">17</td><td class="num">20</td><td><span class="badge ok">stable</span></td><td><span class="badge ok">ok</span></td></tr>
+                <tr><td>Mémoire pic</td><td class="num">412 Mo</td><td class="num">512 Mo</td><td><span class="badge warn">+6 %</span></td><td><span class="badge ok">ok</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid c3 mt">
+          <div class="card"><div class="l small muted">p95 (ms)</div><div class="sparkline"><span class="v">240</span><svg class="spark" viewBox="0 0 120 32" aria-hidden="true"><polyline points="0,22 12,20 24,24 36,18 48,20 60,15 72,17 84,13 96,14 108,12 120,13"/></svg></div></div>
+          <div class="card"><div class="l small muted">Bundle (Ko)</div><div class="sparkline"><span class="v">218</span><svg class="spark" viewBox="0 0 120 32" aria-hidden="true"><polyline points="0,10 12,12 24,11 36,14 48,13 60,16 72,18 84,17 96,19 108,18 120,20"/></svg></div></div>
+          <div class="card"><div class="l small muted">Requêtes / requête</div><div class="sparkline"><span class="v">17</span><svg class="spark" viewBox="0 0 120 32" aria-hidden="true"><polyline points="0,18 12,17 24,19 36,16 48,17 60,15 72,16 84,14 96,15 108,14 120,14"/></svg></div></div>
+        </div>
+
+        <div class="grid c2 mt">
+          <div class="card">
+            <h2>Signaux statiques</h2>
+            <p class="sub">Potentiels, à confirmer par la revue.</p>
+            <div class="table-wrap">
+              <table>
+                <caption class="sr">Signaux de performance statiques</caption>
+                <thead><tr><th>Type</th><th>Emplacement</th><th>Confiance</th><th>État</th></tr></thead>
+                <tbody>
+                  <tr><td>Requête non bornée</td><td><code>app/models/search.rb:44</code></td><td>haute</td><td><span class="badge warn">alerte</span></td></tr>
+                  <tr><td>N+1</td><td><code>app/serializers/invoice_serializer.rb:12</code></td><td>haute</td><td><span class="badge warn">alerte</span></td></tr>
+                  <tr><td>I/O sync en chemin chaud</td><td><code>app/services/export.rb:58</code></td><td>moyenne</td><td><span class="badge warn">alerte</span></td></tr>
+                  <tr><td>Regex à backtracking</td><td><code>app/validators/email_validator.rb:9</code></td><td>moyenne</td><td><span class="badge neutral">info</span></td></tr>
+                  <tr><td>Image non optimisée</td><td><code>public/hero.png</code> (1,8 Mo)</td><td>haute</td><td><span class="badge warn">alerte</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Données</h2>
+            <p class="sub">Perte, fuite, rétention, restauration.</p>
+            <ul class="list">
+              <li><span class="b bad">✕</span><div><b>Migration destructive</b> — ajout <code>NOT NULL</code> sans défaut, 2,1 M lignes.</div></li>
+              <li><span class="b bad">✕</span><div><b>PII dans les logs</b> — email en clair dans l'export.</div></li>
+              <li><span class="b warn">!</span><div><b>Rétention non définie</b> sur <code>audit_events</code>.</div></li>
+              <li><span class="b ok">✓</span><div><b>Chiffrement</b> au repos et en transit.</div></li>
+              <li><span class="b ok">✓</span><div><b>Restauration testée</b> il y a 2 jours (18/10).</div></li>
+            </ul>
+            <div class="note bad mt"><p><b>Gate data :</b> bloqué par la migration et la PII. La sauvegarde doit être rejouée sur ce run.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- AGENTS IA                                                    -->
+      <!-- ============================================================ -->
+      <section class="view" id="view-agents" aria-labelledby="ag-title" hidden>
+        <div class="phead">
+          <div><p class="eyebrow">Analyse</p><h1 id="ag-title">Agents IA</h1>
+            <p class="sub">Runs, modèles, coûts, escalades et indépendance de la revue.</p></div>
+          <div class="phead-actions"><span class="badge neutral">90 jours</span><span class="badge ok">81 % de réussite</span></div>
+        </div>
+
+        <div class="grid c6">
+          <div class="card kpi"><div class="l">Runs</div><div class="v">128</div><div class="d">4 agents</div></div>
+          <div class="card kpi"><div class="l">Réussite</div><div class="v">81<small>%</small></div><div class="d up">+4 pts</div></div>
+          <div class="card kpi"><div class="l">Escalades</div><div class="v">6</div><div class="d">4,7 %</div></div>
+          <div class="card kpi"><div class="l">Coût</div><div class="v">142,80<small>€</small></div><div class="d">budget 300 €</div></div>
+          <div class="card kpi"><div class="l">Tokens</div><div class="v">4,2<small>M</small></div><div class="d">entrée · 0,9 M sortie</div></div>
+          <div class="card kpi"><div class="l">Indépendance</div><div class="v">92<small>%</small></div><div class="d">revues, modèle ≠</div></div>
+        </div>
+
+        <div class="card">
+          <h2>Agents</h2>
+          <div class="table-wrap">
+            <table>
+              <caption class="sr">Agents</caption>
+              <thead><tr><th>Agent</th><th>Rôle</th><th>Modèle</th><th>Runs</th><th>Réussite</th><th>Durée médiane</th><th>Coût</th><th>Dernier run</th></tr></thead>
+              <tbody>
+                <tr><td>OpenCode</td><td>exécutant</td><td class="mono">deepseek-v4.1-flash</td><td class="num">54</td><td class="num">83 %</td><td>38 min</td><td class="num">41,20 €</td><td>il y a 2 h</td></tr>
+                <tr><td>Claude Code</td><td>relecteur</td><td class="mono">claude-opus-4.6</td><td class="num">31</td><td class="num">94 %</td><td>18 min</td><td class="num">62,40 €</td><td>il y a 1 h</td></tr>
+                <tr><td>Codex</td><td>exécutant</td><td class="mono">gpt-5.1-codex</td><td class="num">28</td><td class="num">79 %</td><td>41 min</td><td class="num">28,60 €</td><td>il y a 5 h</td></tr>
+                <tr><td>Claude Code</td><td>rédacteur doc</td><td class="mono">claude-sonnet-4.6</td><td class="num">15</td><td class="num">87 %</td><td>12 min</td><td class="num">10,60 €</td><td>hier</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid c2 mt">
+          <div class="card">
+            <h2>Coût par feature</h2>
+            <p class="sub">Les features complexes coûtent plus en revue qu'en écriture.</p>
+            <div class="row small"><span>Billing v2</span><b>48,20 €</b></div><div class="bar" style="--v:100"><span></span></div>
+            <div class="row small mt"><span>Export comptable</span><b>31,40 €</b></div><div class="bar" style="--v:65"><span></span></div>
+            <div class="row small mt"><span>Search perf</span><b>24,10 €</b></div><div class="bar" style="--v:50"><span></span></div>
+            <div class="row small mt"><span>Auth SSO</span><b>21,80 €</b></div><div class="bar" style="--v:45"><span></span></div>
+            <div class="row small mt"><span>i18n EN</span><b>17,30 €</b></div><div class="bar" style="--v:36"><span></span></div>
+          </div>
+          <div class="card">
+            <h2>Indépendance des revues</h2>
+            <div class="sparkline">
+              <div class="donut" style="--p:92"><div class="ctr"><b>92 %</b><small>modèle ≠</small></div></div>
+              <div style="flex:1">
+                <div class="kv small">
+                  <dt>Agent ≠</dt><dd>100 %</dd>
+                  <dt>Modèle ≠</dt><dd>92 %</dd>
+                  <dt>Famille ≠</dt><dd>78 %</dd>
+                  <dt>Dégradée</dt><dd><b>8 %</b> · signée par l'humain</dd>
+                </div>
+              </div>
+            </div>
+            <div class="note warn mt"><p>8 % des revues n'ont pas pu utiliser un autre modèle : la décision humaine est obligatoire.</p></div>
+          </div>
+        </div>
+
+        <div class="card mt">
+          <h2>Journal des runs</h2>
+          <div class="table-wrap">
+            <table>
+              <caption class="sr">Journal des runs</caption>
+              <thead><tr><th>Heure</th><th>Agent</th><th>Rôle</th><th>Tâche</th><th>Statut</th><th>Durée</th><th>Coût</th><th>Indépendance</th></tr></thead>
+              <tbody>
+                <tr><td>11:18</td><td>Claude Code</td><td>relecteur</td><td class="mono">5.3</td><td><span class="badge review">conditions</span></td><td>18 min</td><td>0,42 €</td><td><span class="badge ok">complète</span></td></tr>
+                <tr><td>10:36</td><td>OpenCode</td><td>exécutant</td><td class="mono">5.3</td><td><span class="badge ok">done</span></td><td>42 min</td><td>0,31 €</td><td>—</td></tr>
+                <tr><td>09:12</td><td>Codex</td><td>exécutant</td><td class="mono">4.2</td><td><span class="badge bad">blocked</span></td><td>51 min</td><td>0,38 €</td><td>—</td></tr>
+                <tr><td>08:44</td><td>Claude Code</td><td>relecteur</td><td class="mono">4.2</td><td><span class="badge bad">reject</span></td><td>22 min</td><td>0,48 €</td><td><span class="badge ok">complète</span></td></tr>
+                <tr><td>hier 17:20</td><td>Claude Code</td><td>doc</td><td class="mono">DOC-8</td><td><span class="badge ok">done</span></td><td>12 min</td><td>0,14 €</td><td>—</td></tr>
+                <tr><td>hier 16:02</td><td>OpenCode</td><td>exécutant</td><td class="mono">7.4</td><td><span class="badge ok">done</span></td><td>35 min</td><td>0,27 €</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- DOCUMENTATION                                                -->
+      <!-- ============================================================ -->
+      <section class="view" id="view-docs" aria-labelledby="dc-title" hidden>
+        <div class="phead">
+          <div><p class="eyebrow">Référence</p><h1 id="dc-title">Documentation</h1>
+            <p class="sub">Markdown source, HTML généré, fraîcheur et lecteur intégré.</p></div>
+          <div class="phead-actions"><span class="badge neutral">24 documents</span><span class="badge warn">3 à revoir</span></div>
+        </div>
+
+        <div class="grid c3">
+          <div class="card"><div class="card-head"><h3>Brief</h3><span class="badge ok">à jour</span></div><p class="small muted"><code>docs/00-cadrage/brief.md</code> · 12/10</p></div>
+          <div class="card"><div class="card-head"><h3>Exigences NF</h3><span class="badge ok">à jour</span></div><p class="small muted"><code>docs/00-cadrage/exigences-nf.md</code> · 12/10</p></div>
+          <div class="card"><div class="card-head"><h3>ADR</h3><span class="badge ok">5 acceptés</span></div><p class="small muted"><code>docs/architecture/adr/</code> · dernier 18/10</p></div>
+          <div class="card"><div class="card-head"><h3>Specs</h3><span class="badge ok">gelées</span></div><p class="small muted"><code>openspec/changes/</code> · 3 changes</p></div>
+          <div class="card"><div class="card-head"><h3>Recette</h3><span class="badge warn">64 %</span></div><p class="small muted"><code>docs/recette/export.md</code> · 18/28</p></div>
+          <div class="card"><div class="card-head"><h3>Runbook</h3><span class="badge ok">à jour</span></div><p class="small muted"><code>docs/ops/runbook.md</code> · 19/10</p></div>
+          <div class="card"><div class="card-head"><h3>Post-mortem</h3><span class="badge warn">1 ouvert</span></div><p class="small muted"><code>docs/incidents/2026-10-16.md</code></p></div>
+          <div class="card"><div class="card-head"><h3>Notes de version</h3><span class="badge ok">à jour</span></div><p class="small muted"><code>docs/release-notes/v1.7.3.md</code></p></div>
+          <div class="card"><div class="card-head"><h3>Rapport client</h3><span class="badge bad">manquant</span></div><p class="small muted"><code>docs/client/2026-10.md</code></p></div>
+          <div class="card"><div class="card-head"><h3>Fichier de suivi</h3><span class="badge ok">ouverture auto</span></div><p class="small muted"><code>docs/suivi/state.json</code> → vue Suivi ouverte dès qu'elle est prête</p></div>
+        </div>
+
+        <div class="grid c2 mt">
+          <div class="card">
+            <h2>Lecteur Markdown</h2>
+            <p class="sub">Rendu OpenSpec : exigences, scénarios, cases à cocher.</p>
+            <div class="note"><p><b>ADR-004 — Gate données</b></p>
+              <p class="small">Statut : accepté · 18/10/2026</p>
+              <p class="small">Toute migration destructive doit être accompagnée d'une sauvegarde vérifiée et d'une procédure de restauration testée. Le gate <code>data</code> bloque la fusion tant que la preuve n'est pas présente.</p>
+              <p class="small"><b>Conséquences :</b> les migrations sont découpées en expand/contract ; le temps de déploiement augmente d'un cycle.</p>
+            </div>
+          </div>
+          <div class="card">
+            <h2>Fraîcheur</h2>
+            <div class="table-wrap">
+              <table>
+                <caption class="sr">Fraîcheur documentaire</caption>
+                <thead><tr><th>Document</th><th>Dernière revue</th><th>Échéance</th><th>État</th></tr></thead>
+                <tbody>
+                  <tr><td>Brief</td><td>12/10</td><td>12/01</td><td><span class="badge ok">ok</span></td></tr>
+                  <tr><td>Analyse de menaces</td><td>02/09</td><td>02/12</td><td><span class="badge warn">à revoir</span></td></tr>
+                  <tr><td>Runbook</td><td>19/10</td><td>19/11</td><td><span class="badge ok">ok</span></td></tr>
+                  <tr><td>Recette</td><td>18/10</td><td>fin de vague</td><td><span class="badge warn">incomplète</span></td></tr>
+                  <tr><td>Rapport client</td><td>—</td><td>31/10</td><td><span class="badge bad">manquant</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="small muted mt">Le HTML est un rendu généré : ne pas modifier à la main.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- CONFIGURATION                                                -->
+      <!-- ============================================================ -->
+      <section class="view" id="view-config" aria-labelledby="cf-title" hidden>
+        <div class="phead">
+          <div><p class="eyebrow">Référence</p><h1 id="cf-title">Configuration</h1>
+            <p class="sub">Ce qui est déclaré, détecté ou mesuré — et ce que la maquette ne fait pas.</p></div>
+          <div class="phead-actions"><span class="badge neutral">schéma 1</span><span class="badge ok">validé</span></div>
+        </div>
+
+        <div class="grid c2">
+          <div class="card">
+            <h2>Extrait de <code>sdlc.config.yaml</code></h2>
+            <pre><code>project:
+  name: Atlas
+  kind: existing
+  stack: [rails, angular, postgresql]
+
+quality:
+  languages:
+    ruby:       { adapter: ruby,       tier: 1 }
+    typescript: { adapter: typescript, tier: 1 }
+    sql:        { adapter: sql,        tier: 2 }
+  coverage:
+    global_min: 80
+    changed_lines_min: 90
+    per_file_min: 60
+  security:
+    block_on: [critical, high]
+    reachability: true
+  performance:
+    p95_ms: 300
+    bundle_kb: 250
+  data:
+    forbid_destructive_migrations: true
+    forbid_pii_in_logs: true
+    require_backup_test: true
+  i18n:
+    locales: [fr, en]
+
+review:
+  independence: different_agent_and_model
+  blind: true
+  max_iterations: 3
+  max_cost_eur: 2
+
+process:
+  detect: true
+  override: null
+
+team:
+  sources: [git, merge_requests, reviews, approvals]
+  exclude_bots: true
+
+gates:
+  tests: blocking
+  coverage: blocking
+  security: blocking
+  performance: blocking_on_regression
+  data: blocking
+  review: blocking_if_reject</code></pre>
+          </div>
+
+          <div class="card">
+            <h2>Déclaré, détecté, mesuré</h2>
+            <div class="table-wrap">
+              <table>
+                <caption class="sr">Origine des données</caption>
+                <thead><tr><th>Donnée</th><th>Origine</th><th>Confiance</th></tr></thead>
+                <tbody>
+                  <tr><td>Stack et langages</td><td>détection fichiers + manifestes</td><td><span class="badge ok">haute</span></td></tr>
+                  <tr><td>Processus</td><td>branches, merges, tags, CI</td><td><span class="badge warn">moyenne</span></td></tr>
+                  <tr><td>Équipe</td><td>git log, API MR, revues</td><td><span class="badge ok">haute</span></td></tr>
+                  <tr><td>Coût IA</td><td>journal des runs</td><td><span class="badge ok">haute</span></td></tr>
+                  <tr><td>Couverture</td><td>Cobertura / lcov</td><td><span class="badge ok">haute</span></td></tr>
+                  <tr><td>Vulnérabilités</td><td>Trivy / OSV / Semgrep</td><td><span class="badge ok">haute</span></td></tr>
+                  <tr><td>Performance</td><td>tests de charge + statique</td><td><span class="badge warn">moyenne</span></td></tr>
+                  <tr><td>Données</td><td>règles + preuves de sauvegarde</td><td><span class="badge ok">haute</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="note warn mt"><p><b>Maquette :</b> aucun de ces chiffres n'est calculé. La version réelle les produira depuis les sources ci-dessus, avec la mention « non mesuré » quand une donnée manque.</p></div>
+          </div>
+        </div>
+
+        <div class="card mt">
+          <h2>Principes de conception</h2>
+          <div class="grid c3">
+            <div class="note"><p><b>Dépôt = source de vérité.</b> Markdown, JSON, JSONL. Pas d'état dans un service.</p></div>
+            <div class="note"><p><b>CLI = point d'application.</b> Tout obligatoire est vérifiable par <code>sdlc check</code>.</p></div>
+            <div class="note"><p><b>Hooks et plugins optionnels.</b> Jamais le seul lieu d'une règle.</p></div>
+            <div class="note"><p><b>Adaptateurs minces.</b> Permissions et invocation, pas de logique métier.</p></div>
+            <div class="note"><p><b>Fonctions déterministes outillées.</b> Un script testable sans agent ; la skill orchestre.</p></div>
+            <div class="note"><p><b>Sorties standard.</b> JUnit, SARIF, Cobertura, JSON — lisibles par tous.</p></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- Navigation entre vues ---------- */
+  var navButtons = Array.prototype.slice.call(document.querySelectorAll('.nav [data-view]'));
+  var triggers = Array.prototype.slice.call(document.querySelectorAll('[data-view]'));
+  var views = Array.prototype.slice.call(document.querySelectorAll('.view'));
+  var nav = document.querySelector('.nav');
+
+  function show(id, focusButton){
+    var target = document.getElementById('view-' + id);
+    if(!target) return;
+    views.forEach(function(v){ v.hidden = (v !== target); });
+    navButtons.forEach(function(b){
+      var on = b.getAttribute('data-view') === id;
+      if(on) b.setAttribute('aria-current', 'page');
+      else b.removeAttribute('aria-current');
+      if(on && focusButton) b.focus();
+    });
+    var h = target.querySelector('h1');
+    if(h) document.title = h.textContent + ' — Atlas';
+    try { history.replaceState(null, '', '#' + id); } catch(e) {}
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  triggers.forEach(function(b){
+    b.addEventListener('click', function(){ show(b.getAttribute('data-view'), false); });
+  });
+
+  if(nav){
+    nav.addEventListener('keydown', function(e){
+      var i = navButtons.indexOf(document.activeElement);
+      if(i < 0) return;
+      var next = null;
+      if(e.key === 'ArrowDown' || e.key === 'ArrowRight') next = (i + 1) % navButtons.length;
+      else if(e.key === 'ArrowUp' || e.key === 'ArrowLeft') next = (i - 1 + navButtons.length) % navButtons.length;
+      else if(e.key === 'Home') next = 0;
+      else if(e.key === 'End') next = navButtons.length - 1;
+      if(next !== null){ e.preventDefault(); navButtons[next].focus(); }
+    });
+  }
+
+  var hash = window.location.hash.replace('#','');
+  if(hash && document.getElementById('view-' + hash)) show(hash, false);
+
+  /* ---------- Thème clair / sombre ---------- */
+  var root = document.documentElement;
+  var themeBtn = document.getElementById('theme');
+  var iconUse = themeBtn ? themeBtn.querySelector('use') : null;
+
+  function applyTheme(t){
+    root.setAttribute('data-theme', t);
+    if(themeBtn) themeBtn.setAttribute('aria-pressed', t === 'dark' ? 'true' : 'false');
+    if(iconUse) iconUse.setAttribute('href', t === 'dark' ? '#i-sun' : '#i-moon');
+  }
+
+  var saved = null;
+  try { saved = localStorage.getItem('sdlc-theme'); } catch(e) {}
+  try {
+    var forced = new URLSearchParams(window.location.search).get('theme');
+    if(forced === 'light' || forced === 'dark') saved = forced;
+  } catch(e) {}
+  var initial = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  applyTheme(initial);
+
+  if(themeBtn){
+    themeBtn.addEventListener('click', function(){
+      var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      try { localStorage.setItem('sdlc-theme', next); } catch(e) {}
+    });
+  }
+
+  /* ---------- Carte d'activité ---------- */
+  var heat = document.getElementById('heat');
+  if(heat){
+    var labels = ['lun','mar','mer','jeu','ven','sam','dim'];
+    for(var i = 0; i < 84; i++){
+      var d = document.createElement('span');
+      var level = (i * 7 + 3) % 5;
+      d.className = level ? ('l' + level) : '';
+      d.title = 'Semaine ' + (Math.floor(i / 7) + 1) + ' · ' + labels[i % 7] + ' · intensité ' + level + '/4';
+      heat.appendChild(d);
+    }
+  }
+})();
+</script>
+</body>
+</html>

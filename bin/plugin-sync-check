@@ -1,0 +1,62 @@
+#!/usr/bin/env python3
+"""Vérifie qu'une installation du plugin correspond au gabarit du framework.
+
+Le foyer de développement est `templates/adapters/opencode/plugins/ai-sdlc-tracker/`.
+Toute installation (par exemple `.opencode/plugins/ai-sdlc-tracker/` d'un projet) doit
+être une copie non éditée : ce contrôle le prouve, fichier par fichier.
+
+Ignorés : `node_modules/`, `tests/`, `README.md` et `GUIDE.md` (le guide est propre à
+l'installation, le README et les tests restent dans le foyer).
+"""
+import argparse
+import hashlib
+import os
+import sys
+
+HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SOURCE = os.path.join(HERE, "templates", "adapters", "opencode", "plugins", "ai-sdlc-tracker")
+IGNORED_DIRS = {"node_modules", "tests"}
+IGNORED_FILES = {"README.md", "GUIDE.md"}
+
+
+def snapshot(root):
+    out = {}
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = sorted(d for d in dirnames if d not in IGNORED_DIRS)
+        for name in sorted(filenames):
+            if name in IGNORED_FILES:
+                continue
+            path = os.path.join(dirpath, name)
+            rel = os.path.relpath(path, root).replace(os.sep, "/")
+            with open(path, "rb") as handle:
+                out[rel] = hashlib.sha256(handle.read()).hexdigest()
+    return out
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--target", required=True, help="dossier installé du plugin")
+    args = parser.parse_args()
+    target = os.path.abspath(os.path.expanduser(args.target))
+    if not os.path.isdir(target):
+        sys.exit(f"installation introuvable : {target}")
+
+    source, installed = snapshot(SOURCE), snapshot(target)
+    problems = []
+    for rel in sorted(set(source) | set(installed)):
+        if rel not in installed:
+            problems.append(f"{rel} : absent de l'installation")
+        elif rel not in source:
+            problems.append(f"{rel} : présent seulement dans l'installation")
+        elif source[rel] != installed[rel]:
+            problems.append(f"{rel} : contenu différent du gabarit")
+
+    if problems:
+        sys.stderr.write("dérive détectée :\n  " + "\n  ".join(problems) + "\n")
+        return 1
+    print(f"installation conforme au gabarit : {len(source)} fichier(s).")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

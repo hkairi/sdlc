@@ -1,0 +1,84 @@
+:root {
+  color-scheme: light dark;
+  --bg: #eef1f6;
+  --panel: #ffffff;
+  --ink: #1b2430;
+  --muted: #5c6b7a;
+  --line: #e2e8f0;
+  --brand: #0f4c81;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121417;
+    --panel: #1a1d21;
+    --ink: #e8ebef;
+    --muted: #a3adb8;
+    --line: #2c3138;
+    --brand: #4b9ad6;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 14px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.shell {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 6px 0 8px;
+  font-size: 30px;
+}
+
+.sub {
+  margin: 0 0 28px;
+  color: var(--muted);
+  max-width: 60ch;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px 22px;
+}
+
+.card h2 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  color: var(--brand);
+}
+
+ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+li + li {
+  margin-top: 6px;
+}
+
+code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.9em;
+}

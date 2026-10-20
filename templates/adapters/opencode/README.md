@@ -16,6 +16,9 @@ Gabarit des fichiers que `sdlc-init` génère pour l'outil **OpenCode**.
 | `command/update-suivi.md` | `.opencode/command/update-suivi.md` | met à jour le suivi d'avancement |
 | `plugins/ai-sdlc-tracker/**` | `.opencode/plugins/ai-sdlc-tracker/**` | plugin de suivi : six outils `sdlc_*`, quatre points de contrôle |
 
+**Foyer de développement du plugin** : `plugins/ai-sdlc-tracker/` (tests, typecheck, CI). Une
+installation est une copie non éditée ; contrôle : `bin/plugin-sync-check --target <installation>`.
+
 **Plugin `ai-sdlc-tracker` — limite connue.** La copie distribuée attend le modèle d'état du dépôt
 d'origine (`openspec/changes/*/tasks.md` + `docs/suivi-*.html` + `scripts/suivi/`). Dans un projet du
 framework, le suivi vit dans `docs/suivi/state.json` : le plugin y reste **inerte** (fail-open explicite)

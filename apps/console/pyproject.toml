@@ -1,0 +1,54 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sdlc-console"
+version = "0.1.0"
+description = "Console SDLC locale : tableau de bord, gates, revue indépendante, équipe et processus."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Propriétaire — HMConsulting" }
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "sqlalchemy>=2.0",
+  "alembic>=1.13",
+  "pydantic>=2.8",
+  "pydantic-settings>=2.4",
+  "pyyaml>=6.0",
+  "jsonschema>=4.23",
+]
+
+[project.optional-dependencies]
+dev = [
+  "httpx>=0.27",
+  "mypy>=1.11",
+  "pytest>=8.3",
+  "pytest-cov>=5.0",
+  "ruff>=0.6",
+  "types-PyYAML>=6.0",
+  "types-jsonschema>=4.23",
+]
+
+[project.scripts]
+sdlc-console = "sdlc_console.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sdlc_console"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+packages = ["sdlc_console"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

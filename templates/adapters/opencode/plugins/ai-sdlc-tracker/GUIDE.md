@@ -1,7 +1,10 @@
 # ai-sdlc-tracker — plugin OpenCode (copie distribuée)
 
-Ce dossier est une **copie de travail** du plugin `ai-sdlc-tracker` du dépôt
-`engagements`, distribué par `sdlc-init` vers `.opencode/plugins/ai-sdlc-tracker/`.
+Ce dossier est le **foyer de développement** du plugin `ai-sdlc-tracker` (tests, typecheck, CI).
+`render_adapters.py` en distribue les fichiers — hors `tests/`, `node_modules/` et `README.md` —
+vers `.opencode/plugins/ai-sdlc-tracker/` du projet cible. Une installation est une **copie non
+éditée** : on la met à jour par copie, et on vérifie avec
+`bin/plugin-sync-check --target <installation>`.
 
 ## Ce qu'il fait
 

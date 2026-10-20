@@ -830,8 +830,8 @@ def render(root: Path, templates: Path, config: dict, force: bool, dry_run: bool
             for src in sorted(src_dir.rglob("*")):
                 if not src.is_file() or src.name in IGNORED_NAMES:
                     continue
-                if "node_modules" in src.parts:
-                    continue
+                if "node_modules" in src.parts or "tests" in src.parts:
+                    continue  # dépendances et tests ne sont pas distribués
                 inside = src.relative_to(src_dir)
                 dst = root / dest_sub / inside
                 rel = f"{sub}/{inside.as_posix()}"

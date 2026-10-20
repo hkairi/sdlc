@@ -1,0 +1,253 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hmconsulting.local/sdlc-console/config.schema.json",
+  "title": "Configuration de la Console SDLC",
+  "description": "Schéma de sdlc.config.yaml : framework SDLC et options de la Console.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "version",
+    "project",
+    "agents",
+    "orchestrator",
+    "executors",
+    "confidentiality",
+    "ci",
+    "deploy",
+    "organisation",
+    "gates",
+    "dashboard",
+    "paths"
+  ],
+  "properties": {
+    "version": { "type": "integer", "minimum": 1 },
+    "workflow_version": { "type": "string" },
+    "project": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["name", "kind", "stack"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "kind": { "type": "string", "enum": ["new", "existing"] },
+        "stack": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+      }
+    },
+    "agents": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["enabled"],
+        "properties": {
+          "enabled": { "type": "boolean" },
+          "cli": { "type": "string" },
+          "models": { "type": "object", "additionalProperties": { "type": "string" } }
+        }
+      },
+      "minProperties": 1
+    },
+    "orchestrator": { "type": "string", "minLength": 1 },
+    "executors": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "confidentiality": { "type": "string", "enum": ["public", "client", "restreint"] },
+    "providers_allowed": { "type": "array", "items": { "type": "string" } },
+    "ci": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["tool", "mode", "coverage_min", "block_on"],
+      "properties": {
+        "tool": {
+          "type": "string",
+          "enum": ["github-actions", "gitlab-ci", "forgejo-actions", "jenkins", "none"]
+        },
+        "mode": { "type": "string", "enum": ["integrate", "replace", "none"] },
+        "coverage_min": { "type": "number", "minimum": 0, "maximum": 100 },
+        "block_on": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["critique", "haute", "moyenne", "basse"] }
+        }
+      }
+    },
+    "deploy": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["decided_at", "targets"],
+      "properties": {
+        "decided_at": { "type": "string", "enum": ["init", "conception"] },
+        "targets": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": true,
+            "required": ["component", "profile"],
+            "properties": {
+              "component": { "type": "string", "minLength": 1 },
+              "profile": {
+                "type": "string",
+                "enum": ["vps-compose", "kubernetes", "paas", "static", "serverless", "mobile", "package", "on-prem"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "organisation": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["parallelism", "commit_cadence", "max_review_iterations", "task_timeout_min"],
+      "properties": {
+        "parallelism": { "type": "string", "enum": ["sequential", "isolated"] },
+        "commit_cadence": { "type": "string", "enum": ["task", "feature"] },
+        "max_review_iterations": { "type": "integer", "minimum": 1 },
+        "task_timeout_min": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "gates": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "required": ["default"],
+      "properties": {
+        "default": { "type": "string", "minLength": 1 },
+        "spec_freeze": { "type": "string", "minLength": 1 },
+        "recette": { "type": "string", "minLength": 1 },
+        "go_no_go": { "type": "string", "minLength": 1 }
+      }
+    },
+    "dashboard": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["file", "reports_dir", "embed_markdown", "embed_max_kb", "publish"],
+      "properties": {
+        "file": { "type": "string", "minLength": 1 },
+        "reports_dir": { "type": "string", "minLength": 1 },
+        "embed_markdown": { "type": "boolean" },
+        "embed_max_kb": { "type": "integer", "minimum": 0 },
+        "publish": { "type": "string", "enum": ["none", "pages", "artifact"] }
+      }
+    },
+    "paths": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "required": ["templates", "spec", "docs", "reports", "ci_script"],
+      "properties": {
+        "templates": { "type": "string" },
+        "spec": { "type": "string" },
+        "docs": { "type": "string" },
+        "reports": { "type": "string" },
+        "ci_script": { "type": "string" }
+      }
+    },
+    "database": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "url": { "type": "string", "minLength": 1 }
+      }
+    },
+    "quality": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "languages": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": true,
+            "required": ["adapter", "tier"],
+            "properties": {
+              "adapter": { "type": "string" },
+              "tier": { "type": "integer", "enum": [1, 2, 3] }
+            }
+          }
+        },
+        "coverage": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "global_min": { "type": "number", "minimum": 0, "maximum": 100 },
+            "changed_lines_min": { "type": "number", "minimum": 0, "maximum": 100 },
+            "per_file_min": { "type": "number", "minimum": 0, "maximum": 100 }
+          }
+        },
+        "security": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "block_on": { "type": "array", "items": { "type": "string", "enum": ["critical", "high", "medium", "low"] } },
+            "reachability": { "type": "boolean" }
+          }
+        },
+        "performance": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "p95_ms": { "type": "integer", "minimum": 0 },
+            "bundle_kb": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "forbid_destructive_migrations": { "type": "boolean" },
+            "forbid_pii_in_logs": { "type": "boolean" },
+            "require_backup_test": { "type": "boolean" }
+          }
+        },
+        "i18n": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "locales": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "independence": {
+          "type": "string",
+          "enum": ["different_agent_and_model", "different_agent", "different_model", "best_effort"]
+        },
+        "blind": { "type": "boolean" },
+        "max_iterations": { "type": "integer", "minimum": 1 },
+        "max_cost_eur": { "type": "number", "minimum": 0 }
+      }
+    },
+    "process": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "detect": { "type": "boolean" },
+        "override": { "type": ["string", "null"] }
+      }
+    },
+    "team": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "sources": { "type": "array", "items": { "type": "string" } },
+        "exclude_bots": { "type": "boolean" }
+      }
+    },
+    "ui": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "open_suivi_on_ready": { "type": "boolean" },
+        "suivi_path": { "type": "string" }
+      }
+    },
+    "retention": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "default_days": { "type": "integer", "minimum": 1 },
+        "per_table": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 1 } },
+        "exclude_audit": { "type": "boolean" }
+      }
+    }
+  }
+}

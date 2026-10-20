@@ -26,9 +26,11 @@ export const REQUIRED_SCRIPTS = [
 
 export const REQUIRED_ASSETS = ["template.html", "template-multi.html", "manifest-example.json"]
 
-function pluginVersion(deps: Deps): string {
+function pluginVersion(): string {
+  // Le plugin lit SON package.json (à côté de ses sources), pas un chemin du dépôt
+  // hôte : il peut être installé ailleurs que sous `.opencode/plugins/`.
   try {
-    const pkg = JSON.parse(deps.readFile(join(".opencode", "plugins", "ai-sdlc-tracker", "package.json"))) as {
+    const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf-8")) as {
       version?: string
     }
     return pkg.version ?? "inconnue"
@@ -50,7 +52,7 @@ export function defineDoctor(deps: Deps): ToolDef {
       const actions: string[] = []
       const config = deps.config
 
-      lines.push(`version du plugin : ${pluginVersion(deps)}`)
+      lines.push(`version du plugin : ${pluginVersion()}`)
       lines.push(`config active : ${config.killed ? "coupée par AI_SDLC_TRACKER=off" : config.enabled ? "oui" : "non (enabled: false)"}`)
 
       const scope = detectScope(deps.directory)
