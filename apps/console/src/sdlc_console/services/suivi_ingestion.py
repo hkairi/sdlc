@@ -16,6 +16,7 @@ from sqlalchemy.orm import Session
 from ..models import Feature, IngestionRun, Project, Task, utc_now
 from ..models import SuiviInconsistency as SuiviInconsistencyRecord
 from ..paths import is_secret_path
+from ..redaction import redact
 from .features import FEATURE_STATUSES, TASK_STATUSES
 from .providers.common import parse_datetime
 
@@ -593,7 +594,9 @@ def _ingest(
                     )
         run.status = "done"
         run.finished_at = utc_now()
-        run.stats_json = json.dumps(stats, sort_keys=True, ensure_ascii=False)
+        run.stats_json = redact(
+            json.dumps(stats, sort_keys=True, ensure_ascii=False)
+        )
         session.flush()
         return SuiviIngestionResult(
             run=run,
@@ -603,8 +606,10 @@ def _ingest(
     except Exception as exc:  # noqa: BLE001 - l'échec est journalisé puis propagé
         run.status = "failed"
         run.finished_at = utc_now()
-        run.error = str(exc)[:2000]
-        run.stats_json = json.dumps({"error": str(exc)[:500]}, ensure_ascii=False)
+        run.error = redact(str(exc))[:2000]
+        run.stats_json = redact(
+            json.dumps({"error": str(exc)[:500]}, ensure_ascii=False)
+        )
         session.flush()
         if isinstance(exc, SuiviIngestionError):
             raise

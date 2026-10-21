@@ -82,10 +82,12 @@ requirements:
   "Configuration validée":
     tests:
       - apps/console/tests/test_config.py
-    tasks: ["1.2"]
+      - apps/console/tests/test_config_view.py
+    tasks: ["1.2", "7.5"]
     scenarios:
       "Configuration invalide":
         - "apps/console/tests/test_config.py::SchemaTest.test_config_sans_project_echoue"
+        - "apps/console/tests/test_config_view.py::ConfigurationViewTest.test_configuration_invalide_indique_la_cle"
 
   "Migration de schéma":
     tests:
@@ -131,7 +133,14 @@ requirements:
         - "apps/console/tests/test_security.py::SecurityMiddlewareTest.test_host_valide_et_entetes"
 
   "Audit chaîné par projet":
-    tasks: ["2.2", "2.7"]
+    tests:
+      - apps/console/tests/test_purge.py
+    tasks: ["2.2", "2.7", "8.5"]
+    scenarios:
+      "Chaîne altérée":
+        - "apps/console/tests/test_purge.py::PurgeTest.test_chaine_audit_alteree_detectee"
+      "Ancrage avant purge":
+        - "apps/console/tests/test_purge.py::PurgeTest.test_ancrage_et_purge_audit"
 
   "Fichier de suivi ouvert dès qu'il est prêt":
     tests:
@@ -231,7 +240,8 @@ requirements:
   "Gate de sécurité":
     tests:
       - apps/console/tests/test_gate_security.py
-    tasks: ["4.4"]
+      - apps/console/tests/test_security_view.py
+    tasks: ["4.4", "7.1"]
     scenarios:
       "Vulnérabilité haute atteignable":
         - "apps/console/tests/test_gate_security.py::GateSecurityTest.test_vulnerabilite_haute_atteignable_bloque"
@@ -241,7 +251,8 @@ requirements:
   "Gate de performance":
     tests:
       - apps/console/tests/test_gate_performance.py
-    tasks: ["4.5"]
+      - apps/console/tests/test_quality_view.py
+    tasks: ["4.5", "7.2"]
     scenarios:
       "Régression observée":
         - "apps/console/tests/test_gate_performance.py::GatePerformanceTest.test_regression_observee_bloque"
@@ -253,7 +264,8 @@ requirements:
   "Gate de données":
     tests:
       - apps/console/tests/test_gate_data.py
-    tasks: ["4.6"]
+      - apps/console/tests/test_quality_view.py
+    tasks: ["4.6", "7.2"]
     scenarios:
       "Migration destructive":
         - "apps/console/tests/test_gate_data.py::GateDataTest.test_migration_destructive_bloque"
@@ -298,31 +310,300 @@ requirements:
   "Métriques d'équipe":
     tests:
       - apps/console/tests/test_team_metrics.py
-    tasks: ["5.1"]
+      - apps/console/tests/test_validation_chain.py
+    tasks: ["5.1", "5.3"]
     scenarios:
       "Métriques d'un contributeur":
         - "apps/console/tests/test_team_metrics.py::TeamMetricsTest.test_metriques_par_personne_et_depot"
         - "apps/console/tests/test_team_metrics.py::TeamMetricsTest.test_filtre_par_depot"
       "Donnée absente":
         - "apps/console/tests/test_team_metrics.py::TeamMetricsTest.test_metriques_par_personne_et_depot"
+      "Chaîne de validation":
+        - "apps/console/tests/test_validation_chain.py::ValidationChainTest.test_taux_et_chaines"
+        - "apps/console/tests/test_validation_chain.py::ValidationChainTest.test_api_team_contient_validation"
+
+  "Bus factor et propriété":
+    tests:
+      - apps/console/tests/test_ownership.py
+    tasks: ["5.2"]
+    scenarios:
+      "Zone à bus factor 1":
+        - "apps/console/tests/test_ownership.py::OwnershipTest.test_bus_factor_et_alertes"
+
+  "Détection de processus":
+    tests:
+      - apps/console/tests/test_process_detection.py
+    tasks: ["5.4"]
+    scenarios:
+      "GitHub Flow avec releases":
+        - "apps/console/tests/test_process_detection.py::ProcessDetectionTest.test_github_flow_avec_releases"
+      "Processus non identifiable":
+        - "apps/console/tests/test_process_detection.py::ProcessDetectionTest.test_non_identifiable"
+
+  "Processus par dépôt et agrégation":
+    tests:
+      - apps/console/tests/test_process_profiles.py
+    tasks: ["5.5"]
+    scenarios:
+      "Dépôts divergents":
+        - "apps/console/tests/test_process_profiles.py::ProcessProfilesTest.test_divergence_sans_moyenne"
+        - "apps/console/tests/test_process_profiles.py::ProcessProfilesTest.test_profil_dominant_et_surcharge"
+
+  "Surcharge de processus":
+    tests:
+      - apps/console/tests/test_process_profiles.py
+    tasks: ["5.5"]
+    scenarios:
+      "Surcharge auditée":
+        - "apps/console/tests/test_process_profiles.py::ProcessProfilesTest.test_profil_dominant_et_surcharge"
+        - "apps/console/tests/test_process_profiles.py::ProcessProfilesTest.test_api_process_override"
+
+  "Métriques DORA":
+    tests:
+      - apps/console/tests/test_dora.py
+    tasks: ["5.6"]
+    scenarios:
+      "MTTR depuis les incidents":
+        - "apps/console/tests/test_dora.py::DoraTest.test_metriques_et_mttr"
+
+  "Corpus de processus":
+    tests:
+      - apps/console/tests/test_process_corpus.py
+    tasks: ["5.7"]
+    scenarios:
+      "Mesure de précision":
+        - "apps/console/tests/test_process_corpus.py::ProcessCorpusTest.test_precision_et_echecs"
+
+  "Flux de processus avec gates":
+    tests:
+      - apps/console/tests/test_process_flow.py
+    tasks: ["5.8"]
+    scenarios:
+      "Flux affiché avec ses gates":
+        - "apps/console/tests/test_process_flow.py::ProcessFlowTest.test_flux_et_liens"
+        - "apps/console/tests/test_process_flow.py::ProcessFlowTest.test_api_flux"
+
+  "Indépendance de la revue":
+    tests:
+      - apps/console/tests/test_review_selection.py
+    tasks: ["6.1"]
+    scenarios:
+      "Relecteur indépendant":
+        - "apps/console/tests/test_review_selection.py::ReviewSelectionTest.test_selection_meilleur_et_derogation"
+      "Relecteur du même modèle":
+        - "apps/console/tests/test_review_selection.py::ReviewSelectionTest.test_niveaux_independance"
+      "Dérogation d'indépendance":
+        - "apps/console/tests/test_review_selection.py::ReviewSelectionTest.test_selection_meilleur_et_derogation"
+
+  "Paquet de revue aveugle":
+    tests:
+      - apps/console/tests/test_review_package.py
+    tasks: ["6.2"]
+    scenarios:
+      "Paquet aveugle":
+        - "apps/console/tests/test_review_package.py::ReviewPackageTest.test_paquet_aveugle_empreinte_et_fichier"
+        - "apps/console/tests/test_review_package.py::ReviewPackageTest.test_api_paquet"
+
+  "Rapport de revue structuré":
+    tests:
+      - apps/console/tests/test_review_report.py
+    tasks: ["6.3"]
+    scenarios:
+      "Rapport valide":
+        - "apps/console/tests/test_review_report.py::ReviewReportTest.test_rapport_valide_et_fiche"
+        - "apps/console/tests/test_review_report.py::ReviewReportTest.test_api_rapport"
+      "Finding sans preuve":
+        - "apps/console/tests/test_review_report.py::ReviewReportTest.test_finding_sans_preuve_refuse"
+
+  "Fiche de décision":
+    tests:
+      - apps/console/tests/test_review_report.py
+    tasks: ["6.3"]
+    scenarios:
+      "Fiche de décision":
+        - "apps/console/tests/test_review_report.py::ReviewReportTest.test_rapport_valide_et_fiche"
+
+  "Décision humaine auditée":
+    tests:
+      - apps/console/tests/test_decisions.py
+    tasks: ["6.4"]
+    scenarios:
+      "Approbation avec conditions":
+        - "apps/console/tests/test_decisions.py::DecisionsTest.test_approbation_conditionnelle_et_audit"
+      "Acteur non authentifié":
+        - "apps/console/tests/test_decisions.py::DecisionsTest.test_approbation_conditionnelle_et_audit"
+
+  "Préflight et lancement d'agent":
+    tests:
+      - apps/console/tests/test_agent_runner.py
+    tasks: ["6.5"]
+    scenarios:
+      "Préflight bloquant":
+        - "apps/console/tests/test_agent_runner.py::AgentRunnerTest.test_preflight_refuse_cli_inconnue"
+      "Commande libre refusée":
+        - "apps/console/tests/test_agent_runner.py::AgentRunnerTest.test_preflight_refuse_cli_inconnue"
+
+  "Cycle de vie et annulation d'un run":
+    tests:
+      - apps/console/tests/test_agent_runner.py
+    tasks: ["6.6"]
+    scenarios:
+      "Annulation d'un run en cours":
+        - "apps/console/tests/test_agent_runner.py::AgentRunnerTest.test_timeout_crash_et_annulation"
+      "Annulation d'un run en file":
+        - "apps/console/tests/test_agent_runner.py::AgentRunnerTest.test_timeout_crash_et_annulation"
+      "Crash ou timeout":
+        - "apps/console/tests/test_agent_runner.py::AgentRunnerTest.test_timeout_crash_et_annulation"
+
+  "Concurrence et reprise après crash":
+    tests:
+      - apps/console/tests/test_agent_runner.py
+    tasks: ["6.5", "6.6"]
+    scenarios:
+      "Troisième run simultané":
+        - "apps/console/tests/test_agent_runner.py::AgentRunnerTest.test_file_et_concurrence"
+
+  "Budget et coût d'un run":
+    tests:
+      - apps/console/tests/test_run_budget.py
+    tasks: ["6.7"]
+    scenarios:
+      "Plafond atteint":
+        - "apps/console/tests/test_run_budget.py::RunBudgetTest.test_plafond_atteint_arrete_le_run"
+        - "apps/console/tests/test_run_budget.py::RunBudgetTest.test_api_budget"
+
+  "Environnement et lecture seule":
+    tests:
+      - apps/console/tests/test_agent_sandbox.py
+    tasks: ["6.8"]
+    scenarios:
+      "Jeton non hérité":
+        - "apps/console/tests/test_agent_sandbox.py::AgentSandboxTest.test_processus_ne_voit_pas_le_jeton"
+      "Écriture Git refusée":
+        - "apps/console/tests/test_agent_sandbox.py::AgentSandboxTest.test_ecriture_git_refusee_et_auditee"
+
+  "Logs d'agent échappés":
+    tests:
+      - apps/console/tests/test_run_events.py
+    tasks: ["6.9"]
+    scenarios:
+      "Log contenant du HTML":
+        - "apps/console/tests/test_run_events.py::RunEventsTest.test_log_echappe_et_redacte"
+
+  "Escalade après rejets":
+    tests:
+      - apps/console/tests/test_escalations.py
+    tasks: ["6.10"]
+    scenarios:
+      "Trois rejets":
+        - "apps/console/tests/test_escalations.py::EscalationTest.test_trois_rejets_bloquent_et_notifient"
+      "Dépassement du temps de tâche":
+        - "apps/console/tests/test_escalations.py::EscalationTest.test_timeout_bloque_et_notifie"
+
+  "Journal des runs et indépendance":
+    tests:
+      - apps/console/tests/test_run_journal.py
+    tasks: ["6.11", "7.3"]
+    scenarios:
+      "Journal filtrable":
+        - "apps/console/tests/test_run_journal.py::RunJournalTest.test_journal_filtres_et_union"
+      "Deux provenances de runs":
+        - "apps/console/tests/test_run_journal.py::RunJournalTest.test_dedup_priorite_au_run_lance"
+      "Seuil d'indépendance dépassé":
+        - "apps/console/tests/test_run_journal.py::RunJournalTest.test_taux_independance_seuil_et_audit"
+
+  "Redaction étendue":
+    tests:
+      - apps/console/tests/test_redaction.py
+      - apps/console/tests/test_redaction_extended.py
+    tasks: ["6.12"]
+    scenarios:
+      "Faux jeton dans un export":
+        - "apps/console/tests/test_redaction_extended.py::RedactionExtendedTest.test_exports_json_et_csv_expurges"
+        - "apps/console/tests/test_redaction_extended.py::RedactionExtendedTest.test_paquet_revue_expurge_et_csp"
+        - "apps/console/tests/test_redaction_extended.py::RedactionExtendedTest.test_redaction_structuree_et_journal"
+
+  "En-têtes de sécurité et CSP":
+    tests:
+      - apps/console/tests/test_security.py
+      - apps/console/tests/test_redaction_extended.py
+    tasks: ["1.5", "6.12"]
+    scenarios:
+      "CSP active":
+        - "apps/console/tests/test_security.py::SecurityMiddlewareTest.test_host_valide_et_entetes"
+        - "apps/console/tests/test_security.py::SecurityMiddlewareTest.test_csp_stricte_verifiee"
+        - "apps/console/tests/test_redaction_extended.py::RedactionExtendedTest.test_paquet_revue_expurge_et_csp"
 
   "Pagination serveur":
+    tests:
+      - apps/console/tests/test_pagination.py
     tasks: ["7.6"]
+    scenarios:
+      "Liste paginée":
+        - "apps/console/tests/test_pagination.py::PaginationApiTest.test_features_paginees"
+        - "apps/console/tests/test_pagination.py::PaginationApiTest.test_tasks_paginees"
+        - "apps/console/tests/test_pagination.py::PaginationUnitTest.test_pages_et_derniere_page_partielle"
+      "Bornes de pagination invalides":
+        - "apps/console/tests/test_pagination.py::PaginationApiTest.test_bornes_invalides_retournent_400"
+        - "apps/console/tests/test_pagination.py::PaginationUnitTest.test_bornes_refusees"
 
   "Accessibilité et navigation":
+    tests:
+      - apps/console/tests/test_accessibility_static.py
+      - apps/console/tests/test_suivi_e2e.py
     tasks: ["8.1"]
+    scenarios:
+      "Parcours clavier des 12 vues":
+        - "apps/console/tests/test_accessibility_static.py::AccessibilityStaticTest.test_les_douze_vues_ont_un_titre_et_une_region"
+        - "apps/console/tests/test_accessibility_static.py::AccessibilityStaticTest.test_langue_lien_evitement_et_landmark"
+        - "apps/console/tests/test_accessibility_static.py::AccessibilityStaticTest.test_focus_visible_et_mouvement_reduit"
+      "Équivalent textuel d'un graphique":
+        - "apps/console/tests/test_accessibility_static.py::AccessibilityStaticTest.test_tableaux_avec_caption"
+        - "apps/console/tests/test_accessibility_static.py::AccessibilityStaticTest.test_mises_a_jour_dynamiques_annoncees"
 
   "Dégradation gracieuse":
     tasks: ["7.6"]
 
   "Déploiements et go/no-go":
+    tests:
+      - apps/console/tests/test_deployments_view.py
     tasks: ["7.7"]
+    scenarios:
+      "Go/no-go bloqué":
+        - "apps/console/tests/test_deployments_view.py::DeploymentsViewTest.test_gate_en_echec_bloque_go"
+      "Historique des déploiements":
+        - "apps/console/tests/test_deployments_view.py::DeploymentsViewTest.test_vue_deploiements_dora_et_go_no_go"
+        - "apps/console/tests/test_deployments_view.py::DeploymentsViewTest.test_api_deploiements_filtre_et_go_no_go"
 
   "Documentation et fraîcheur":
+    tests:
+      - apps/console/tests/test_documents_view.py
     tasks: ["7.4"]
+    scenarios:
+      "Document généré":
+        - "apps/console/tests/test_documents_view.py::DocumentsViewTest.test_inventaire_fraicheur_et_generated"
+        - "apps/console/tests/test_documents_view.py::DocumentsViewTest.test_api_documents_et_contenu"
+      "Document périmé":
+        - "apps/console/tests/test_documents_view.py::DocumentsViewTest.test_inventaire_fraicheur_et_generated"
+      "XSS dans un document":
+        - "apps/console/tests/test_documents_view.py::DocumentsViewTest.test_lecture_markdown_sans_html_interprete"
 
   "Rétention et purge":
+    tests:
+      - apps/console/tests/test_purge.py
     tasks: ["8.5"]
+    scenarios:
+      "Purge standard":
+        - "apps/console/tests/test_purge.py::PurgeTest.test_purge_standard_conserve_audit_et_supprime_les_vieux"
+      "Purge pendant une ingestion":
+        - "apps/console/tests/test_purge.py::PurgeTest.test_purge_sans_confirmation_et_ingestion_en_cours"
+      "Sauvegarde trop ancienne":
+        - "apps/console/tests/test_purge.py::PurgeTest.test_backup_absent_ou_trop_ancien_refuse"
 
   "Sauvegarde et restauration globales":
+    tests:
+      - apps/console/tests/test_backup.py
     tasks: ["8.4"]
+    scenarios:
+      "Restauration":
+        - "apps/console/tests/test_backup.py::BackupTest.test_sauvegarde_verification_et_restauration"

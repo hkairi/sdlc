@@ -136,6 +136,7 @@ class GitIngestionTest(unittest.TestCase):
         self.assertEqual(first.additions, 1)
         self.assertEqual(first.deletions, 0)
         self.assertEqual(first.files_changed, 1)
+        self.assertEqual(json.loads(first.files_json), ["app.py"])
         self.assertFalse(first.is_merge)
         self.assertFalse(first.is_bot)
 

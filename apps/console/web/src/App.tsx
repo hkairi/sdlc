@@ -1,6 +1,16 @@
 import { useEffect, useState } from "react";
+import Agents from "./Agents";
+import Configuration from "./Configuration";
+import Deployments from "./Deployments";
+import Documents from "./Documents";
 import Features from "./Features";
+import Gates from "./Gates";
 import Overview from "./Overview";
+import PerformanceData from "./PerformanceData";
+import Process from "./Process";
+import Review from "./Review";
+import Security from "./Security";
+import Team from "./Team";
 import {
   fetchJson,
   openSuiviOnce,
@@ -108,7 +118,11 @@ export default function App() {
   const persistentUrl = selectedId === null ? null : suiviUrl(selectedId);
 
   return (
-    <main className="shell">
+    <>
+      <a className="skip-link" href="#main-content">
+        Aller au contenu principal
+      </a>
+      <main className="shell" id="main-content">
       <header>
         <p className="eyebrow">Console SDLC · Suivi</p>
         <h1>Suivi du projet</h1>
@@ -121,6 +135,26 @@ export default function App() {
       <Overview projectId={selectedId} />
 
       <Features projectId={selectedId} />
+
+      <Gates projectId={selectedId} />
+
+      <Review projectId={selectedId} />
+
+      <Team projectId={selectedId} />
+
+      <Process projectId={selectedId} />
+
+      <Security projectId={selectedId} />
+
+      <PerformanceData projectId={selectedId} />
+
+      <Agents projectId={selectedId} />
+
+      <Documents projectId={selectedId} />
+
+      <Configuration projectId={selectedId} />
+
+      <Deployments projectId={selectedId} />
 
       <section className="card" aria-labelledby="suivi-title">
         <div className="card-head">
@@ -212,6 +246,7 @@ export default function App() {
           </p>
         )}
       </section>
-    </main>
+      </main>
+    </>
   );
 }

@@ -11,6 +11,9 @@ __pycache__/
 # Sorties des contrôles (scripts/ci.sh), régénérées à chaque exécution
 /reports/
 
+# Couverture Console locale
+/apps/console/.coverage
+
 # Frontend Console (dépendances et build)
 /apps/console/web/node_modules/
 /apps/console/web/dist/

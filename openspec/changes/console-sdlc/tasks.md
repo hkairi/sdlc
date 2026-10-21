@@ -50,49 +50,49 @@
 ## 5. Équipe et processus
 
 - [x] 5.1 **[2.2, 2.6]** Implémenter les métriques d'équipe par personne et par dépôt (commits, MR, revues, approbations, IA)
-- [ ] 5.2 **[5.1]** Implémenter le bus factor, la propriété par zone (CODEOWNERS) et les alertes
-- [ ] 5.3 **[5.1]** Implémenter la chaîne de validation auteur → relecteur agent → humain
-- [ ] 5.4 **[2.1, 2.4]** Implémenter la détection de processus (branches, merges, tags, protections, CI) et la confiance
-- [ ] 5.5 **[5.4]** Implémenter le profil par dépôt, l'agrégation projet et la surcharge auditée
-- [ ] 5.6 **[5.1, 5.4]** Implémenter les métriques DORA (lead time, fréquence, CFR, MTTR) avec sources et « non mesuré »
-- [ ] 5.7 **[5.4]** Ajouter le corpus étiqueté, la commande `process corpus` et le rapport de précision ≥ 80 %
-- [ ] 5.8 **[5.4]** Afficher le flux de processus avec ses gates (feature, release, hotfix, recette, go/no-go)
+- [x] 5.2 **[5.1]** Implémenter le bus factor, la propriété par zone (CODEOWNERS) et les alertes
+- [x] 5.3 **[5.1]** Implémenter la chaîne de validation auteur → relecteur agent → humain
+- [x] 5.4 **[2.1, 2.4]** Implémenter la détection de processus (branches, merges, tags, protections, CI) et la confiance
+- [x] 5.5 **[5.4]** Implémenter le profil par dépôt, l'agrégation projet et la surcharge auditée
+- [x] 5.6 **[5.1, 5.4]** Implémenter les métriques DORA (lead time, fréquence, CFR, MTTR) avec sources et « non mesuré »
+- [x] 5.7 **[5.4]** Ajouter le corpus étiqueté, la commande `process corpus` et le rapport de précision ≥ 80 %
+- [x] 5.8 **[5.4]** Afficher le flux de processus avec ses gates (feature, release, hotfix, recette, go/no-go)
 
 ## 6. Revue, décisions et agents
 
-- [ ] 6.1 **[3.3]** Implémenter la sélection du relecteur (agent, modèle, famille) et l'affichage de l'indépendance
-- [ ] 6.2 **[6.1]** Construire le paquet aveugle (spec, diff, preuves, ADR) et son empreinte
-- [ ] 6.3 **[6.2]** Implémenter le schéma `review.schema.json`, le rapport structuré et la fiche de décision
-- [ ] 6.4 **[6.3]** Implémenter la décision humaine (approuver, conditions, rejeter, info) et l'audit
-- [ ] 6.5 **[1.3]** Implémenter le runner d'agents : modèles de commande, préflight, concurrence, file
-- [ ] 6.6 **[6.5]** Implémenter le groupe de processus, l'annulation, le crash/timeout et la conservation des logs
-- [ ] 6.7 **[6.5]** Implémenter le budget (échantillonnage, arrêt au plafond, coût réel, dépassement signalé)
-- [ ] 6.8 **[6.5]** Purger l'environnement des jetons, appliquer la lecture seule et refuser Git en écriture
-- [ ] 6.9 **[6.3, 6.5]** Diffuser les logs en SSE, en texte échappé, avec `aria-live` et sans déplacement du focus
-- [ ] 6.10 **[6.4]** Escalade après `max_iterations` : tâche `blocked`, notification humaine, itérations conservées
-- [ ] 6.11 **[6.1, 6.5]** Journal des runs (agent, rôle, modèle, statut, durée, coût, tokens) et taux d'indépendance avec seuil 10 %
-- [ ] 6.12 **[6.3, 6.9]** Redaction étendue (exports, `stats_json`, journaux) et CSP vérifiée en revue
+- [x] 6.1 **[3.3]** Implémenter la sélection du relecteur (agent, modèle, famille) et l'affichage de l'indépendance
+- [x] 6.2 **[6.1]** Construire le paquet aveugle (spec, diff, preuves, ADR) et son empreinte
+- [x] 6.3 **[6.2]** Implémenter le schéma `review.schema.json`, le rapport structuré et la fiche de décision
+- [x] 6.4 **[6.3]** Implémenter la décision humaine (approuver, conditions, rejeter, info) et l'audit
+- [x] 6.5 **[1.3]** Implémenter le runner d'agents : modèles de commande, préflight, concurrence, file
+- [x] 6.6 **[6.5]** Implémenter le groupe de processus, l'annulation, le crash/timeout et la conservation des logs
+- [x] 6.7 **[6.5]** Implémenter le budget (échantillonnage, arrêt au plafond, coût réel, dépassement signalé)
+- [x] 6.8 **[6.5]** Purger l'environnement des jetons, appliquer la lecture seule et refuser Git en écriture
+- [x] 6.9 **[6.3, 6.5]** Diffuser les logs en SSE, en texte échappé, avec `aria-live` et sans déplacement du focus
+- [x] 6.10 **[6.4]** Escalade après `max_iterations` : tâche `blocked`, notification humaine, itérations conservées
+- [x] 6.11 **[6.1, 6.5]** Journal des runs (agent, rôle, modèle, statut, durée, coût, tokens) et taux d'indépendance avec seuil 10 %
+- [x] 6.12 **[6.3, 6.9]** Redaction étendue (exports, `stats_json`, journaux) et CSP vérifiée en revue
 
 ## 7. Vues restantes
 
-- [ ] 7.1 **[4.4]** Vue Sécurité : findings, SBOM, licences, dérogations, surface agentique
-- [ ] 7.2 **[4.5, 4.6]** Vue Performance & données : budgets, signaux, PII, migrations, sauvegardes
-- [ ] 7.3 **[6.5]** Vue Agents IA : runs, coûts, escalades, indépendance, journal
-- [ ] 7.4 **[3.3]** Vue Documentation : fraîcheur, lecteur Markdown, mention « fichier généré, ne pas modifier », régénération, suivi
-- [ ] 7.5 **[1.2]** Vue Configuration : config effective, origine des données, validation
-- [ ] 7.6 **[3.8]** Pagination serveur (`limit`/`offset`/`total`, 50 par défaut) et dégradation gracieuse au-delà des volumes cibles
-- [ ] 7.7 **[2.8]** Vue Déploiements : dev/préprod/prod, historique, DORA, checklist go/no-go, rollback
+- [x] 7.1 **[4.4]** Vue Sécurité : findings, SBOM, licences, dérogations, surface agentique
+- [x] 7.2 **[4.5, 4.6]** Vue Performance & données : budgets, signaux, PII, migrations, sauvegardes
+- [x] 7.3 **[6.5]** Vue Agents IA : runs, coûts, escalades, indépendance, journal
+- [x] 7.4 **[3.3]** Vue Documentation : fraîcheur, lecteur Markdown, mention « fichier généré, ne pas modifier », régénération, suivi
+- [x] 7.5 **[1.2]** Vue Configuration : config effective, origine des données, validation
+- [x] 7.6 **[3.8]** Pagination serveur (`limit`/`offset`/`total`, 50 par défaut) et dégradation gracieuse au-delà des volumes cibles
+- [x] 7.7 **[2.8]** Vue Déploiements : dev/préprod/prod, historique, DORA, checklist go/no-go, rollback
 
 ## 8. Finition et recette
 
-- [ ] 8.1 **[toutes]** Audit d'accessibilité RGAA 4.1 AA / WCAG 2.2 AA sur les 12 vues (clavier, contraste, équivalents textuels, `caption`, `prefers-reduced-motion`)
-- [ ] 8.2 **[toutes]** Tests de performance : vue d'ensemble < 1,5 s, multi-dépôts < 2 s, listes < 500 ms, ingestion 10 k commits < 60 s, démarrage < 2 s, mémoire < 512 Mo
-- [ ] 8.3 **[1.4]** Packaging `uv`/`pipx`, build frontend embarqué, commande unique `sdlc-console`
-- [ ] 8.4 **[1.3]** Sauvegarde/restauration globale vérifiée, âge affiché, procédure testée
-- [ ] 8.5 **[1.3, 2.3, 8.4]** Purge 12 mois (audit exclu, logs inclus), ancrage et contrôle d'intégrité
-- [ ] 8.6 **[toutes]** Jeu de démonstration `--demo`, documentation, runbook, ADR, guide d'installation et solution WSL2 (mode miroir ou navigateur dans WSL)
-- [ ] 8.7 **[toutes]** Recette complète, matrice de scénarios et rapport de recette
-- [ ] 8.8 **[1.6]** Câbler `scripts/ci.sh` pour `apps/console` : lint, typecheck, tests, couverture ≥ 80 %, SAST, dépendances, secrets, build
+- [x] 8.1 **[toutes]** Audit d'accessibilité RGAA 4.1 AA / WCAG 2.2 AA sur les 12 vues (clavier, contraste, équivalents textuels, `caption`, `prefers-reduced-motion`)
+- [x] 8.2 **[toutes]** Tests de performance : vue d'ensemble < 1,5 s, multi-dépôts < 2 s, listes < 500 ms, ingestion 10 k commits < 60 s, démarrage < 2 s, mémoire < 512 Mo
+- [x] 8.3 **[1.4]** Packaging `uv`/`pipx`, build frontend embarqué, commande unique `sdlc-console`
+- [x] 8.4 **[1.3]** Sauvegarde/restauration globale vérifiée, âge affiché, procédure testée
+- [x] 8.5 **[1.3, 2.3, 8.4]** Purge 12 mois (audit exclu, logs inclus), ancrage et contrôle d'intégrité
+- [x] 8.6 **[toutes]** Jeu de démonstration `--demo`, documentation, runbook, ADR, guide d'installation et solution WSL2 (mode miroir ou navigateur dans WSL)
+- [x] 8.7 **[toutes]** Recette complète, matrice de scénarios et rapport de recette
+- [x] 8.8 **[1.6]** Câbler `scripts/ci.sh` pour `apps/console` : lint, typecheck, tests, couverture ≥ 80 %, SAST, dépendances, secrets, build
 
 ### Critères d'acceptation par lot
 

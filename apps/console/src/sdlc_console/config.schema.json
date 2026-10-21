@@ -213,7 +213,8 @@
         },
         "blind": { "type": "boolean" },
         "max_iterations": { "type": "integer", "minimum": 1 },
-        "max_cost_eur": { "type": "number", "minimum": 0 }
+        "max_cost_eur": { "type": "number", "minimum": 0 },
+        "independence_threshold_percent": { "type": "number", "minimum": 0, "maximum": 100 }
       }
     },
     "process": {

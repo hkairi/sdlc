@@ -286,6 +286,7 @@ class Commit(Base):
     additions: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     deletions: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     files_changed: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    files_json: Mapped[str] = mapped_column(Text, nullable=False, default="[]")
     is_merge: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     is_bot: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     ai_assisted: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
@@ -471,9 +472,11 @@ class TaskRun(Base):
     tokens_out: Mapped[int | None] = mapped_column(Integer, nullable=True)
     pid: Mapped[int | None] = mapped_column(Integer, nullable=True)
     process_group: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    timeout_seconds: Mapped[int | None] = mapped_column(Integer, nullable=True)
     exit_code: Mapped[int | None] = mapped_column(Integer, nullable=True)
     log_path: Mapped[str | None] = mapped_column(String(1000), nullable=True)
     cancel_requested: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    failure_reason: Mapped[str | None] = mapped_column(String(100), nullable=True)
     report_path: Mapped[str | None] = mapped_column(String(1000), nullable=True)
     origin: Mapped[str] = mapped_column(String(20), nullable=False, default="ingérée")
     imported_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=utc_now)
@@ -870,6 +873,185 @@ class GateFinding(Base):
 
     def __repr__(self) -> str:
         return f"GateFinding(id={self.id!r}, key={self.key!r}, severity={self.severity!r})"
+
+
+class ReviewPackage(Base):
+    """Paquet aveugle de revue, traçable par empreinte."""
+
+    __tablename__ = "review_packages"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    project_id: Mapped[int] = mapped_column(
+        ForeignKey("projects.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    task_key: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
+    feature_key: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    fingerprint: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    report_path: Mapped[str] = mapped_column(String(1000), nullable=False)
+    files_json: Mapped[str] = mapped_column(Text, nullable=False, default="[]")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=utc_now,
+    )
+
+    __table_args__ = (
+        Index("ix_review_packages_project_created", "project_id", "created_at"),
+    )
+
+    def __repr__(self) -> str:
+        return f"ReviewPackage(id={self.id!r}, task={self.task_key!r})"
+
+
+class Decision(Base):
+    """Décision humaine, tracée et auditée."""
+
+    __tablename__ = "decisions"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    project_id: Mapped[int] = mapped_column(
+        ForeignKey("projects.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    subject_type: Mapped[str] = mapped_column(String(50), nullable=False)
+    subject_id: Mapped[str] = mapped_column(String(100), nullable=False)
+    decision: Mapped[str] = mapped_column(String(40), nullable=False)
+    actor_person_id: Mapped[int | None] = mapped_column(
+        ForeignKey("persons.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    actor_label: Mapped[str] = mapped_column(String(200), nullable=False)
+    reason: Mapped[str] = mapped_column(Text, nullable=False)
+    conditions_json: Mapped[str] = mapped_column(Text, nullable=False, default="[]")
+    scope: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=utc_now,
+    )
+    expires_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+
+    __table_args__ = (
+        Index("ix_decisions_project_created", "project_id", "created_at"),
+        Index("ix_decisions_subject", "project_id", "subject_type", "subject_id"),
+    )
+
+    def __repr__(self) -> str:
+        return f"Decision(id={self.id!r}, subject={self.subject_type!r}, decision={self.decision!r})"
+
+
+class HumanNotification(Base):
+    """Notification destinée à l'humain, notamment après escalade."""
+
+    __tablename__ = "human_notifications"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    project_id: Mapped[int] = mapped_column(
+        ForeignKey("projects.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    kind: Mapped[str] = mapped_column(String(50), nullable=False)
+    subject_type: Mapped[str] = mapped_column(String(50), nullable=False)
+    subject_id: Mapped[str] = mapped_column(String(100), nullable=False)
+    message: Mapped[str] = mapped_column(Text, nullable=False)
+    payload_json: Mapped[str] = mapped_column(Text, nullable=False, default="{}")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=utc_now,
+    )
+    acknowledged_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+    acknowledged_by: Mapped[str | None] = mapped_column(String(200), nullable=True)
+
+    __table_args__ = (
+        Index("ix_human_notifications_project_created", "project_id", "created_at"),
+        Index("ix_human_notifications_subject", "project_id", "subject_type", "subject_id"),
+    )
+
+    def __repr__(self) -> str:
+        return f"HumanNotification(id={self.id!r}, kind={self.kind!r})"
+
+
+class ReviewReport(Base):
+    """Rapport structuré et fiche de décision d'une revue."""
+
+    __tablename__ = "review_reports"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    project_id: Mapped[int] = mapped_column(
+        ForeignKey("projects.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    package_id: Mapped[int] = mapped_column(
+        ForeignKey("review_packages.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    task_key: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
+    verdict: Mapped[str] = mapped_column(String(30), nullable=False)
+    confidence: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    report_path: Mapped[str] = mapped_column(String(1000), nullable=False)
+    decision_path: Mapped[str] = mapped_column(String(1000), nullable=False)
+    payload_json: Mapped[str] = mapped_column(Text, nullable=False, default="{}")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=utc_now,
+    )
+
+    __table_args__ = (
+        Index("ix_review_reports_project_created", "project_id", "created_at"),
+    )
+
+    def __repr__(self) -> str:
+        return f"ReviewReport(id={self.id!r}, task={self.task_key!r}, verdict={self.verdict!r})"
+
+
+class ProcessOverride(Base):
+    """Surcharge manuelle datée et auditée du profil de processus."""
+
+    __tablename__ = "process_overrides"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    project_id: Mapped[int] = mapped_column(
+        ForeignKey("projects.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    repository_id: Mapped[int | None] = mapped_column(
+        ForeignKey("repositories.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
+    profile_key: Mapped[str] = mapped_column(String(50), nullable=False)
+    reason: Mapped[str] = mapped_column(Text, nullable=False)
+    actor_label: Mapped[str] = mapped_column(String(200), nullable=False, default="orchestrateur local")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=utc_now,
+    )
+
+    __table_args__ = (
+        Index("ix_process_overrides_project_repo", "project_id", "repository_id"),
+    )
+
+    def __repr__(self) -> str:
+        return (
+            f"ProcessOverride(id={self.id!r}, profile={self.profile_key!r}, "
+            f"repository={self.repository_id!r})"
+        )
 
 
 class GateWaiverRecord(Base):

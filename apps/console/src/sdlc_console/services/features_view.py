@@ -10,6 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..models import Feature, Project, SuiviInconsistency, Task, utc_now
+from .pagination import PageParams, paginate
 
 STATUS_LABELS = {
     "todo": "À faire",
@@ -280,8 +281,10 @@ def build_features_view(
     *,
     phase: str | None = None,
     gate: str | None = None,
+    limit: int = 50,
+    offset: int = 0,
 ) -> dict[str, Any]:
-    """Liste les features avec filtres phase/gate et incohérences."""
+    """Liste paginée des features avec filtres phase/gate et incohérences."""
     features = list(
         session.scalars(
             select(Feature).where(Feature.project_id == project.id).order_by(Feature.key)
@@ -313,13 +316,18 @@ def build_features_view(
     if gate:
         filtered = [] if not _gate_matches(gate) else filtered
 
+    page = paginate(filtered, PageParams(limit=limit, offset=offset))
     return {
         "project": {"id": project.id, "name": project.name, "slug": project.slug},
         "filters": {"phase": phase, "gate": gate},
         "available_phases": available_phases,
         "available_gates": available_gates,
-        "features": filtered,
-        "total": len(filtered),
+        "features": page.items,
+        "total": page.total,
+        "limit": page.limit,
+        "offset": page.offset,
+        "has_more": page.has_more,
+        "next_offset": page.next_offset,
         "inconsistencies": [
             item
             for feature in all_data
@@ -395,6 +403,8 @@ def list_tasks_view(
     *,
     feature_key: str | None = None,
     status: str | None = None,
+    limit: int = 50,
+    offset: int = 0,
 ) -> dict[str, Any]:
     query = (
         select(Task)
@@ -417,11 +427,16 @@ def list_tasks_view(
         item["feature_name"] = task.feature.name
         item["phase"] = _phase_for_feature(task.feature)
         data.append(item)
+    page = paginate(data, PageParams(limit=limit, offset=offset))
     return {
         "project": {"id": project.id, "name": project.name, "slug": project.slug},
         "filters": {"feature_key": feature_key, "status": status},
-        "tasks": data,
-        "total": len(data),
+        "tasks": page.items,
+        "total": page.total,
+        "limit": page.limit,
+        "offset": page.offset,
+        "has_more": page.has_more,
+        "next_offset": page.next_offset,
     }
 
 

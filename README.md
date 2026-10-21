@@ -75,6 +75,28 @@ templates/
   handoff/                        # contrat de passation
 ```
 
+## Console SDLC locale
+
+La Console SDLC est l'application de démonstration du framework : tableau de bord,
+gates, revue indépendante, équipe, processus, sécurité, performance, agents,
+documentation et configuration. Elle tourne localement sur `127.0.0.2`, sans
+authentification, avec SQLite.
+
+```bash
+cd apps/console
+./scripts/build_frontend.sh
+uv tool install .        # ou pipx install .
+sdlc-console init --demo
+sdlc-console serve
+```
+
+Documentation : [`docs/installation.md`](docs/installation.md) (dont WSL2),
+[`docs/ops/runbook.md`](docs/ops/runbook.md), recette
+[`docs/recette/console-sdlc.md`](docs/recette/console-sdlc.md).
+
+Contrôles uniques : `scripts/ci.sh` (Ruff, mypy, tests Python/Vitest, couverture
+≥ 80 %, Bandit, pip-audit, npm audit, gitleaks, build frontend et roue Python).
+
 ## Documentation
 
 - Spécification : [`docs/conception/workflow-sdlc.md`](docs/conception/workflow-sdlc.md)

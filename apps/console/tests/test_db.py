@@ -89,6 +89,11 @@ class MigrationTest(unittest.TestCase):
                 self.assertIn("gate_runs", tables)
                 self.assertIn("gate_findings", tables)
                 self.assertIn("gate_waivers", tables)
+                self.assertIn("process_overrides", tables)
+                self.assertIn("review_packages", tables)
+                self.assertIn("review_reports", tables)
+                self.assertIn("decisions", tables)
+                self.assertIn("human_notifications", tables)
                 columns = {column["name"] for column in inspector.get_columns("projects")}
                 self.assertEqual(columns, {"id", "name", "slug", "timezone", "created_at"})
                 repository_columns = {column["name"] for column in inspector.get_columns("repositories")}
@@ -183,6 +188,7 @@ class MigrationTest(unittest.TestCase):
                         "additions",
                         "deletions",
                         "files_changed",
+                        "files_json",
                         "is_merge",
                         "is_bot",
                         "ai_assisted",
@@ -282,9 +288,11 @@ class MigrationTest(unittest.TestCase):
                         "tokens_out",
                         "pid",
                         "process_group",
+                        "timeout_seconds",
                         "exit_code",
                         "log_path",
                         "cancel_requested",
+                        "failure_reason",
                         "report_path",
                         "origin",
                         "imported_at",
@@ -441,6 +449,97 @@ class MigrationTest(unittest.TestCase):
                         "expires_at",
                         "created_at",
                         "revoked_at",
+                    },
+                )
+                process_override_columns = {
+                    column["name"]
+                    for column in inspector.get_columns("process_overrides")
+                }
+                self.assertEqual(
+                    process_override_columns,
+                    {
+                        "id",
+                        "project_id",
+                        "repository_id",
+                        "profile_key",
+                        "reason",
+                        "actor_label",
+                        "created_at",
+                    },
+                )
+                review_package_columns = {
+                    column["name"]
+                    for column in inspector.get_columns("review_packages")
+                }
+                self.assertEqual(
+                    review_package_columns,
+                    {
+                        "id",
+                        "project_id",
+                        "task_key",
+                        "feature_key",
+                        "fingerprint",
+                        "report_path",
+                        "files_json",
+                        "created_at",
+                    },
+                )
+                review_report_columns = {
+                    column["name"]
+                    for column in inspector.get_columns("review_reports")
+                }
+                self.assertEqual(
+                    review_report_columns,
+                    {
+                        "id",
+                        "project_id",
+                        "package_id",
+                        "task_key",
+                        "verdict",
+                        "confidence",
+                        "report_path",
+                        "decision_path",
+                        "payload_json",
+                        "created_at",
+                    },
+                )
+                decision_columns = {
+                    column["name"] for column in inspector.get_columns("decisions")
+                }
+                self.assertEqual(
+                    decision_columns,
+                    {
+                        "id",
+                        "project_id",
+                        "subject_type",
+                        "subject_id",
+                        "decision",
+                        "actor_person_id",
+                        "actor_label",
+                        "reason",
+                        "conditions_json",
+                        "scope",
+                        "created_at",
+                        "expires_at",
+                    },
+                )
+                notification_columns = {
+                    column["name"]
+                    for column in inspector.get_columns("human_notifications")
+                }
+                self.assertEqual(
+                    notification_columns,
+                    {
+                        "id",
+                        "project_id",
+                        "kind",
+                        "subject_type",
+                        "subject_id",
+                        "message",
+                        "payload_json",
+                        "created_at",
+                        "acknowledged_at",
+                        "acknowledged_by",
                     },
                 )
             finally:

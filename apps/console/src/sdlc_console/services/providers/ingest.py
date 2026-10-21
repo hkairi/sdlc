@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 
 from ...models import Approval, IngestionRun, MergeRequest, Project, Repository, Review, utc_now
 from ...paths import is_secret_path
+from ...redaction import redact
 from ..people import resolve_person
 from ..projects import list_repositories
 from .common import as_int, repository_owner_and_name, repository_path_from_url
@@ -378,14 +379,16 @@ def collect_repository(
             stats = store_merge_requests(session, repository, items)
         run.status = "done"
         run.finished_at = utc_now()
-        run.stats_json = json.dumps({"mode": mode, **stats}, sort_keys=True)
+        run.stats_json = redact(json.dumps({"mode": mode, **stats}, sort_keys=True))
         session.flush()
         return run
     except Exception as exc:  # noqa: BLE001 - l'échec est journalisé puis propagé
         run.status = "failed"
         run.finished_at = utc_now()
-        run.error = str(exc)[:2000]
-        run.stats_json = json.dumps({"mode": mode, "error": str(exc)[:500]}, ensure_ascii=False)
+        run.error = redact(str(exc))[:2000]
+        run.stats_json = redact(
+            json.dumps({"mode": mode, "error": str(exc)[:500]}, ensure_ascii=False)
+        )
         session.flush()
         if isinstance(exc, ProviderError):
             raise

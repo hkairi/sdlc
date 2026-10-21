@@ -56,6 +56,204 @@ const features = {
   sources: {},
 };
 
+const security = {
+  generated_at: "2026-10-21T10:00:00+00:00",
+  project,
+  status: "not_measured",
+  run: {
+    id: null,
+    verdict: "not_run",
+    base_verdict: null,
+    blocks: false,
+    report_path: null,
+    generated_at: null,
+  },
+  findings: [],
+  finding_counts: {},
+  sbom: {
+    status: "not_measured",
+    path: null,
+    format: null,
+    components: null,
+    licenses: [],
+    packages: [],
+    detail: "aucun SBOM",
+  },
+  licenses: { values: [], count: 0, status: "not_measured", policy: { allowed: [], denied: [], status: "not_declared" } },
+  waivers: [],
+  agent_surface: {
+    agents: [],
+    repositories: [],
+    recent_runs: [],
+    runs_by_status: {},
+    read_only_reviews: 0,
+    git_write_refused: 0,
+    environment_policy: "",
+    surface: "",
+  },
+  sources: {},
+};
+
+const quality = {
+  generated_at: "2026-10-21T10:00:00+00:00",
+  project,
+  performance: {
+    status: "not_measured",
+    verdict: "not_run",
+    blocks: false,
+    report_path: null,
+    generated_at: null,
+    budgets: {},
+    cases: [],
+    signals: [],
+    findings: [],
+    controls: [],
+  },
+  data: {
+    status: "not_measured",
+    verdict: "not_run",
+    blocks: false,
+    report_path: null,
+    generated_at: null,
+    controls: [],
+    pii: [],
+    migrations: [],
+    backup: {
+      status: "not_measured",
+      verified: null,
+      restore_tested: null,
+      age_hours: null,
+      source: "",
+      verdict: null,
+      reason: null,
+    },
+    retention_days: null,
+    schema: { status: "not_measured", current: null, head: null, up_to_date: null, source: "alembic" },
+  },
+  sources: {},
+};
+
+const agentsData = {
+  project,
+  filters: { agent_id: null, role: null, status: null },
+  runs: [],
+  total: 0,
+  limit: 50,
+  offset: 0,
+  has_more: false,
+  independence: {
+    status: "not_measured",
+    window_days: 30,
+    total_reviews: 0,
+    independent_reviews: 0,
+    degraded_reviews: 0,
+    degraded_rate_percent: null,
+    threshold_percent: 10,
+    decision_required: false,
+    unmeasured_reviews: 0,
+    detail: "aucune revue",
+  },
+  independence_alert: null,
+};
+
+const notifications = { project, notifications: [], total: 0 };
+
+const documents = {
+  generated_at: "2026-10-21T10:00:00+00:00",
+  project,
+  review_days: 90,
+  documents: [],
+  summary: { expected: 0, present: 0, missing: 0, stale: 0, generated: 0 },
+  sources: {},
+};
+
+const configuration = {
+  project,
+  config_file: { path: "sdlc.config.yaml", exists: false, readable: false },
+  validation: { valid: false, errors: [], schema_id: null, schema_title: null },
+  effective: {},
+  origins: [],
+  sources: {},
+  notice: "",
+};
+
+const gates = { project, gates: [], total: 0, limit: 50, offset: 0, has_more: false, next_offset: null };
+const findings = { project, findings: [], total: 0, limit: 50, offset: 0, has_more: false, next_offset: null };
+const reviewPackages = { project, packages: [], total: 0 };
+const decisions = { project, decisions: [], total: 0 };
+const reviewers = {
+  project,
+  selected: null,
+  level: "degraded",
+  allowed: false,
+  waiver_required: true,
+  reason: "aucun relecteur",
+  candidates: [],
+};
+const team = {
+  project,
+  repositories: [],
+  persons: [],
+  totals: {
+    commits: 0,
+    merged_requests: 0,
+    reviews: 0,
+    approvals: 0,
+    additions: 0,
+    deletions: 0,
+    persons: 0,
+    ai_percent: null,
+  },
+  validation: {
+    total: 0,
+    agent_review_rate: null,
+    human_approval_rate: null,
+    complete_rate: null,
+    status: "not_measured",
+  },
+  sources: {},
+};
+const ownership = {
+  project,
+  window_days: 90,
+  zones: [],
+  alerts: [],
+  status: "not_measured",
+  sources: {},
+};
+const processData = {
+  project,
+  repositories: [],
+  profiles: [],
+  dominant_profile: null,
+  project_profile: null,
+  divergent: false,
+  divergences: [],
+  status: "not_measured",
+};
+const processFlow = { project, flows: [], gates: {}, sources: {} };
+
+const deployments = {
+  generated_at: "2026-10-21T10:00:00+00:00",
+  project,
+  filters: { env: null },
+  environments: {
+    dev: { status: "not_measured", count: 0, latest: null },
+    preprod: { status: "not_measured", count: 0, latest: null },
+    prod: { status: "not_measured", count: 0, latest: null },
+  },
+  history: [],
+  total: 0,
+  limit: 50,
+  offset: 0,
+  has_more: false,
+  next_offset: null,
+  rollbacks: [],
+  dora: { metrics: [], deployments: { prod: 0, successful: 0, failed: 0 } },
+  go_no_go: { verdict: "go", conditions: [], checklist: [] },
+  sources: {},
+};
+
 function jsonResponse(payload: unknown): Response {
   return new Response(JSON.stringify(payload), {
     status: 200,
@@ -108,6 +306,54 @@ function mockApi(options: { initiallyReady?: boolean } = {}) {
     }
     if (url.startsWith("/api/projects/1/features")) {
       return Promise.resolve(jsonResponse(features));
+    }
+    if (url === "/api/projects/1/gates") {
+      return Promise.resolve(jsonResponse(gates));
+    }
+    if (url.startsWith("/api/projects/1/findings")) {
+      return Promise.resolve(jsonResponse(findings));
+    }
+    if (url === "/api/projects/1/review-packages") {
+      return Promise.resolve(jsonResponse(reviewPackages));
+    }
+    if (url === "/api/projects/1/reviewers") {
+      return Promise.resolve(jsonResponse(reviewers));
+    }
+    if (url === "/api/projects/1/decisions") {
+      return Promise.resolve(jsonResponse(decisions));
+    }
+    if (url === "/api/projects/1/team") {
+      return Promise.resolve(jsonResponse(team));
+    }
+    if (url.startsWith("/api/projects/1/team/ownership")) {
+      return Promise.resolve(jsonResponse(ownership));
+    }
+    if (url === "/api/projects/1/process") {
+      return Promise.resolve(jsonResponse(processData));
+    }
+    if (url === "/api/projects/1/process/flow") {
+      return Promise.resolve(jsonResponse(processFlow));
+    }
+    if (url === "/api/projects/1/security") {
+      return Promise.resolve(jsonResponse(security));
+    }
+    if (url === "/api/projects/1/performance") {
+      return Promise.resolve(jsonResponse(quality));
+    }
+    if (url.startsWith("/api/projects/1/agents")) {
+      return Promise.resolve(jsonResponse(agentsData));
+    }
+    if (url.startsWith("/api/projects/1/notifications")) {
+      return Promise.resolve(jsonResponse(notifications));
+    }
+    if (url.startsWith("/api/projects/1/documents")) {
+      return Promise.resolve(jsonResponse(documents));
+    }
+    if (url === "/api/projects/1/configuration") {
+      return Promise.resolve(jsonResponse(configuration));
+    }
+    if (url.startsWith("/api/projects/1/deployments")) {
+      return Promise.resolve(jsonResponse(deployments));
     }
     if (url === "/api/projects/1/suivi?format=json") {
       return Promise.resolve(jsonResponse({}));
@@ -168,6 +414,33 @@ describe("App suivi", () => {
     expect(window.open).toHaveBeenCalledTimes(1);
   });
 
+  it("expose le lien d'évitement et les 12 vues avec des titres de niveau 2", async () => {
+    mockApi({ initiallyReady: true });
+    render(<App />);
+
+    expect(
+      await screen.findByRole("link", { name: "Aller au contenu principal" }),
+    ).toBeTruthy();
+    expect(document.querySelector("main#main-content")).toBeTruthy();
+    const expected = [
+      "Vue d'ensemble",
+      "Features & tâches",
+      "Gates & qualité",
+      "Revue indépendante",
+      "Équipe",
+      "Processus",
+      "Sécurité",
+      "Performance & données",
+      "Agents IA",
+      "Documentation",
+      "Configuration",
+      "Déploiements",
+    ];
+    for (const name of expected) {
+      expect(screen.getByRole("heading", { level: 2, name })).toBeTruthy();
+    }
+  });
+
   it("expose le lien persistant et les libellés accessibles quand l'ouverture est désactivée", async () => {
     const disabled = { ...ready, open_on_ready: false };
     vi.stubGlobal(
@@ -185,6 +458,54 @@ describe("App suivi", () => {
         }
         if (url.startsWith("/api/projects/1/features")) {
           return Promise.resolve(jsonResponse(features));
+        }
+        if (url === "/api/projects/1/gates") {
+          return Promise.resolve(jsonResponse(gates));
+        }
+        if (url.startsWith("/api/projects/1/findings")) {
+          return Promise.resolve(jsonResponse(findings));
+        }
+        if (url === "/api/projects/1/review-packages") {
+          return Promise.resolve(jsonResponse(reviewPackages));
+        }
+        if (url === "/api/projects/1/reviewers") {
+          return Promise.resolve(jsonResponse(reviewers));
+        }
+        if (url === "/api/projects/1/decisions") {
+          return Promise.resolve(jsonResponse(decisions));
+        }
+        if (url === "/api/projects/1/team") {
+          return Promise.resolve(jsonResponse(team));
+        }
+        if (url.startsWith("/api/projects/1/team/ownership")) {
+          return Promise.resolve(jsonResponse(ownership));
+        }
+        if (url === "/api/projects/1/process") {
+          return Promise.resolve(jsonResponse(processData));
+        }
+        if (url === "/api/projects/1/process/flow") {
+          return Promise.resolve(jsonResponse(processFlow));
+        }
+        if (url === "/api/projects/1/security") {
+          return Promise.resolve(jsonResponse(security));
+        }
+        if (url === "/api/projects/1/performance") {
+          return Promise.resolve(jsonResponse(quality));
+        }
+        if (url.startsWith("/api/projects/1/agents")) {
+          return Promise.resolve(jsonResponse(agentsData));
+        }
+        if (url.startsWith("/api/projects/1/notifications")) {
+          return Promise.resolve(jsonResponse(notifications));
+        }
+        if (url.startsWith("/api/projects/1/documents")) {
+          return Promise.resolve(jsonResponse(documents));
+        }
+        if (url === "/api/projects/1/configuration") {
+          return Promise.resolve(jsonResponse(configuration));
+        }
+        if (url.startsWith("/api/projects/1/deployments")) {
+          return Promise.resolve(jsonResponse(deployments));
         }
         return Promise.reject(new Error(`URL inattendue : ${url}`));
       }),

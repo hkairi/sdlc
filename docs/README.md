@@ -14,3 +14,7 @@
 - [`mockup-suivi-projet.html`](mockup-suivi-projet.html) — maquette validée du tableau de bord projet (données fictives).
 - [`mockup-framework.html`](mockup-framework.html) — maquette complète du tableau de bord : vue d'ensemble, features, gates, revue indépendante, déploiements, **équipe** (répartition déduite de l'historique) et **processus** (git flow détecté), données fictives.
 - [`mockup-dashboard-sdlc.html`](mockup-dashboard-sdlc.html) — maquette de la console produit « My AI powered SDLC » (données fictives) : organisation (équipes, projets, membres et rôles), travail (features, tickets, changes OpenSpec) et pilotage (avancement, runs d'agents, qualité, coûts, incidents).
+
+- [`installation.md`](installation.md) — installation `uv`/`pipx`, build frontend embarqué, WSL2.
+- [`ops/runbook.md`](ops/runbook.md) — runbook d'exploitation et escalades.
+- [`recette/accessibilite.md`](recette/accessibilite.md) — audit d'accessibilité des 12 vues.

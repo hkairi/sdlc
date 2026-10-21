@@ -45,11 +45,13 @@ class SecurityFinding:
 
 @dataclass(frozen=True)
 class SbomInfo:
-    """SBOM chargé et son format."""
+    """SBOM chargé, ses composants et ses licences."""
 
     path: str
     format: str
     components: int
+    licenses: tuple[str, ...] = ()
+    packages: tuple[dict[str, Any], ...] = ()
 
 
 @dataclass(frozen=True)
@@ -292,17 +294,69 @@ def parse_sbom(path: str | Path, *, root: str | Path | None = None) -> SbomInfo:
         raise GateError(f"SBOM invalide : {path}")
     if payload.get("bomFormat") == "CycloneDX" or isinstance(payload.get("components"), list):
         components = payload.get("components") or []
+        licenses: set[str] = set()
+        packages: list[dict[str, Any]] = []
+        for component in components:
+            if not isinstance(component, dict):
+                continue
+            package_licenses: list[str] = []
+            raw_licenses = component.get("licenses")
+            if isinstance(raw_licenses, list):
+                for item in raw_licenses:
+                    if not isinstance(item, dict):
+                        continue
+                    license_data = item.get("license")
+                    if isinstance(license_data, dict):
+                        value = license_data.get("id") or license_data.get("name")
+                    else:
+                        value = item.get("expression") or item.get("id") or item.get("name")
+                    if value and str(value).upper() not in {"NOASSERTION", "NONE"}:
+                        package_licenses.append(str(value))
+                        licenses.add(str(value))
+            packages.append(
+                {
+                    "name": str(component.get("name") or "inconnu"),
+                    "version": str(component.get("version") or ""),
+                    "licenses": package_licenses,
+                }
+            )
         return SbomInfo(
             path=_relative(source, root_path),
             format="cyclonedx",
             components=len(components),
+            licenses=tuple(sorted(licenses)),
+            packages=tuple(packages),
         )
     if payload.get("spdxVersion") or isinstance(payload.get("packages"), list):
-        packages = payload.get("packages") or []
+        packages_raw = payload.get("packages") or []
+        spdx_licenses: set[str] = set()
+        spdx_packages: list[dict[str, Any]] = []
+        for package in packages_raw:
+            if not isinstance(package, dict):
+                continue
+            values = [
+                str(package.get("licenseConcluded") or ""),
+                str(package.get("licenseDeclared") or ""),
+            ]
+            package_licenses = [
+                value
+                for value in values
+                if value and value.upper() not in {"NOASSERTION", "NONE"}
+            ]
+            spdx_licenses.update(package_licenses)
+            spdx_packages.append(
+                {
+                    "name": str(package.get("name") or "inconnu"),
+                    "version": str(package.get("versionInfo") or ""),
+                    "licenses": package_licenses,
+                }
+            )
         return SbomInfo(
             path=_relative(source, root_path),
             format="spdx",
-            components=len(packages),
+            components=len(packages_raw),
+            licenses=tuple(sorted(spdx_licenses)),
+            packages=tuple(spdx_packages),
         )
     return SbomInfo(path=_relative(source, root_path), format="unknown", components=0)
 

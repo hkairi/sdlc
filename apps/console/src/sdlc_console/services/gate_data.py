@@ -483,6 +483,11 @@ def run_data_gate(
             reason=backup_reason,
             evidence=evidence,
             findings=tuple(backup_findings),
+            details={
+                "age_hours": status.age_hours if status is not None else None,
+                "verified": status.verified if status is not None else None,
+                "restore_tested": status.restore_tested if status is not None else None,
+            },
         ),
         ControlResult(
             key="retention",
@@ -491,6 +496,7 @@ def run_data_gate(
             reason=retention_reason,
             evidence=evidence,
             findings=tuple(retention_findings),
+            details={"retention_days": retention_days},
         ),
         ControlResult(
             key="encryption",
@@ -499,6 +505,7 @@ def run_data_gate(
             reason=encryption_reason,
             evidence=evidence,
             findings=tuple(encryption_findings),
+            details={"encrypted": encrypted},
         ),
     ]
     evaluation = evaluate_gate(

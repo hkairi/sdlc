@@ -72,6 +72,10 @@ export type FeaturesResponse = {
   available_gates: Array<{ id: string; name: string; source: string }>;
   features: FeatureItem[];
   total: number;
+  limit: number;
+  offset: number;
+  has_more: boolean;
+  next_offset: number | null;
   inconsistencies: Inconsistency[];
   sources: Record<string, string>;
 };
@@ -97,7 +101,13 @@ export type TaskDetail = {
   source: string;
 };
 
-export function featuresUrl(projectId: number, phase: string, gate: string): string {
+export function featuresUrl(
+  projectId: number,
+  phase: string,
+  gate: string,
+  limit = 50,
+  offset = 0,
+): string {
   const params = new URLSearchParams();
   if (phase) {
     params.set("phase", phase);
@@ -105,8 +115,9 @@ export function featuresUrl(projectId: number, phase: string, gate: string): str
   if (gate) {
     params.set("gate", gate);
   }
-  const query = params.toString();
-  return `/api/projects/${projectId}/features${query ? `?${query}` : ""}`;
+  params.set("limit", String(limit));
+  params.set("offset", String(offset));
+  return `/api/projects/${projectId}/features?${params.toString()}`;
 }
 
 export function taskDetailUrl(projectId: number, taskId: number): string {

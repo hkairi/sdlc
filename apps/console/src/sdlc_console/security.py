@@ -11,6 +11,7 @@ import hashlib
 import hmac
 import secrets
 import time
+from collections.abc import Mapping
 from urllib.parse import urlparse
 
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
@@ -29,20 +30,57 @@ DEFAULT_ALLOWED_ORIGINS = frozenset(
     }
 )
 
+CSP_POLICY = (
+    "default-src 'self'; "
+    "script-src 'self'; "
+    "style-src 'self' 'unsafe-inline'; "
+    "img-src 'self' data:; "
+    "connect-src 'self'; "
+    "object-src 'none'; "
+    "frame-ancestors 'none'; "
+    "base-uri 'self'"
+)
+
 SECURITY_HEADERS = {
-    "Content-Security-Policy": (
-        "default-src 'self'; "
-        "script-src 'self'; "
-        "style-src 'self' 'unsafe-inline'; "
-        "img-src 'self' data:; "
-        "connect-src 'self'; "
-        "frame-ancestors 'none'; "
-        "base-uri 'self'"
-    ),
+    "Content-Security-Policy": CSP_POLICY,
     "X-Content-Type-Options": "nosniff",
     "Referrer-Policy": "no-referrer",
     "X-Frame-Options": "DENY",
 }
+
+
+def verify_csp(headers: Mapping[str, str] | None = None) -> dict[str, object]:
+    """Vérifie la CSP attendue, utilisable comme preuve en revue."""
+    policy = (headers or SECURITY_HEADERS).get("Content-Security-Policy", "")
+    directives = {
+        part.strip().split(" ", 1)[0]: part.strip()
+        for part in policy.split(";")
+        if part.strip()
+    }
+    issues: list[str] = []
+    required = {
+        "default-src": "'self'",
+        "script-src": "'self'",
+        "object-src": "'none'",
+        "frame-ancestors": "'none'",
+        "base-uri": "'self'",
+    }
+    for name, expected in required.items():
+        if name not in directives:
+            issues.append(f"directive absente : {name}")
+        elif expected not in directives[name]:
+            issues.append(f"directive {name} sans {expected}")
+    if "'unsafe-eval'" in policy:
+        issues.append("script-src autorise unsafe-eval")
+    if " *" in policy or "*;" in policy:
+        issues.append("CSP contient un joker")
+    return {
+        "ok": not issues,
+        "policy": policy,
+        "directives": directives,
+        "issues": issues,
+        "source": "SecurityMiddleware",
+    }
 
 
 class CsrfProtector:

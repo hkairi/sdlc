@@ -8,7 +8,7 @@
     "storage_key": null,
     "lang": "fr"
   },
-  "file_updated": "2026-10-20",
+  "file_updated": "2026-10-21",
   "features": [
     {
       "id": "console-sdlc",
@@ -111,7 +111,7 @@
           "color": "#2b6cb0",
           "order": 3,
           "items": [],
-          "status": "doing"
+          "status": "done"
         },
         {
           "id": "validation",
@@ -1355,10 +1355,21 @@
           "lot": "L5",
           "title": "Implémenter le bus factor, la propriété par zone",
           "text": "Implémenter le bus factor, la propriété par zone (CODEOWNERS) et les alertes",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Bus factor et propriété livrés : fichiers par commit, parsing CODEOWNERS, zones par dépôt, cumul 50 % sur 90 jours, propriétaires principal/secondaire, alertes bus factor 1, route team/ownership et migration 0013.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Bus factor et propriété : fichiers de commit, CODEOWNERS, zones, propriétaires principal/secondaire et alertes."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Bus factor et propriété livrés : fichiers par commit, parsing CODEOWNERS, zones par dépôt, cumul 50 % sur 90 jours, propriétaires principal/secondaire, alertes bus factor 1, route team/ownership et migration 0013."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1374,10 +1385,21 @@
           "lot": "L5",
           "title": "Implémenter la chaîne de validation auteur → relecteur agent → humain",
           "text": "Implémenter la chaîne de validation auteur → relecteur agent → humain",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Chaîne de validation livrée : auteur → relecteur agent → approbation humaine, statuts par MR, taux agent/humain/complétude par dépôt, intégration à /team et route /team/validation.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Chaîne de validation auteur → relecteur agent → humain, taux de revues agent et d'approbations humaines."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Chaîne de validation livrée : auteur → relecteur agent → approbation humaine, statuts par MR, taux agent/humain/complétude par dépôt, intégration à /team et route /team/validation."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1393,10 +1415,21 @@
           "lot": "L5",
           "title": "Implémenter la détection de processus",
           "text": "Implémenter la détection de processus (branches, merges, tags, protections, CI) et la confiance",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Détection de processus livrée : lecture branches/tags/merges/CI, profils GitHub Flow (+releases), Git Flow, trunk-based, GitLab Flow, signaux et confiance, non identifiable motivé, route /process.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Détection de processus : branches, merges, tags, protections, CI, profils et confiance."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Détection de processus livrée : lecture branches/tags/merges/CI, profils GitHub Flow (+releases), Git Flow, trunk-based, GitLab Flow, signaux et confiance, non identifiable motivé, route /process."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1412,10 +1445,21 @@
           "lot": "L5",
           "title": "Implémenter le profil par dépôt, l'agrégation projet et la surcharge auditée",
           "text": "Implémenter le profil par dépôt, l'agrégation projet et la surcharge auditée",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Profils par dépôt et agrégation livrés : profil dominant, divergences sans moyenne, surcharge repository/projet datée, motivée et auditée, API PUT /process/override, migration 0014.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Profils par dépôt, agrégation projet, divergences et surcharge manuelle datée/motivée/auditée."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Profils par dépôt et agrégation livrés : profil dominant, divergences sans moyenne, surcharge repository/projet datée, motivée et auditée, API PUT /process/override, migration 0014."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1431,10 +1475,21 @@
           "lot": "L5",
           "title": "Implémenter les métriques DORA",
           "text": "Implémenter les métriques DORA (lead time, fréquence, CFR, MTTR) avec sources et « non mesuré »",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "DORA : fréquence, CFR, lead time et MTTR avec fenêtre, sources et non mesuré.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Métriques DORA : lead time, fréquence, CFR, MTTR avec fenêtre, sources et non mesuré."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "DORA : fréquence, CFR, lead time et MTTR avec fenêtre, sources et non mesuré."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1450,10 +1505,21 @@
           "lot": "L5",
           "title": "Ajouter le corpus étiqueté, la commande process corpus et le rapport de précision ≥ 80 %",
           "text": "Ajouter le corpus étiqueté, la commande `process corpus` et le rapport de précision ≥ 80 %",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Corpus de processus étiqueté, commande process corpus et rapport de précision.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Corpus de processus étiqueté, commande process corpus et rapport de précision ≥ 80 %."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Corpus de processus étiqueté, commande process corpus et rapport de précision."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1469,10 +1535,21 @@
           "lot": "L5",
           "title": "Afficher le flux de processus avec ses gates",
           "text": "Afficher le flux de processus avec ses gates (feature, release, hotfix, recette, go/no-go)",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Flux feature/release/hotfix avec gates et liens vers leurs preuves.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Flux de processus avec gates feature/release/hotfix, liens vers les preuves de gates."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Flux feature/release/hotfix avec gates et liens vers leurs preuves."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1488,10 +1565,21 @@
           "lot": "L6",
           "title": "Implémenter la sélection du relecteur",
           "text": "Implémenter la sélection du relecteur (agent, modèle, famille) et l'affichage de l'indépendance",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Sélection du relecteur indépendant agent/modèle/famille et niveaux d'indépendance.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Sélection du relecteur indépendant : agent, modèle, famille et niveau d'indépendance."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Sélection du relecteur indépendant agent/modèle/famille et niveaux d'indépendance."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1507,10 +1595,21 @@
           "lot": "L6",
           "title": "Construire le paquet aveugle",
           "text": "Construire le paquet aveugle (spec, diff, preuves, ADR) et son empreinte",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Paquet de revue aveugle avec spec, diff, preuves, ADR et empreinte.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Paquet de revue aveugle : spec, diff, preuves, ADR, empreinte et fichier téléchargeable."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Paquet de revue aveugle avec spec, diff, preuves, ADR et empreinte."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1526,10 +1625,21 @@
           "lot": "L6",
           "title": "Implémenter le schéma review.schema.json, le rapport structuré et la fiche de décision",
           "text": "Implémenter le schéma `review.schema.json`, le rapport structuré et la fiche de décision",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Schéma review.schema.json, rapport structuré et fiche de décision.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Schéma review.schema.json, rapport structuré, fiche de décision et validation des findings."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Schéma review.schema.json, rapport structuré et fiche de décision."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1545,10 +1655,21 @@
           "lot": "L6",
           "title": "Implémenter la décision humaine",
           "text": "Implémenter la décision humaine (approuver, conditions, rejeter, info) et l'audit",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Décisions humaines approuver/conditions/rejeter/info, motif, acteur et audit.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Décision humaine auditée : approbation, conditions, rejet, info, acteur, motif, portée."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Décisions humaines approuver/conditions/rejeter/info, motif, acteur et audit."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1564,10 +1685,21 @@
           "lot": "L6",
           "title": "Implémenter le runner d'agents",
           "text": "Implémenter le runner d'agents : modèles de commande, préflight, concurrence, file",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Runner d'agents : modèles de commande, préflight, file et concurrence.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Runner d'agents : modèles de commande, préflight, concurrence, file et lancement."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Runner d'agents : modèles de commande, préflight, file et concurrence."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1583,10 +1715,21 @@
           "lot": "L6",
           "title": "Implémenter le groupe de processus, l'annulation, le crash/timeout et la conservation des logs",
           "text": "Implémenter le groupe de processus, l'annulation, le crash/timeout et la conservation des logs",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Cycle de vie des runs : annulation, timeout, crash et logs conservés.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Cycle de vie des runs : groupe de processus, annulation, crash, timeout et conservation des logs."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Cycle de vie des runs : annulation, timeout, crash et logs conservés."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1602,10 +1745,21 @@
           "lot": "L6",
           "title": "Implémenter le budget",
           "text": "Implémenter le budget (échantillonnage, arrêt au plafond, coût réel, dépassement signalé)",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Budget des runs : estimation, arrêt au plafond, coût réel et dépassement signalé.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Budget des runs : estimation cumulée, arrêt au plafond, coût réel et dépassement signalé."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Budget des runs : estimation, arrêt au plafond, coût réel et dépassement signalé."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1621,10 +1775,21 @@
           "lot": "L6",
           "title": "Purger l'environnement des jetons, appliquer la lecture seule et refuser Git en écriture",
           "text": "Purger l'environnement des jetons, appliquer la lecture seule et refuser Git en écriture",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Environnement agent purgé, lecture seule signalée, Git en écriture refusé par garde et audité.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Purger l'environnement des jetons, lecture seule des revues et refus audité des écritures Git."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Environnement agent purgé, lecture seule signalée, Git en écriture refusé par garde et audité."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1640,10 +1805,21 @@
           "lot": "L6",
           "title": "Diffuser les logs en SSE, en texte échappé, avec aria-live et sans déplacement du focus",
           "text": "Diffuser les logs en SSE, en texte échappé, avec `aria-live` et sans déplacement du focus",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "SSE des logs et de l'état, texte échappé côté React, aria-live sans déplacement du focus.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Logs d'agent en SSE, texte échappé, aria-live et focus stable."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "SSE des logs et de l'état, texte échappé côté React, aria-live sans déplacement du focus."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1659,10 +1835,21 @@
           "lot": "L6",
           "title": "Escalade après max_iterations",
           "text": "Escalade après `max_iterations` : tâche `blocked`, notification humaine, itérations conservées",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Escalade après max_iterations et task_timeout_min : tâche bloquée, notification acquittable et itérations auditées.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Escalade après max_iterations : tâche bloquée, notification humaine et itérations auditées."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Escalade après max_iterations et task_timeout_min : tâche bloquée, notification acquittable et itérations auditées."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1678,10 +1865,21 @@
           "lot": "L6",
           "title": "Journal des runs",
           "text": "Journal des runs (agent, rôle, modèle, statut, durée, coût, tokens) et taux d'indépendance avec seuil 10 %",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Journal unifié ingéré/lancé, filtres, durée, coût, tokens et taux d'indépendance avec seuil 10 % audité.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Journal unifié des runs, filtres, durée/coût/tokens et taux d'indépendance à 10 %."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Journal unifié ingéré/lancé, filtres, durée, coût, tokens et taux d'indépendance avec seuil 10 % audité."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1697,10 +1895,21 @@
           "lot": "L6",
           "title": "Redaction étendue",
           "text": "Redaction étendue (exports, `stats_json`, journaux) et CSP vérifiée en revue",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Redaction des exports, stats_json, journaux et paquets de revue ; CSP stricte vérifiée en revue.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Redaction étendue aux exports, stats_json, journaux et paquets de revue ; CSP vérifiée."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Redaction des exports, stats_json, journaux et paquets de revue ; CSP stricte vérifiée en revue."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1716,10 +1925,21 @@
           "lot": "L7",
           "title": "Vue Sécurité",
           "text": "Vue Sécurité : findings, SBOM, licences, dérogations, surface agentique",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Vue Sécurité alimentée par le gate, findings, SBOM/licences, dérogations et surface agentique ; API et composant testés.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Vue Sécurité : findings, SBOM, licences, dérogations et surface agentique."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Vue Sécurité alimentée par le gate, findings, SBOM/licences, dérogations et surface agentique ; API et composant testés."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1735,10 +1955,21 @@
           "lot": "L7",
           "title": "Vue Performance & données",
           "text": "Vue Performance & données : budgets, signaux, PII, migrations, sauvegardes",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Vue Performance & données : budgets, cas, signaux, PII, migrations, sauvegarde, rétention et schéma ; API et composant testés.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Vue Performance & données : budgets, signaux, PII, migrations et sauvegardes."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Vue Performance & données : budgets, cas, signaux, PII, migrations, sauvegarde, rétention et schéma ; API et composant testés."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1754,10 +1985,21 @@
           "lot": "L7",
           "title": "Vue Agents IA",
           "text": "Vue Agents IA : runs, coûts, escalades, indépendance, journal",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Vue Agents IA : journal filtrable, coûts/tokens, escalades, indépendance et journal SSE intégré.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Vue Agents IA : runs, coûts, escalades, indépendance et journal SSE."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Vue Agents IA : journal filtrable, coûts/tokens, escalades, indépendance et journal SSE intégré."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1773,10 +2015,21 @@
           "lot": "L7",
           "title": "Vue Documentation",
           "text": "Vue Documentation : fraîcheur, lecteur Markdown, mention « fichier généré, ne pas modifier », régénération, suivi",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Vue Documentation : inventaire, fraîcheur, lecteur Markdown sûr, mention générée et régénération du suivi.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Vue Documentation : fraîcheur, lecteur Markdown sûr, mention générée, régénération."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Vue Documentation : inventaire, fraîcheur, lecteur Markdown sûr, mention générée et régénération du suivi."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1792,10 +2045,21 @@
           "lot": "L7",
           "title": "Vue Configuration",
           "text": "Vue Configuration : config effective, origine des données, validation",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Vue Configuration : config effective lecture seule, validation JSON Schema avec clé fautive et origines déclarée/détectée/mesurée.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Vue Configuration : config effective, validation JSON Schema et origine des données."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Vue Configuration : config effective lecture seule, validation JSON Schema avec clé fautive et origines déclarée/détectée/mesurée."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1811,10 +2075,21 @@
           "lot": "L7",
           "title": "Pagination serveur",
           "text": "Pagination serveur (`limit`/`offset`/`total`, 50 par défaut) et dégradation gracieuse au-delà des volumes cibles",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Pagination serveur générique 50/200, métadonnées total/offset/has_more, 400 explicites, chargement incrémental des features.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Pagination serveur 50/200 et dégradation gracieuse des listes."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Pagination serveur générique 50/200, métadonnées total/offset/has_more, 400 explicites, chargement incrémental des features."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1830,10 +2105,21 @@
           "lot": "L7",
           "title": "Vue Déploiements",
           "text": "Vue Déploiements : dev/préprod/prod, historique, DORA, checklist go/no-go, rollback",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Vue Déploiements : dev/préprod/prod, historique paginé, DORA, rollbacks et checklist go/no-go avec preuves.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Vue Déploiements : environnements, historique, DORA, checklist go/no-go et rollback."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Vue Déploiements : dev/préprod/prod, historique paginé, DORA, rollbacks et checklist go/no-go avec preuves."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1849,10 +2135,21 @@
           "lot": "L8",
           "title": "Audit d'accessibilité RGAA 4.1 AA / WCAG 2.2 AA sur les 12 vues",
           "text": "Audit d'accessibilité RGAA 4.1 AA / WCAG 2.2 AA sur les 12 vues (clavier, contraste, équivalents textuels, `caption`, `prefers-reduced-motion`)",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Audit accessibilité des 12 vues, ajout des vues Gates/Revue/Équipe/Processus, lien d'évitement, focus, captions, aria-live et prefers-reduced-motion.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Audit accessibilité RGAA/WCAG des 12 vues, avec les vues Gates, Revue, Équipe et Processus manquantes."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Audit accessibilité des 12 vues, ajout des vues Gates/Revue/Équipe/Processus, lien d'évitement, focus, captions, aria-live et prefers-reduced-motion."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1868,10 +2165,21 @@
           "lot": "L8",
           "title": "Tests de performance",
           "text": "Tests de performance : vue d'ensemble < 1,5 s, multi-dépôts < 2 s, listes < 500 ms, ingestion 10 k commits < 60 s, démarrage < 2 s, mémoire < 512 Mo",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Tests de performance reproductibles : vues, multi-dépôts, listes, démarrage et mémoire ; cibles CI documentées.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Tests de performance des vues, des listes, du démarrage et de la mémoire."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Tests de performance reproductibles : vues, multi-dépôts, listes, démarrage et mémoire ; cibles CI documentées."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1887,10 +2195,21 @@
           "lot": "L8",
           "title": "Packaging uv/pipx, build frontend embarqué, commande unique sdlc-console",
           "text": "Packaging `uv`/`pipx`, build frontend embarqué, commande unique `sdlc-console`",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Packaging avec frontend embarqué, script de build, service statique et commande unique sdlc-console.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Packaging uv/pipx, build frontend embarqué et commande unique sdlc-console."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Packaging avec frontend embarqué, script de build, service statique et commande unique sdlc-console."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1906,10 +2225,21 @@
           "lot": "L8",
           "title": "Sauvegarde/restauration globale vérifiée, âge affiché, procédure testée",
           "text": "Sauvegarde/restauration globale vérifiée, âge affiché, procédure testée",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Sauvegarde SQLite globale, vérification d'intégrité, restauration testée, âge affiché et commandes CLI/API.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Sauvegarde/restauration globale vérifiée, âge affiché et procédure testée."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Sauvegarde SQLite globale, vérification d'intégrité, restauration testée, âge affiché et commandes CLI/API."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1925,10 +2255,21 @@
           "lot": "L8",
           "title": "Purge 12 mois (audit exclu, logs inclus), ancrage et contrôle d'intégrité",
           "text": "Purge 12 mois (audit exclu, logs inclus), ancrage et contrôle d'intégrité",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Purge 12 mois avec sauvegarde récente, audit exclu, purge_busy, ancrage et contrôle d'intégrité ; API et CLI testés.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Purge 12 mois avec sauvegarde récente, exclusion de l'audit, gestion purge_busy et ancrage."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Purge 12 mois avec sauvegarde récente, audit exclu, purge_busy, ancrage et contrôle d'intégrité ; API et CLI testés."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1944,10 +2285,21 @@
           "lot": "L8",
           "title": "Jeu de démonstration --demo, documentation, runbook, ADR, guide d'installation et solution WSL2",
           "text": "Jeu de démonstration `--demo`, documentation, runbook, ADR, guide d'installation et solution WSL2 (mode miroir ou navigateur dans WSL)",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Jeu de démonstration idempotent (--demo), guide d'installation uv/pipx, runbook d'exploitation, ADR existants et solution WSL2 (mode miroir ou navigateur dans WSL).",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "doing",
+              "note": "Jeu de démonstration --demo, documentation, runbook, ADR et guide d'installation WSL2."
+            },
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Jeu de démonstration idempotent (--demo), guide d'installation uv/pipx, runbook d'exploitation, ADR existants et solution WSL2 (mode miroir ou navigateur dans WSL)."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1963,10 +2315,16 @@
           "lot": "L8",
           "title": "Recette complète, matrice de scénarios et rapport de recette",
           "text": "Recette complète, matrice de scénarios et rapport de recette",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "Recette complète générée depuis la traçabilité : 57 exigences, 99 scénarios, 139 références, 347 tests Python et 26 tests Vitest verts.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "Recette complète générée depuis la traçabilité : 57 exigences, 99 scénarios, 139 références, 347 tests Python et 26 tests Vitest verts."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,
@@ -1982,10 +2340,16 @@
           "lot": "L8",
           "title": "Câbler scripts/ci.sh pour apps/console",
           "text": "Câbler `scripts/ci.sh` pour `apps/console` : lint, typecheck, tests, couverture ≥ 80 %, SAST, dépendances, secrets, build",
-          "status": "todo",
-          "updated": "",
-          "note": "",
-          "history": [],
+          "status": "done",
+          "updated": "2026-10-21",
+          "note": "scripts/ci.sh câblé : Ruff, mypy, tests Python/Vitest, couverture 87 % ≥ 80 %, Bandit, pip-audit, npm audit, gitleaks, build frontend et roue Python ; 8 contrôles verts.",
+          "history": [
+            {
+              "date": "2026-10-21",
+              "status": "done",
+              "note": "scripts/ci.sh câblé : Ruff, mypy, tests Python/Vitest, couverture 87 % ≥ 80 %, Bandit, pip-audit, npm audit, gitleaks, build frontend et roue Python ; 8 contrôles verts."
+            }
+          ],
           "executor": null,
           "reviewer": null,
           "review_iteration": null,

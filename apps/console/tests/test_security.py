@@ -7,7 +7,7 @@ import unittest
 from fastapi.testclient import TestClient
 
 from sdlc_console.app import create_app
-from sdlc_console.security import CsrfProtector
+from sdlc_console.security import SECURITY_HEADERS, CsrfProtector, verify_csp
 
 BASE = "http://127.0.0.2"
 ALLOWED_ORIGINS = {"http://127.0.0.2:8765", "http://127.0.0.2:5173"}
@@ -61,6 +61,14 @@ class SecurityMiddlewareTest(unittest.TestCase):
         self.assertIn("Content-Security-Policy", response.headers)
         self.assertEqual(response.headers["X-Content-Type-Options"], "nosniff")
         self.assertNotIn("Access-Control-Allow-Origin", response.headers)
+
+    def test_csp_stricte_verifiee(self) -> None:
+        result = verify_csp(SECURITY_HEADERS)
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["issues"], [])
+        bad = verify_csp({"Content-Security-Policy": "script-src * 'unsafe-eval'"})
+        self.assertFalse(bad["ok"])
+        self.assertTrue(bad["issues"])
 
     def test_csrf_absent(self) -> None:
         response = self.client.post("/api/_test", json={"x": 1})

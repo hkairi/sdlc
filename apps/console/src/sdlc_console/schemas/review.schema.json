@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "review.schema.json",
+  "title": "Rapport de revue indépendante",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "task_key",
+    "package_fingerprint",
+    "verdict",
+    "confidence",
+    "findings",
+    "unverified",
+    "options",
+    "decision_sheet",
+    "generated_at"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "task_key": { "type": "string", "minLength": 1 },
+    "package_fingerprint": { "type": "string", "minLength": 8 },
+    "verdict": { "type": "string", "enum": ["pass", "warn", "fail"] },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "category",
+          "severity",
+          "confidence",
+          "evidence",
+          "impact",
+          "minimal_fix"
+        ],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "category": { "type": "string", "minLength": 1 },
+          "severity": {
+            "type": "string",
+            "enum": ["blocker", "major", "minor", "info"]
+          },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "evidence": { "type": "string", "minLength": 1 },
+          "impact": { "type": "string", "minLength": 1 },
+          "minimal_fix": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "unverified": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "options": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "label", "effort", "risk"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "label": { "type": "string", "minLength": 1 },
+          "effort": { "type": "string", "minLength": 1 },
+          "risk": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "decision_sheet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verdict",
+        "confidence",
+        "blockers",
+        "risks",
+        "unverified",
+        "questions",
+        "options",
+        "recommendation"
+      ],
+      "properties": {
+        "verdict": { "type": "string", "enum": ["pass", "warn", "fail"] },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "blockers": { "type": "array", "maxItems": 3, "items": { "type": "string" } },
+        "risks": { "type": "array", "items": { "type": "string" } },
+        "unverified": { "type": "array", "items": { "type": "string" } },
+        "questions": { "type": "array", "items": { "type": "string" } },
+        "options": { "type": "array", "items": { "type": "string" } },
+        "recommendation": { "type": "string", "minLength": 1 }
+      }
+    },
+    "generated_at": { "type": "string", "minLength": 1 }
+  }
+}

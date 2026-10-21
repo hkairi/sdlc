@@ -18,6 +18,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from ..models import Commit, IngestionRun, Person, Project, Repository, utc_now
+from ..redaction import redact
 from .people import create_person, is_bot_identity, normalize_email, resolve_person
 from .projects import list_repositories, validate_git_repository
 
@@ -53,6 +54,7 @@ class ParsedCommit:
     additions: int
     deletions: int
     files_changed: int
+    files: tuple[str, ...]
     is_merge: bool
 
     @property
@@ -105,11 +107,14 @@ def parse_git_log(output: str) -> list[ParsedCommit]:
         additions = 0
         deletions = 0
         files_changed = 0
+        files: list[str] = []
         for line in numstat.splitlines():
             parts = line.split("\t")
             if len(parts) < 3:
                 continue
             files_changed += 1
+            if parts[2].strip():
+                files.append(parts[2].strip())
             if parts[0].isdigit():
                 additions += int(parts[0])
             if parts[1].isdigit():
@@ -131,6 +136,7 @@ def parse_git_log(output: str) -> list[ParsedCommit]:
                 additions=additions,
                 deletions=deletions,
                 files_changed=files_changed,
+                files=tuple(files),
                 is_merge=len(parents) > 1,
             )
         )
@@ -265,6 +271,7 @@ def ingest_repository(
                         additions=item.additions,
                         deletions=item.deletions,
                         files_changed=item.files_changed,
+                        files_json=json.dumps(list(item.files), ensure_ascii=False),
                         is_merge=item.is_merge,
                         is_bot=person.is_bot,
                         ai_assisted=item.ai_assisted,
@@ -283,22 +290,26 @@ def ingest_repository(
         )
         run.status = "done"
         run.finished_at = utc_now()
-        run.stats_json = json.dumps(
-            {
-                "scanned": len(parsed),
-                "inserted": inserted,
-                "skipped": skipped,
-                "total": int(total or 0),
-            },
-            sort_keys=True,
+        run.stats_json = redact(
+            json.dumps(
+                {
+                    "scanned": len(parsed),
+                    "inserted": inserted,
+                    "skipped": skipped,
+                    "total": int(total or 0),
+                },
+                sort_keys=True,
+            )
         )
         session.flush()
         return run
     except Exception as exc:  # noqa: BLE001 - on conserve l'échec dans le run
         run.status = "failed"
         run.finished_at = utc_now()
-        run.error = str(exc)[:2000]
-        run.stats_json = json.dumps({"error": str(exc)[:500]}, ensure_ascii=False)
+        run.error = redact(str(exc))[:2000]
+        run.stats_json = redact(
+            json.dumps({"error": str(exc)[:500]}, ensure_ascii=False)
+        )
         session.flush()
         if isinstance(exc, GitIngestionError):
             raise

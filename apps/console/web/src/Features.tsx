@@ -57,6 +57,7 @@ export default function Features({ projectId }: Props) {
   const [task, setTask] = useState<TaskDetail | null>(null);
   const [taskError, setTaskError] = useState<string | null>(null);
   const [taskLoading, setTaskLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
     updateQuery(phase, gate);
@@ -108,6 +109,27 @@ export default function Features({ projectId }: Props) {
       );
     } finally {
       setTaskLoading(false);
+    }
+  }
+
+  async function loadMore(): Promise<void> {
+    if (projectId === null || data === null || !data.has_more) {
+      return;
+    }
+    setLoadingMore(true);
+    setError(null);
+    try {
+      const next = await fetchJson<FeaturesResponse>(
+        featuresUrl(projectId, phase, gate, data.limit, data.next_offset ?? data.features.length),
+      );
+      setData({
+        ...next,
+        features: [...data.features, ...next.features],
+      });
+    } catch (cause: unknown) {
+      setError(cause instanceof Error ? cause.message : "Chargement suivant impossible");
+    } finally {
+      setLoadingMore(false);
     }
   }
 
@@ -204,6 +226,16 @@ export default function Features({ projectId }: Props) {
               ))}
             </ul>
           )}
+          <div className="pagination">
+            <p className="muted">
+              {data.features.length} / {data.total} feature(s) affichée(s)
+            </p>
+            {data.has_more ? (
+              <button type="button" onClick={loadMore} disabled={loadingMore}>
+                {loadingMore ? "Chargement…" : "Afficher les suivantes"}
+              </button>
+            ) : null}
+          </div>
         </>
       ) : !error ? (
         <p className="muted">Chargement des features…</p>
