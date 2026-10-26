@@ -17,7 +17,7 @@ import type { HookEvent } from "../types.ts"
  * produisait « sync OK : 0 tâche(s) » à chaque rédaction).
  */
 export const TRACKED_PATH =
-  /(^|\/)(openspec\/changes\/(?:archive\/\d{4}-\d{2}-\d{2}-)?[^/]+\/tasks\.md|docs\/suivi-[^/]+\.html)$/
+  /(^|\/)(openspec\/changes\/(?:archive\/\d{4}-\d{2}-\d{2}-)?[^/]+\/tasks\.md|docs\/suivi-[^/]+\.html|docs\/suivi\/state\.json)$/
 
 /** Supprime les segments entre guillemets : `rg "git commit" docs/` n'est pas un commit. */
 export function stripQuoted(command: string): string {

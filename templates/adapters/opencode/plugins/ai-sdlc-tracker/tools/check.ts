@@ -22,7 +22,7 @@ export function defineCheck(deps: Deps): ToolDef {
   return sdlcTool({
     name: "check",
     description:
-      "Contrôle que docs/suivi-<change>.html et openspec/changes/<change>/tasks.md sont synchrones. " +
+      "Contrôle que docs/suivi/state.json et openspec/changes/<change>/tasks.md sont synchrones. " +
       "Même verdict que le hook git et la CI. À lancer avant un commit ou une clôture. " +
       "Modes exclusifs : « change » (un change), all: true (tous les changes ouverts), « paths » (chemins touchés).",
     input: {
@@ -59,8 +59,8 @@ export function defineCheck(deps: Deps): ToolDef {
         if (!target.ok) {
           return text(`check refusé : ${target.message}\nSuivis disponibles : ${target.candidates.join(", ")}`)
         }
-        args.push("--file", target.target.file, "--tasks", target.target.tasksFile)
-        label = `${target.target.file} ↔ ${target.target.tasksFile}`
+        args.push("--state", target.target.stateFile, "--tasks", target.target.tasksFile)
+        label = `${target.target.stateFile} ↔ ${target.target.tasksFile}`
       } else if (all) {
         args.push("--all")
         label = "tous les changes ouverts"

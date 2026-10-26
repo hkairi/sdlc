@@ -24,27 +24,22 @@ type Fixture = {
   harness: ReturnType<typeof createHarness>
 }
 
-const SUIVI = `<div class="task" data-id="1.1" data-lot="L1" data-status="doing" data-updated="2026-10-19">
-  <h3>a</h3>
-  <em class="note"></em>
-  <span class="draft-flag"></span>
-</div>`
-
 function fixture(tasksChecked: boolean): Fixture {
   const dir = mkdtempSync(join(tmpdir(), "sdlc-e2e-"))
   mkdirSync(join(dir, "scripts"), { recursive: true })
-  mkdirSync(join(dir, "docs"), { recursive: true })
+  mkdirSync(join(dir, "docs", "suivi"), { recursive: true })
   mkdirSync(join(dir, "openspec", "changes", "add-x"), { recursive: true })
 
   copyFileSync(join(REPO, "scripts", "check_sync.py"), join(dir, "scripts", "check_sync.py"))
-  cpSync(join(REPO, "scripts", "suivi"), join(dir, "scripts", "suivi"), { recursive: true })
 
   writeFileSync(
     join(dir, "openspec", "changes", "add-x", "tasks.md"),
     `# Tasks — add-x\n\n## 1. Lot\n\n- [${tasksChecked ? "x" : " "}] 1.1 a\n`,
   )
   writeFileSync(join(dir, "openspec", "changes", "add-x", "proposal.md"), "# Change: add-x\n\n## Why\n\nDémo.\n")
-  writeFileSync(join(dir, "docs", "suivi-add-x.html"), SUIVI)
+  const state = { schema: 1, features: [{ id: "add-x", change: "add-x", tasks_file: "openspec/changes/add-x/tasks.md",
+    tasks: [{ id: "1.1", lot: "1", title: "a", status: "doing", updated: "2026-10-19", note: "" }] }] }
+  writeFileSync(join(dir, "docs", "suivi", "state.json"), JSON.stringify(state))
 
   // Dépôt git de test (répertoire temporaire uniquement) : le garde lit `git status`.
   const init = spawnSync("git", ["init", "--quiet"], { cwd: dir, encoding: "utf-8" })

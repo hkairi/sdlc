@@ -18,7 +18,7 @@ import { decideCommit, installCommitGuard } from "../hooks/commit-guard.ts"
 import { commandSucceeded, generateAfterValidate, installAfterValidate } from "../hooks/after-validate.ts"
 import { signalAfterWrite } from "../hooks/after-write.ts"
 import { alertOnIdle, sessionOf } from "../hooks/idle-alert.ts"
-import { changeOfPath, isGitCommit, openspecValidateChange, stripQuoted } from "../hooks/shared.ts"
+import { changeOfPath, isGitCommit, openspecValidateChange, stripQuoted, TRACKED_PATH } from "../hooks/shared.ts"
 
 const REPO = resolve(import.meta.dirname, "fixtures/repo")
 
@@ -274,6 +274,8 @@ test("les identifiants de change sont déduits des chemins suivis", () => {
     "add-push-channel-self-service",
   )
   assert.equal(changeOfPath("docs/README.md"), undefined)
+  assert.equal(changeOfPath("docs/suivi/state.json"), undefined, "state.json est un suivi global (aucun change unique)")
+  assert.match("docs/suivi/state.json", TRACKED_PATH, "state.json est un chemin suivi")
 })
 
 test("un dépôt non suivi laisse passer le commit et le dit", async () => {

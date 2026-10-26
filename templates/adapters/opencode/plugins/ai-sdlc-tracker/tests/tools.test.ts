@@ -59,12 +59,11 @@ test("sdlc_check délègue au script et refuse deux modes à la fois", async () 
   const tool = defineCheck(deps)
 
   const ok = await tool.execute!({ change: "add-x" })
-  assert.match(content(ok), /check — docs\/suivi-add-x\.html/)
+  assert.match(content(ok), /check — docs\/suivi\/state\.json/)
   assert.match(content(ok), /sync OK/)
-  assert.equal(calls[0].args[0], "--file")
-  assert.equal(calls[0].args[1], "docs/suivi-add-x.html")
+  assert.equal(calls[0].args[0], "--state")
+  assert.equal(calls[0].args[1], "docs/suivi/state.json")
   assert.equal(calls[0].args[2], "--tasks")
-  // Le change a été archivé : le tasks.md vit sous openspec/changes/archive/<date>-<id>/.
   assert.match(calls[0].args[3], /openspec\/changes\/(archive\/\d{4}-\d{2}-\d{2}-)?add-x\/tasks\.md$/)
 
   const ambiguous = await tool.execute!({ change: "add-x", all: true })
