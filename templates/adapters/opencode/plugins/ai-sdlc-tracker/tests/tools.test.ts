@@ -96,13 +96,15 @@ test("sdlc_track met à jour mono et nomme le fichier", async () => {
     status: "done",
     note: "Fait : configuration ; vérifié : 42 tests, 0 échec.",
   })
-  assert.match(content(result), /docs\/suivi-add-x\.html · 1\.1 → done/)
+  assert.match(content(result), /docs\/suivi-add-x\.html · add-x:1\.1 → done/)
   assert.equal(calls[0].args[0], "--file")
   assert.equal(calls[0].args[1], "docs/suivi-add-x.html")
-  assert.equal(calls[0].args[2], "--tasks")
-  assert.match(calls[0].args[3], /openspec\/changes\/(archive\/\d{4}-\d{2}-\d{2}-)?add-x\/tasks\.md$/)
+  assert.equal(calls[0].args[2], "--feature")
+  assert.equal(calls[0].args[3], "add-x")
+  assert.equal(calls[0].args[4], "--tasks")
+  assert.match(calls[0].args[5], /openspec\/changes\/add-x\/tasks\.md$/)
   assert.deepEqual(calls[0].args.slice(-3), ["1.1", "done", "Fait : configuration ; vérifié : 42 tests, 0 échec."])
-  assert.equal(calls[0].script, "scripts/suivi/scripts/track.py")
+  assert.equal(calls[0].script, ".agents/skills/suivi-taches/scripts/track.py")
 })
 
 test("sdlc_track refuse une tâche inconnue, un done sans note et un done sans preuve", async () => {
@@ -120,14 +122,34 @@ test("sdlc_track refuse une tâche inconnue, un done sans note et un done sans p
   assert.equal(calls.length, 0, "aucun refus n'écrit dans le dépôt")
 })
 
+test("sdlc_track signale un relecteur absent ou égal à l'exécutant", async () => {
+  const { deps } = mount()
+  const tool = defineTrack(deps)
+
+  const absent = await tool.execute!({
+    change: "add-x", task: "1.1", status: "done",
+    note: "Fait ; vérifié : 3 tests.",
+  })
+  assert.match(content(absent), /relecteur requis pour clore/)
+
+  const same = await tool.execute!({
+    change: "add-x", task: "1.1", status: "done",
+    note: "Fait ; vérifié : 3 tests.",
+    executor: "codex", reviewer: "codex",
+  })
+  assert.match(content(same), /ne peut pas être l'exécutant/)
+})
+
 test("sdlc_track refuse d'ouvrir deux tâches en cours dans le même lot", async () => {
   const dir = mkdtempSync(join(tmpdir(), "sdlc-track-"))
-  mkdirSync(join(dir, "docs"), { recursive: true })
+  mkdirSync(join(dir, "docs", "suivi"), { recursive: true })
   mkdirSync(join(dir, "openspec", "changes", "add-x"), { recursive: true })
   writeFileSync(join(dir, "openspec", "changes", "add-x", "tasks.md"), "- [ ] 2.1 a\n- [ ] 2.2 b\n")
-  const html = `<div class="task" data-id="2.1" data-status="doing" data-updated="2026-10-19"><h3>a</h3><em class="note"></em></div>
-<div class="task" data-id="2.2" data-status="todo" data-updated=""><h3>b</h3><em class="note"></em></div>`
-  writeFileSync(join(dir, "docs", "suivi-add-x.html"), html)
+  const state = { schema: 1, features: [{ id: "add-x", change: "add-x", tasks_file: "openspec/changes/add-x/tasks.md", tasks: [
+    { id: "2.1", lot: "2", title: "a", status: "doing", updated: "2026-10-19", note: "" },
+    { id: "2.2", lot: "2", title: "b", status: "todo", updated: "", note: "" },
+  ] }] }
+  writeFileSync(join(dir, "docs", "suivi", "state.json"), JSON.stringify(state))
 
   const { deps, calls } = mount({ directory: dir })
   const tool = defineTrack(deps)
@@ -163,7 +185,7 @@ test("sdlc_phase refuse la phase impl et préfixe la feature en multi", async ()
   })
   assert.match(content(mono), /· cadrage\.proposition → done/)
   assert.deepEqual(calls[0].args.slice(-3), ["cadrage.proposition", "done", "proposal + design validés (openspec validate --strict)."])
-  assert.equal(calls[0].script, "scripts/suivi/scripts/track_phase.py")
+  assert.equal(calls[0].script, ".agents/skills/suivi-taches/scripts/track_phase.py")
 })
 
 test("sdlc_generate vise le script vendorisé et impose le nom du projet", async () => {
@@ -174,22 +196,21 @@ test("sdlc_generate vise le script vendorisé et impose le nom du projet", async
   const tool = defineGenerate(deps)
   const result = await tool.execute!({ change: "add-x" })
 
-  assert.equal(calls[0].script, "scripts/suivi/scripts/generate_from_openspec.py")
+  assert.equal(calls[0].script, ".agents/skills/suivi-taches/scripts/generate.py")
   assert.deepEqual(calls[0].args, [
-    "add-x",
-    "--title",
-    "Suivi d'avancement — add-x · repo",
-    "--eyebrow",
-    "repo · Suivi d'avancement",
+    "--out", "docs/suivi-add-x.html",
+    "--tasks", "openspec/changes/add-x/tasks.md",
+    "--title", "Suivi d'avancement — add-x · repo",
+    "--eyebrow", "repo · Suivi d'avancement",
   ])
-  assert.match(content(result), /docs\/suivi-add-x\.html régénéré/)
+  assert.match(content(result), /docs\/suivi-add-x\.html généré/)
   assert.match(content(result), /Demander à l'utilisateur s'il veut l'ouvrir/)
 
   const unknown = await tool.execute!({ change: "change-inexistant" })
   assert.match(content(unknown), /generate refusé/)
 
   const multi = await tool.execute!({ change: "x", multi: true })
-  assert.equal(calls[1].script, "scripts/suivi/scripts/generate_multi.py")
+  assert.equal(calls[1].script, ".agents/skills/suivi-taches/scripts/generate.py")
   assert.ok(calls[1].args.includes("docs/suivi-multi.json"))
   assert.match(content(multi), /generate multi/)
 })
@@ -209,15 +230,14 @@ test("sdlc_status est en lecture seule, dédoublonne et signale l'ancienneté", 
 
 test("sdlc_report écrit un HTML autonome et refuse d'écraser sans accord", async () => {
   const dir = mkdtempSync(join(tmpdir(), "sdlc-report-"))
-  mkdirSync(join(dir, "docs"), { recursive: true })
+  mkdirSync(join(dir, "docs", "suivi"), { recursive: true })
   mkdirSync(join(dir, "openspec", "changes", "add-x"), { recursive: true })
   writeFileSync(join(dir, "openspec", "changes", "add-x", "tasks.md"), "- [x] 1.1 a\n")
   writeFileSync(join(dir, "openspec", "changes", "add-x", "proposal.md"), "# Change: Démonstration\n")
-  writeFileSync(
-    join(dir, "docs", "suivi-add-x.html"),
-    `<div class="task" data-id="1.1" data-status="done" data-updated="2026-10-19"><h3>a</h3>` +
-      `<em class="note">Fait ; vérifié : 3 tests.</em></div>`,
-  )
+  const state = { schema: 1, features: [{ id: "add-x", change: "add-x", tasks_file: "openspec/changes/add-x/tasks.md", tasks: [
+    { id: "1.1", lot: "1", title: "a", status: "done", updated: "2026-10-19", note: "Fait ; vérifié : 3 tests." },
+  ] }] }
+  writeFileSync(join(dir, "docs", "suivi", "state.json"), JSON.stringify(state))
 
   const { deps } = mount({ directory: dir })
   const tool = defineReport(deps)
@@ -248,7 +268,7 @@ test("sdlc_doctor conclut et nomme les actions, sans écrire", async () => {
   assert.match(output, /version du plugin : 0\.2\.1/)
   assert.match(output, /périmètre : tracked/)
   assert.match(output, /script de contrôle : scripts\/check_sync\.py — présent/)
-  assert.match(output, /vendorisation \(scripts\/suivi\) : complète/)
+  assert.match(output, /vendorisation \(\.agents\/skills\/suivi-taches\) : complète/)
   assert.match(output, /python : python3/)
   assert.match(output, /hook git :/)
   assert.match(output, /baseline : \d{4}-\d{2}-\d{2} \(\d+ dérive\(s\) connue\(s\), \d+ tâche\(s\) sans preuve\)/)
@@ -264,7 +284,7 @@ test("sdlc_doctor nomme ce qui manque dans un dépôt vide", async () => {
   assert.match(output, /sdlc_doctor — à corriger/)
   assert.match(output, /périmètre : none/)
   assert.match(output, /ABSENT/)
-  assert.match(output, /vendoriser : python3 scripts\/suivi\/sync_from_skill\.py --write/)
+  assert.match(output, /vérifier la skill suivi-taches/)
   assert.match(output, /installer le hook git/)
 })
 
@@ -282,7 +302,7 @@ test("les outils sont muets hors périmètre ou sous interrupteur d'urgence", as
 })
 
 test("la baseline distingue la dette connue du neuf", async () => {
-  const known = JSON.parse(readFileSync(join(REPO, "scripts/suivi/baseline.json"), "utf-8")) as { drifts: string[] }
+  const known = JSON.parse(readFileSync(join(REPO, ".agents/skills/suivi-taches/baseline.json"), "utf-8")) as { drifts: string[] }
   const knownDrift = known.drifts[0]
 
   const withKnown = mount({ answer: () => ({ code: 1, stdout: JSON.stringify({ problems: [knownDrift] }) }) })
@@ -296,10 +316,11 @@ test("la baseline distingue la dette connue du neuf", async () => {
 
 test("sans baseline, tout problème est nouveau mais l'état reste lisible", async () => {
   const dir = mkdtempSync(join(tmpdir(), "sdlc-nobase-"))
-  mkdirSync(join(dir, "docs"), { recursive: true })
-  writeFileSync(join(dir, "docs", "suivi-add-x.html"),
-    `<div class="task" data-id="1.1" data-status="done" data-updated="2026-10-19"><h3>a</h3>` +
-    `<em class="note">Fait ; vérifié : 3 tests.</em></div>`)
+  mkdirSync(join(dir, "docs", "suivi"), { recursive: true })
+  const state = { schema: 1, features: [{ id: "add-x", change: "add-x", tasks: [
+    { id: "1.1", lot: "1", title: "a", status: "done", updated: "2026-10-19", note: "Fait ; vérifié : 3 tests." },
+  ] }] }
+  writeFileSync(join(dir, "docs", "suivi", "state.json"), JSON.stringify(state))
   const { deps } = mount({ directory: dir, answer: () => ({ code: 1, stdout: JSON.stringify({ problems: ["x"] }) }) })
   const output = content(await defineStatus(deps).execute!({}))
   assert.match(output, /1 dérive\(s\)/)
@@ -307,17 +328,16 @@ test("sans baseline, tout problème est nouveau mais l'état reste lisible", asy
 
 function trackFixture(status: "todo" | "done"): string {
   const dir = mkdtempSync(join(tmpdir(), "sdlc-concurrency-"))
-  mkdirSync(join(dir, "docs"), { recursive: true })
+  mkdirSync(join(dir, "docs", "suivi"), { recursive: true })
   mkdirSync(join(dir, "openspec", "changes", "add-x"), { recursive: true })
   writeFileSync(
     join(dir, "openspec", "changes", "add-x", "tasks.md"),
     `## 1. Lot\n\n- [${status === "done" ? "x" : " "}] 1.1 a\n`,
   )
-  writeFileSync(
-    join(dir, "docs", "suivi-add-x.html"),
-    `<div class="task" data-id="1.1" data-status="${status}" data-updated="2026-10-19">` +
-      `<h3>a</h3><em class="note"></em><span class="draft-flag"></span></div>`,
-  )
+  const state = { schema: 1, features: [{ id: "add-x", change: "add-x", tasks_file: "openspec/changes/add-x/tasks.md", tasks: [
+    { id: "1.1", lot: "1", title: "a", status, updated: "2026-10-19", note: "" },
+  ] }] }
+  writeFileSync(join(dir, "docs", "suivi", "state.json"), JSON.stringify(state))
   return dir
 }
 
@@ -344,6 +364,7 @@ test("une mise à jour déjà appliquée ne produit aucun avertissement", async 
     task: "1.1",
     status: "done",
     note: "Fait ; vérifié : 3 tests.",
+    reviewer: "claude",
   })
   assert.doesNotMatch(content(result), /⚠/)
 })
@@ -356,14 +377,13 @@ test("sdlc_phase traduit « planification » en identifiant réel « plan »", a
 
 function phaseFixture(status: "todo" | "done"): string {
   const dir = mkdtempSync(join(tmpdir(), "sdlc-phase-"))
-  mkdirSync(join(dir, "docs"), { recursive: true })
+  mkdirSync(join(dir, "docs", "suivi"), { recursive: true })
   mkdirSync(join(dir, "openspec", "changes", "add-x"), { recursive: true })
   writeFileSync(join(dir, "openspec", "changes", "add-x", "tasks.md"), "## 1. Lot\n\n- [ ] 1.1 a\n")
-  const phaseData = { phases: [{ id: "plan", name: "Planification", items: [{ id: "tasks", status }] }] }
-  writeFileSync(
-    join(dir, "docs", "suivi-add-x.html"),
-    `<script type="application/json" id="phase-data">${JSON.stringify(phaseData)}</script>`,
-  )
+  const state = { schema: 1, features: [{ id: "add-x", change: "add-x", tasks_file: "openspec/changes/add-x/tasks.md",
+    phases: [{ id: "plan", name: "Planification", items: [{ id: "tasks", status }] }],
+    tasks: [{ id: "1.1", lot: "1", title: "a", status: "todo", updated: "", note: "" }] }] }
+  writeFileSync(join(dir, "docs", "suivi", "state.json"), JSON.stringify(state))
   return dir
 }
 

@@ -13,26 +13,19 @@ Six outils typés (`sdlc_check`, `sdlc_track`, `sdlc_phase`, `sdlc_generate`, `s
 `openspec validate <id> --strict`, signalement des écritures directes, alerte de fin de tour
 désactivée par défaut).
 
-## Limite connue — à lire avant de l'activer
+## Modèle d'état
 
-Cette copie attend le **modèle d'état du dépôt d'origine** :
+Le plugin lit la **source de vérité** `docs/suivi/state.json` (schéma 1) et considère le HTML
+(`docs/suivi-*.html`) comme un rendu généré, jamais comme une source. Il :
 
-- un change OpenSpec dans `openspec/changes/<id>/tasks.md` ;
-- un suivi HTML `docs/suivi-<id>.html` (ou `docs/suivi-multi.html`) ;
-- les scripts vendorisés sous `scripts/suivi/` et `scripts/check_sync.py`.
+- détecte le périmètre (`docs/suivi/state.json` ou un change OpenSpec) ;
+- résout la feature par `features[].id` aligné sur `openspec/changes/<id>/` ;
+- lit les rôles (`executor`, `reviewer`, `review_iteration`, `escalated`, `ready_to_commit`,
+  `commit_message`) et signale un relecteur absent ou égal à l'exécutant ;
+- délègue l'écriture et la génération aux scripts de la skill `suivi-taches` (`track.py`,
+  `track_phase.py`, `generate.py`) — la règle « relecteur ≠ auteur » et l'escalade y sont appliquées.
 
-Dans un projet installé par le framework, le suivi de la skill `suivi-taches` vit dans
-`docs/suivi/state.json` et le HTML est un **rendu généré**. Le plugin n'y reconnaîtra donc pas son
-périmètre et restera **inerte** (fail-open explicite : « outil inactif : aucun change OpenSpec ni
-suivi reconnu »). Ce n'est pas un bug silencieux, mais ce n'est pas non plus une intégration.
-
-L'adaptation au modèle `state.json` (lire/écrire l'état via les scripts du framework, typer les rôles
-exécutant/relecteur et les itérations de revue) est un travail distinct, inscrit dans
-`docs/conception/tasks.md`. En attendant :
-
-- ne pas activer le plugin dans un projet du framework sans l'avoir testé ;
-- les tests automatisés du plugin sont restés dans le dépôt d'origine (ils s'appuient sur ses
-  fixtures) ; ils devront être portés avec l'adaptation.
+Les tests (81) sont autonomes : ils ne dépendent d'aucun dépôt hôte.
 
 ## Configuration
 

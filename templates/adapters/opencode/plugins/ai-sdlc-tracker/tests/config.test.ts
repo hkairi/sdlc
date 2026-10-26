@@ -17,7 +17,7 @@ test("les défauts sont ceux du design, sans nom de projet en dur", () => {
   })
   assert.equal(config.alertOnIdle, false)
   assert.equal(config.strict, false)
-  assert.equal(config.scriptsDir, "scripts/suivi")
+  assert.equal(config.scriptsDir, ".agents/skills/suivi-taches")
   assert.equal(config.checkScript, "scripts/check_sync.py")
   assert.equal(config.commandTimeoutMs, 10_000)
 })
@@ -82,5 +82,5 @@ test("un répertoire sans change ni suivi est classé inactif, sans exception", 
 test("le dépôt engagements est reconnu comme dépôt suivi", () => {
   const scope = detectScope(REPO)
   assert.equal(scope.scope, "tracked")
-  assert.match(scope.message, /\d+ change\(s\) OpenSpec, \d+ suivi\(s\)/)
+  assert.match(scope.message, /\d+ change\(s\) OpenSpec/)
 })

@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "meta": { "title": "Fixture state.json" },
+  "file_updated": "2026-10-19",
+  "features": [
+    {
+      "id": "add-x",
+      "name": "Add X",
+      "change": "add-x",
+      "tasks_file": "openspec/changes/add-x/tasks.md",
+      "tasks": [
+        { "id": "1.1", "lot": "1", "title": "Première tâche", "status": "todo", "updated": "", "note": "" },
+        { "id": "1.2", "lot": "1", "title": "Deuxième tâche", "status": "todo", "updated": "", "note": "" },
+        { "id": "2.1", "lot": "2", "title": "Troisième tâche", "status": "todo", "updated": "", "note": "" }
+      ]
+    },
+    {
+      "id": "add-y",
+      "name": "Add Y",
+      "change": "add-y",
+      "tasks_file": "openspec/changes/archive/2026-10-13-add-y/tasks.md",
+      "tasks": [
+        { "id": "1.1", "lot": "1", "title": "Tâche archivée", "status": "done", "updated": "2026-10-13", "note": "vérifié" }
+      ]
+    }
+  ]
+}

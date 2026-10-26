@@ -9,6 +9,12 @@ const task = (id: string, status: string, note = ""): TaskState => ({
   updated: "2026-10-19",
   note,
   title: "",
+  executor: null,
+  reviewer: null,
+  review_iteration: null,
+  escalated: false,
+  ready_to_commit: false,
+  commit_message: null,
 })
 
 test("ouverture refusée quand une autre tâche du lot est en cours sans note", () => {

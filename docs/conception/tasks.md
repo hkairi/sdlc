@@ -63,7 +63,7 @@ Référence : [workflow-sdlc.md](workflow-sdlc.md). Exécutant : OpenCode. Orche
 - [x] 10.3 `--uninstall` retire aussi les adaptateurs non modifiés, les entrées ajoutées, le bloc Claude et les dossiers vides ; tests d'installation et de bout en bout étendus
 
 ## 11. Plugin OpenCode `ai-sdlc-tracker` (copie distribuée)
-- [ ] 11.1 Copier le plugin dans l'adaptateur OpenCode
+- [x] 11.1 Copier le plugin dans l'adaptateur OpenCode
   - Technique : copie depuis le dépôt `engagements` (`.opencode/plugins/ai-sdlc-tracker/`) vers `templates/adapters/opencode/plugins/ai-sdlc-tracker/` : `index.ts`, `core.ts`, `types.ts`, `tools/`, `hooks/`, `package.json`, `.gitignore`, et un `GUIDE.md` qui documente la limite du modèle d'état. Les tests restent dans le dépôt d'origine (ils s'appuient sur ses fixtures) et `node_modules/` n'est jamais copié.
   - Fichiers : `templates/adapters/opencode/plugins/ai-sdlc-tracker/**`
   - Acceptation :
@@ -71,7 +71,7 @@ Référence : [workflow-sdlc.md](workflow-sdlc.md). Exécutant : OpenCode. Orche
     - `GUIDE.md` dit explicitement que le plugin attend `openspec/` + `docs/suivi-*.html` et reste inerte dans un projet du framework tant que l'adaptation à `state.json` n'est pas faite
   - Tests : `find templates/adapters/opencode/plugins/ai-sdlc-tracker -type f | wc -l` (19)
 
-- [ ] 11.2 Distribuer le plugin : copie récursive des sous-dossiers d'adaptateur
+- [x] 11.2 Distribuer le plugin : copie récursive des sous-dossiers d'adaptateur
   - Technique : ajout de `("plugins", ".opencode/plugins")` à `SUB_DIRS["opencode"]` et passage de `iterdir()` à `rglob("*")` avec conservation du chemin relatif et exclusion de `node_modules` ; les dossiers plats (`agent`, `command`) se comportent comme avant.
   - Fichiers : `.agents/skills/sdlc-init/scripts/render_adapters.py`
   - Acceptation :
@@ -81,7 +81,7 @@ Référence : [workflow-sdlc.md](workflow-sdlc.md). Exécutant : OpenCode. Orche
     - les tests d'installation passent (28 tests)
   - Tests : `python3 -m unittest tests.install.test_sdlc_install -v`
 
-- [ ] 11.3 Documenter l'adaptateur et la limite du plugin
+- [x] 11.3 Documenter l'adaptateur et la limite du plugin
   - Technique : ligne de destination dans le tableau du README de l'adaptateur et encadré « limite connue » renvoyant au `GUIDE.md` ; mention explicite de ne pas activer le plugin sans l'avoir vérifié dans le projet cible.
   - Fichiers : `templates/adapters/opencode/README.md`
   - Acceptation :
@@ -89,7 +89,7 @@ Référence : [workflow-sdlc.md](workflow-sdlc.md). Exécutant : OpenCode. Orche
     - la limite du modèle `state.json` est écrite sans laisser croire à une intégration
   - Tests : relecture (pas de test automatisé pour un README)
 
-- [ ] 11.4 Adapter le plugin au modèle d'état du framework (`docs/suivi/state.json`)
+- [x] 11.4 Adapter le plugin au modèle d'état du framework (`docs/suivi/state.json`)
   - Technique : remplacer la lecture/écriture HTML par les scripts `track.py` / `track_phase.py` du framework et le format `state.json` (schéma 1) ; typer les rôles (exécutant, relecteur ≠ auteur, itérations de revue) ; porter les tests dans le framework.
   - Fichiers : `templates/adapters/opencode/plugins/ai-sdlc-tracker/**`, `tests/`
   - Acceptation :
@@ -98,7 +98,7 @@ Référence : [workflow-sdlc.md](workflow-sdlc.md). Exécutant : OpenCode. Orche
     - les tests du plugin passent dans un projet du framework
   - Tests : `node --test` dans le dossier du plugin + scénario dans un projet jetable
 
-- [ ] 11.5 Faire du gabarit le foyer unique (tests, CI, fixtures autonomes)
+- [x] 11.5 Faire du gabarit le foyer unique (tests, CI, fixtures autonomes)
   - Technique : tests déplacés dans le gabarit avec des fixtures locales (`tests/fixtures/repo/` : `check_sync.py`, `scripts/suivi/`, change `add-x`, suivis mono et multi, baseline) pour ne dépendre d'aucun dépôt hôte ; `sdlc_doctor` lit son propre `package.json` ; workflow CI (Node 22/24/26) déplacé dans le framework ; `render_adapters.py` exclut `tests/`.
   - Fichiers : `templates/adapters/opencode/plugins/ai-sdlc-tracker/{tests,tsconfig.json,package.json,README.md}`, `.github/workflows/ai-sdlc-tracker.yml`, `.agents/skills/sdlc-init/scripts/render_adapters.py`
   - Acceptation :
@@ -108,7 +108,7 @@ Référence : [workflow-sdlc.md](workflow-sdlc.md). Exécutant : OpenCode. Orche
     - le workflow CI pointe sur le dossier du gabarit
   - Tests : `npm test`, `npm run typecheck`, `render_adapters.py` dans un projet vide
 
-- [ ] 11.6 Contrôler la dérive gabarit → installation
+- [x] 11.6 Contrôler la dérive gabarit → installation
   - Technique : `bin/plugin-sync-check` compare les empreintes en ignorant `node_modules/`, `tests/`, `README.md` et `GUIDE.md` ; l'installation d'`engagements` est resynchronisée ; le contrôle a détecté une divergence réelle (`tools/doctor.ts`) avant correction.
   - Fichiers : `bin/plugin-sync-check`, installation `engagements/.opencode/plugins/ai-sdlc-tracker/`
   - Acceptation :

@@ -48,7 +48,7 @@ export const DEFAULT_CONFIG: Omit<TrackerConfig, "killed"> = {
   strict: false,
   projectName: "",
   checkScript: "scripts/check_sync.py",
-  scriptsDir: "scripts/suivi",
+  scriptsDir: ".agents/skills/suivi-taches",
   pythonBin: "",
   commandTimeoutMs: 10_000,
 }
@@ -101,26 +101,25 @@ export function gatesEnabled(config: TrackerConfig): boolean {
 
 export type Scope = { scope: "tracked" | "none"; message: string }
 
-/** Le dépôt a-t-il des changes OpenSpec ou des suivis ? Sinon, le plugin est inactif. */
+/** Chemin du fichier d'état partagé (source de vérité du suivi). */
+export const STATE_FILE = "docs/suivi/state.json"
+
+/** Le dépôt a-t-il un `state.json` ou des changes OpenSpec ? Sinon, le plugin est inactif. */
 export function detectScope(directory: string): Scope {
   const changes = listOpenChanges(directory)
-  const suivis = listSuivis(directory)
-  if (changes.length > 0 || suivis.length > 0) {
+  const hasState = existsSync(join(directory, STATE_FILE))
+  if (changes.length > 0 || hasState) {
     return {
       scope: "tracked",
-      message: `${changes.length} change(s) OpenSpec, ${suivis.length} suivi(s) dans docs/`,
+      message: `${changes.length} change(s) OpenSpec, ${hasState ? "state.json présent" : "pas de state.json"} dans docs/`,
     }
   }
-  return { scope: "none", message: "outil inactif : aucun change OpenSpec ni suivi reconnu dans ce dépôt" }
+  return { scope: "none", message: "outil inactif : aucun change OpenSpec ni docs/suivi/state.json reconnu dans ce dépôt" }
 }
 
+/** Le fichier d'état `state.json`, s'il existe (liste d'un élément au plus). */
 export function listSuivis(directory: string): string[] {
-  const docs = join(directory, "docs")
-  if (!existsSync(docs)) return []
-  return readdirSync(docs)
-    .filter((name) => /^suivi-.*\.html$/.test(name))
-    .map((name) => join("docs", name))
-    .sort()
+  return existsSync(join(directory, STATE_FILE)) ? [STATE_FILE] : []
 }
 
 export function listOpenChanges(directory: string): { id: string; tasksFile: string }[] {
@@ -158,6 +157,18 @@ export type TaskState = {
   updated: string
   note: string
   title: string
+  /** Exécutant (agent / personne). `null` si non renseigné. */
+  executor: string | null
+  /** Relecteur — toujours différent de l'exécutant. `null` si non assigné. */
+  reviewer: string | null
+  /** Numéro d'itération de revue (1 = première revue). `null` si non mesuré. */
+  review_iteration: number | null
+  /** `true` quand l'itération dépasse `organisation.max_review_iterations`. */
+  escalated: boolean
+  /** `true` quand la tâche est prête à commiter. */
+  ready_to_commit: boolean
+  /** Message de commit proposé (Conventional Commits). `null` si aucun. */
+  commit_message: string | null
 }
 
 function lotOf(id: string): string {
@@ -184,6 +195,12 @@ export function parseMonoTasks(html: string): TaskState[] {
       updated,
       note: rawNote.replace(/<[^>]*>/g, "").trim(),
       title: title.replace(/<[^>]*>/g, "").trim(),
+      executor: null,
+      reviewer: null,
+      review_iteration: null,
+      escalated: false,
+      ready_to_commit: false,
+      commit_message: null,
     })
   })
   return tasks
@@ -225,18 +242,88 @@ export function parseMultiFeatures(html: string): MultiFeature[] {
           updated: String(task.updated ?? ""),
           note: String(task.note ?? "").replace(/<[^>]*>/g, "").trim(),
           title: String(task.title ?? "").replace(/<[^>]*>/g, "").trim(),
+          executor: null,
+          reviewer: null,
+          review_iteration: null,
+          escalated: false,
+          ready_to_commit: false,
+          commit_message: null,
         }
       }),
     }
   })
 }
 
+// ---------------------------------------------------------------------------
+// Lecture de l'état : state.json (schéma 1, source de vérité du framework)
+// ---------------------------------------------------------------------------
+
+export type StateFeature = {
+  id: string
+  change: string | null
+  tasksFile: string | null
+  tasks: TaskState[]
+}
+
+export type StateParseResult =
+  | { ok: true; schema: number; features: StateFeature[] }
+  | { ok: false; reason: string }
+
+/** Lit `docs/suivi/state.json` (schéma 1) : source de vérité, plus le HTML. */
+export function parseStateJson(content: string): StateParseResult {
+  let data: unknown
+  try {
+    data = JSON.parse(content)
+  } catch {
+    return { ok: false, reason: "state.json illisible (JSON invalide)" }
+  }
+  const root = data as Record<string, unknown>
+  if (root.schema !== 1) {
+    return {
+      ok: false,
+      reason: `schéma de state.json non reconnu : ${String(root.schema ?? "absent")} (attendu 1)`,
+    }
+  }
+  const rawFeatures = Array.isArray(root.features) ? root.features : []
+  const features = rawFeatures.map((raw) => {
+    const feature = raw as Record<string, unknown>
+    const tasks = Array.isArray(feature.tasks) ? feature.tasks : []
+    return {
+      id: String(feature.id ?? ""),
+      change: typeof feature.change === "string" ? feature.change : null,
+      tasksFile: typeof feature.tasks_file === "string" ? feature.tasks_file : null,
+      tasks: tasks.map((rawTask) => {
+        const task = rawTask as Record<string, unknown>
+        const id = String(task.id ?? "")
+        return {
+          id,
+          lot: String(task.lot ?? lotOf(id)),
+          status: String(task.status ?? "todo"),
+          updated: String(task.updated ?? ""),
+          note: String(task.note ?? "").replace(/<[^>]*>/g, "").trim(),
+          title: String(task.title ?? "").replace(/<[^>]*>/g, "").trim(),
+          executor: typeof task.executor === "string" && task.executor !== "" ? task.executor : null,
+          reviewer: typeof task.reviewer === "string" && task.reviewer !== "" ? task.reviewer : null,
+          review_iteration: typeof task.review_iteration === "number" ? task.review_iteration : null,
+          escalated: task.escalated === true,
+          ready_to_commit: task.ready_to_commit === true,
+          commit_message:
+            typeof task.commit_message === "string" && task.commit_message !== "" ? task.commit_message : null,
+        }
+      }),
+    }
+  })
+  return { ok: true, schema: 1, features }
+}
+
 export type Target = {
-  kind: "mono" | "multi"
-  /** Fichier de suivi à mettre à jour (relatif au dépôt). */
+  kind: "state"
+  /** HTML de suivi à régénérer (dérivé de l'identifiant de la feature). */
   file: string
-  /** Clé de la feature, en multi uniquement (pour `track_multi.py`). */
-  feature?: string
+  /** `docs/suivi/state.json` (source de vérité lue). */
+  stateFile: string
+  /** Identifiant de la feature (passé en `--feature` aux scripts). */
+  feature: string
   tasksFile: string
   tasks: TaskState[]
 }
@@ -246,9 +333,9 @@ export type TargetResult =
   | { ok: false; message: string; candidates: string[] }
 
 /**
- * Résout la cible d'une tâche : suivi mono `docs/suivi-<id>.html`, sinon la
- * feature du suivi multi dont `change` ou `tasks_file` correspond. Un `file`
- * explicite force la cible. Le résultat nomme toujours le fichier retenu.
+ * Résout la cible d'une tâche depuis `docs/suivi/state.json` : la feature dont
+ * `change`, `id` ou `tasks_file` correspond au change. Le HTML n'est plus lu :
+ * c'est un rendu généré. Le résultat nomme toujours `state.json` et la feature.
  */
 export function resolveTarget(
   directory: string,
@@ -256,84 +343,35 @@ export function resolveTarget(
   overrideFile?: string,
   readFile: (path: string) => string = (path) => readFileSync(join(directory, path), "utf-8"),
 ): TargetResult {
-  const monoFile = join("docs", `suivi-${changeId}.html`)
-  const candidates = [...listSuivis(directory), ...listOpenChanges(directory).map((c) => c.tasksFile)]
-
-  if (overrideFile) {
-    const rel = overrideFile.replace(/^\.\//, "")
-    if (!existsSync(join(directory, rel))) {
-      return { ok: false, message: `fichier de suivi introuvable : ${rel}`, candidates }
-    }
-    const content = readFile(rel)
-    if (/id="feature-data"/.test(content)) {
-      const feature = parseMultiFeatures(content).find((f) => f.change === changeId)
-      if (!feature) {
-        return {
-          ok: false,
-          message: `${rel} ne référence pas le change ${changeId} (features : ${parseMultiFeatures(content).map((f) => f.key).join(", ") || "aucune"})`,
-          candidates,
-        }
-      }
-      return {
-        ok: true,
-        target: {
-          kind: "multi",
-          file: rel,
-          feature: feature.key,
-          tasksFile: feature.tasksFile ?? findTasksFile(directory, changeId) ?? "",
-          tasks: feature.tasks,
-        },
-      }
-    }
+  const candidates = [STATE_FILE, ...listOpenChanges(directory).map((c) => c.tasksFile)]
+  const stateRel = overrideFile ? overrideFile.replace(/^\.\//, "") : STATE_FILE
+  if (!existsSync(join(directory, stateRel))) {
+    return { ok: false, message: `suivi introuvable : ${stateRel} (générer avec sdlc_generate)`, candidates }
+  }
+  const parsed = parseStateJson(readFile(stateRel))
+  if (!parsed.ok) {
+    return { ok: false, message: parsed.reason, candidates }
+  }
+  const feature = parsed.features.find(
+    (f) => f.change === changeId || f.id === changeId || (f.tasksFile ?? "").includes(`/${changeId}/`),
+  )
+  if (!feature) {
     return {
-      ok: true,
-      target: {
-        kind: "mono",
-        file: rel,
-        tasksFile: findTasksFile(directory, changeId) ?? "",
-        tasks: parseMonoTasks(content),
-      },
+      ok: false,
+      message: `${stateRel} ne référence pas le change ${changeId} (features : ${parsed.features.map((f) => f.id).join(", ") || "aucune"})`,
+      candidates,
     }
   }
-
-  if (existsSync(join(directory, monoFile))) {
-    return {
-      ok: true,
-      target: {
-        kind: "mono",
-        file: monoFile,
-        tasksFile: findTasksFile(directory, changeId) ?? "",
-        tasks: parseMonoTasks(readFile(monoFile)),
-      },
-    }
-  }
-
-  const multiFile = join("docs", "suivi-multi.html")
-  if (existsSync(join(directory, multiFile))) {
-    const features = parseMultiFeatures(readFile(multiFile))
-    const feature = features.find(
-      (f) => f.change === changeId || (f.tasksFile ?? "").includes(`/${changeId}/`),
-    )
-    if (feature) {
-      return {
-        ok: true,
-        target: {
-          kind: "multi",
-          file: multiFile,
-          feature: feature.key,
-          tasksFile: feature.tasksFile ?? findTasksFile(directory, changeId) ?? "",
-          tasks: feature.tasks,
-        },
-      }
-    }
-  }
-
   return {
-    ok: false,
-    message:
-      `aucun suivi pour le change ${changeId} : ni docs/suivi-${changeId}.html, ni feature correspondante dans docs/suivi-multi.html. ` +
-      `Générer le suivi (sdlc_generate) ou vérifier l'identifiant.`,
-    candidates,
+    ok: true,
+    target: {
+      kind: "state",
+      file: join("docs", `suivi-${feature.id}.html`),
+      stateFile: stateRel,
+      feature: feature.id,
+      tasksFile: feature.tasksFile ?? findTasksFile(directory, changeId) ?? "",
+      tasks: feature.tasks,
+    },
   }
 }
 

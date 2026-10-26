@@ -36,7 +36,7 @@ if [ ! -x "$PY" ]; then
   exit 2
 fi
 
-mkdir -p "$REPORTS/lint" "$REPORTS/coverage" "$REPORTS/security" "$REPORTS/build"
+mkdir -p "$REPORTS/lint" "$REPORTS/coverage" "$REPORTS/security" "$REPORTS/build" "$REPORTS/junit"
 STATUS_FILE="$(mktemp "${TMPDIR:-/tmp}/sdlc-ci-status.XXXXXX")"
 trap 'rm -f "$STATUS_FILE"' EXIT
 FAILED=0
@@ -91,9 +91,9 @@ control_typecheck() {
 
 control_tests() {
   cd "$CONSOLE" || return 1
-  "$PY" -m unittest discover -s tests 2>&1 | tee "$REPORTS/junit-unittest.txt"
+  "$PY" "$ROOT/scripts/junit_unittest.py" "$REPORTS/junit/unittest.xml" tests 2>&1 | tee "$REPORTS/junit/unittest.txt"
   cd "$WEB" || return 1
-  npm test -- --run 2>&1 | tee "$REPORTS/junit-vitest.txt"
+  npm test -- --run --reporter=junit --outputFile.junit="$REPORTS/junit/vitest.xml" 2>&1 | tee "$REPORTS/junit/vitest.txt"
 }
 
 control_coverage() {

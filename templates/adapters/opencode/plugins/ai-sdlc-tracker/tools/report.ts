@@ -64,7 +64,7 @@ export function defineReport(deps: Deps): ToolDef {
       const ecarts = target.tasks.filter((task) => task.status === "blocked").length
       return text(
         `${out} écrit (${target.tasks.length} tâches, ${done} terminées, ${ecarts} bloquée(s)) — ` +
-          `suivi lu : ${target.file}`,
+          `état lu : ${target.stateFile}`,
       )
     },
   })

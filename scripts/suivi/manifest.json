@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "generated": "2026-10-19",
+  "source": "/Users/hkairi/.claude/skills/suivi-taches",
+  "entries": [
+    {
+      "vendor": "scripts/suivi/scripts/track.py",
+      "source": "scripts/track.py",
+      "header": true,
+      "sha256_source": "a084d2a8cf2b82c8512a6fc3b3105941042a4597c8f77542df9967aa0c5504a1",
+      "sha256_vendor": "c21144d2aca48e54c2fd183cda3cedfa520ea2d4fda255db001f8c80365872d5"
+    },
+    {
+      "vendor": "scripts/suivi/scripts/track_multi.py",
+      "source": "scripts/track_multi.py",
+      "header": true,
+      "sha256_source": "284e59a8c1fad8447cf279237e93a4de6944e49532a9b803309d4c8fde748c86",
+      "sha256_vendor": "e6af3925adc0895560b08868ceef06d3fc23c57bf3565f3677c8d578d57b0599"
+    },
+    {
+      "vendor": "scripts/suivi/scripts/track_phase.py",
+      "source": "scripts/track_phase.py",
+      "header": true,
+      "sha256_source": "0db43e511189ba5dd570e5761b430c35aa939e81fb43b3dec3b9a112281566a4",
+      "sha256_vendor": "7f2d49adefb996dff9a99db911681ac4bf88ea2902c1e09e01826bcf8b8b99e0"
+    },
+    {
+      "vendor": "scripts/suivi/scripts/generate.py",
+      "source": "scripts/generate.py",
+      "header": true,
+      "sha256_source": "60767dccbd173d5699e34f89ab67eb89a61403b714c9d30001ec891c67d4c0e4",
+      "sha256_vendor": "007feeafeb4dcf2ea63df76fb575fbf9c53e305bf4253c07250565f2a749e1fa"
+    },
+    {
+      "vendor": "scripts/suivi/scripts/generate_multi.py",
+      "source": "scripts/generate_multi.py",
+      "header": true,
+      "sha256_source": "0348aa6bd98ab73149333fc4309a54246c36023b3065ae7e86d971aafc23b3e6",
+      "sha256_vendor": "76160c7bd71d3f1d5c243225728dfa9cfd4ff84a09a317268787604849a8991e"
+    },
+    {
+      "vendor": "scripts/suivi/scripts/generate_from_openspec.py",
+      "source": "scripts/generate_from_openspec.py",
+      "header": true,
+      "sha256_source": "3f2c51d90a245bf1934f940948d69017ebcba8dd3e436ad18119eb41469a1b21",
+      "sha256_vendor": "2b06aae3d553ddfa549d60ea78846a9fe3477a31a09b2ad4de2f814acef542c8"
+    },
+    {
+      "vendor": "scripts/suivi/scripts/phases.py",
+      "source": "scripts/phases.py",
+      "header": true,
+      "sha256_source": "b29f975d7299ad2d7c986ed7266470744dd49305126031927c4b614b22e13afa",
+      "sha256_vendor": "ed5e54610b60fa29637192523ac90c30213ecde73fea4d229c53679805e4a8e8"
+    },
+    {
+      "vendor": "scripts/suivi/scripts/sourcedocs.py",
+      "source": "scripts/sourcedocs.py",
+      "header": true,
+      "sha256_source": "02d4576c1aa24b5e02d886c3604391c3e85c5495030600a9a495f6b40311d9b8",
+      "sha256_vendor": "2bd77a53053a9a17bb9abfc728a3b10366f174332da0101eec492bf683d353ca"
+    },
+    {
+      "vendor": "scripts/suivi/assets/template.html",
+      "source": "assets/template.html",
+      "header": false,
+      "sha256_source": "455fef8a274b01fd0089b65afc9dcc87bf53a6fe136a75254668039647222a19",
+      "sha256_vendor": "455fef8a274b01fd0089b65afc9dcc87bf53a6fe136a75254668039647222a19"
+    },
+    {
+      "vendor": "scripts/suivi/assets/template-multi.html",
+      "source": "assets/template-multi.html",
+      "header": false,
+      "sha256_source": "64def08ff27cec5c5f1fd4acd7fba2e1c40db18481367e5acbe1be7f5966f177",
+      "sha256_vendor": "64def08ff27cec5c5f1fd4acd7fba2e1c40db18481367e5acbe1be7f5966f177"
+    },
+    {
+      "vendor": "scripts/suivi/assets/manifest-example.json",
+      "source": "assets/manifest-example.json",
+      "header": false,
+      "sha256_source": "50018c72e540ac31644fa876a5656271dae2bd074955663d9006411f0724ca63",
+      "sha256_vendor": "50018c72e540ac31644fa876a5656271dae2bd074955663d9006411f0724ca63"
+    }
+  ]
+}

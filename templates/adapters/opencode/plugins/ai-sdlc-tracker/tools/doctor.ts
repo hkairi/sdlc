@@ -18,13 +18,13 @@ export const REQUIRED_SCRIPTS = [
   "track_multi.py",
   "track_phase.py",
   "generate.py",
-  "generate_multi.py",
-  "generate_from_openspec.py",
   "phases.py",
-  "sourcedocs.py",
+  "state_io.py",
+  "render.py",
+  "tracking.py",
 ]
 
-export const REQUIRED_ASSETS = ["template.html", "template-multi.html", "manifest-example.json"]
+export const REQUIRED_ASSETS = ["template.html", "template-multi.html"]
 
 function pluginVersion(): string {
   // Le plugin lit SON package.json (à côté de ses sources), pas un chemin du dépôt
@@ -70,7 +70,7 @@ export function defineDoctor(deps: Deps): ToolDef {
       const vendorOk = missingScripts.length === 0 && missingAssets.length === 0
       lines.push(`vendorisation (${config.scriptsDir}) : ${vendorOk ? "complète" : `incomplète (${missingScripts.length + missingAssets.length} manquant(s))`}`)
       if (!vendorOk) {
-        actions.push(`vendoriser : python3 ${config.scriptsDir}/sync_from_skill.py --write`)
+        actions.push(`vérifier la skill suivi-taches (${config.scriptsDir})`)
         if (missingScripts.length > 0) lines.push(`  scripts manquants : ${missingScripts.join(", ")}`)
         if (missingAssets.length > 0) lines.push(`  gabarits manquants : ${missingAssets.join(", ")}`)
       }

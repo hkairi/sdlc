@@ -64,54 +64,37 @@ export function defineGenerate(deps: Deps): ToolDef {
       if (off) return text(off)
 
       const change = optionalString(input, "change") ?? failure("argument « change » requis")
-      const strict = optionalBoolean(input, "strictDetails") !== false
+      const script = scriptPath(deps.config, "generate.py")
+      if (!existsSync(join(deps.directory, script))) {
+        return text(`generate refusé : ${script} introuvable (option scriptsDir « ${deps.config.scriptsDir} »)`)
+      }
 
       if (optionalBoolean(input, "multi") === true) {
-        const script = scriptPath(deps.config, "generate_multi.py")
-        if (!existsSync(join(deps.directory, script))) {
-          return text(`generate refusé : ${script} introuvable (option scriptsDir « ${deps.config.scriptsDir} »)`)
-        }
         const result = await deps.runScript(
           script,
-          [
-            "--out",
-            "docs/suivi-multi.html",
-            "--manifest",
-            "docs/suivi-multi.json",
-            ...(strict ? ["--strict-details"] : []),
-          ],
+          ["--out", "docs/suivi-multi.html", "--manifest", "docs/suivi-multi.json"],
           deps.directory,
         )
         return text(scriptText("generate multi", result))
       }
 
-      const script = scriptPath(deps.config, "generate_from_openspec.py")
-      if (!existsSync(join(deps.directory, script))) {
-        return text(`generate refusé : ${script} introuvable (option scriptsDir « ${deps.config.scriptsDir} »)`)
-      }
-
-      const existing = join("docs", `suivi-${change}.html`)
-      const created = !existsSync(join(deps.directory, existing))
-      if (created && !findTasksFile(deps.directory, change)) {
-        return text(
-          `generate refusé : ni docs/suivi-${change}.html ni openspec/changes/${change}/tasks.md — ` +
-            `vérifier l'identifiant du change.`,
-        )
+      const tasksFile = findTasksFile(deps.directory, change)
+      if (!tasksFile) {
+        return text(`generate refusé : openspec/changes/${change}/tasks.md introuvable — vérifier l'identifiant du change.`)
       }
 
       const title = changeTitle(deps.directory, change, deps.readFile)
+      const out = join("docs", `suivi-${change}.html`)
       const args = [
-        change,
-        "--title",
-        `Suivi d'avancement — ${title} · ${deps.config.projectName}`,
-        "--eyebrow",
-        `${deps.config.projectName} · Suivi d'avancement`,
-        ...(strict ? [] : ["--no-strict-details"]),
+        "--out", out,
+        "--tasks", tasksFile,
+        "--title", `Suivi d'avancement — ${title} · ${deps.config.projectName}`,
+        "--eyebrow", `${deps.config.projectName} · Suivi d'avancement`,
       ]
       const result = await deps.runScript(script, args, deps.directory)
       return text(
-        `${existing} ${created ? "créé" : "régénéré"}\n${scriptText("generate", result)}\n` +
-          `Demander à l'utilisateur s'il veut l'ouvrir (open ${existing}) ; ne pas l'ouvrir sans accord.`,
+        `${out} généré\n${scriptText("generate", result)}\n` +
+          `Demander à l'utilisateur s'il veut l'ouvrir (open ${out}) ; ne pas l'ouvrir sans accord.`,
       )
     },
   })

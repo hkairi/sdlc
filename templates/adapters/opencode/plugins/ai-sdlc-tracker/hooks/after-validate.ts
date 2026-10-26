@@ -10,7 +10,7 @@
  */
 import { existsSync } from "node:fs"
 import { join } from "node:path"
-import { scriptPath } from "../core.ts"
+import { findTasksFile, scriptPath } from "../core.ts"
 import { inactive } from "../tools/shared.ts"
 import type { Deps } from "../tools/shared.ts"
 import type { HookEvent, TrackerContext } from "../types.ts"
@@ -37,17 +37,21 @@ export async function generateAfterValidate(deps: Deps, event: HookEvent): Promi
   const off = inactive(deps)
   if (off) return off
 
-  const script = scriptPath(deps.config, "generate_from_openspec.py")
+  const script = scriptPath(deps.config, "generate.py")
   if (!existsSync(join(deps.directory, script))) {
     return `[ai-sdlc-tracker] suivi non généré : ${script} introuvable (option scriptsDir « ${deps.config.scriptsDir} »)`
   }
+
+  const tasksFile = findTasksFile(deps.directory, change)
+  if (!tasksFile) return undefined
 
   const existing = join(deps.directory, "docs", `suivi-${change}.html`)
   const created = !existsSync(existing)
   const result = await deps.runScript(
     script,
     [
-      change,
+      "--out", `docs/suivi-${change}.html`,
+      "--tasks", tasksFile,
       "--title",
       `Suivi d'avancement — ${changeTitle(deps.directory, change, deps.readFile)} · ${deps.config.projectName}`,
       "--eyebrow",

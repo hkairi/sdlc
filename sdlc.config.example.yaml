@@ -1,6 +1,8 @@
 # Configuration du framework SDLC piloté par agents IA
 # Copier ce fichier en sdlc.config.yaml puis adapter les valeurs.
 # Spécification complète : .sdlc/workflow-sdlc.md
+# Schéma extensible : une application peut ajouter ses propres clés de premier niveau
+# (validées par son propre schéma). Ce fichier ne documente que les clés du framework.
 
 # Version du schéma de configuration.
 version: 1

@@ -830,9 +830,11 @@ def render(root: Path, templates: Path, config: dict, force: bool, dry_run: bool
             for src in sorted(src_dir.rglob("*")):
                 if not src.is_file() or src.name in IGNORED_NAMES:
                     continue
-                if "node_modules" in src.parts or "tests" in src.parts:
-                    continue  # dépendances et tests ne sont pas distribués
                 inside = src.relative_to(src_dir)
+                # On exclut les dépendances et les tests *du gabarit* (chemin relatif),
+                # pas un composant « tests » du chemin absolu du projet (ex. tests/install/tmp).
+                if "node_modules" in inside.parts or "tests" in inside.parts:
+                    continue
                 dst = root / dest_sub / inside
                 rel = f"{sub}/{inside.as_posix()}"
                 write_regular(src, dst, tool, rel, enabled, markers, keep_comments, force, reporter, root, record)

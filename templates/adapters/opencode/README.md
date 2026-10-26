@@ -19,11 +19,9 @@ Gabarit des fichiers que `sdlc-init` génère pour l'outil **OpenCode**.
 **Foyer de développement du plugin** : `plugins/ai-sdlc-tracker/` (tests, typecheck, CI). Une
 installation est une copie non éditée ; contrôle : `bin/plugin-sync-check --target <installation>`.
 
-**Plugin `ai-sdlc-tracker` — limite connue.** La copie distribuée attend le modèle d'état du dépôt
-d'origine (`openspec/changes/*/tasks.md` + `docs/suivi-*.html` + `scripts/suivi/`). Dans un projet du
-framework, le suivi vit dans `docs/suivi/state.json` : le plugin y reste **inerte** (fail-open explicite)
-tant que l'adaptation au modèle `state.json` n'est pas faite. Voir
-`plugins/ai-sdlc-tracker/GUIDE.md`. Ne pas l'activer sans l'avoir vérifié dans le projet cible.
+**Plugin `ai-sdlc-tracker`.** Le plugin lit `docs/suivi/state.json` (source de vérité du framework) et
+applique la règle « relecteur ≠ auteur ». Il délègue l'écriture et la génération aux scripts de la
+skill `suivi-taches` (`track.py`, `track_phase.py`, `generate.py`). Voir `plugins/ai-sdlc-tracker/GUIDE.md`.
 
 `opencode.json` doit être **fusionné** avec un fichier existant plutôt qu'écrasé. OpenCode lit
 `AGENTS.md` nativement : aucun fichier de règles supplémentaire n'est nécessaire.

@@ -5,7 +5,7 @@
  * blocage (une seule tâche en cours par lot, preuve obligatoire pour `done`),
  * puis l'appel du script. Le retour nomme toujours le fichier modifié.
  */
-import { canStartTask, noteHasEvidence, parseMonoTasks, parseMultiFeatures, resolveTarget, scriptPath } from "../core.ts"
+import { canStartTask, noteHasEvidence, parseStateJson, resolveTarget, scriptPath } from "../core.ts"
 import {
   evidenceFor,
   failure,
@@ -39,7 +39,12 @@ export function defineTrack(deps: Deps): ToolDef {
         note: { type: "string", description: "fait / écart / vérifié (avec chiffres)" },
         force: { type: "boolean", description: "ouvrir malgré une tâche en cours dans le lot" },
         reason: { type: "string", description: "raison du forçage, obligatoire avec force" },
-        file: { type: "string", description: "fichier de suivi à forcer (mono ou multi)" },
+        file: { type: "string", description: "fichier d'état à forcer (défaut : docs/suivi/state.json)" },
+        executor: { type: "string", description: "agent exécutant (rôle)" },
+        reviewer: { type: "string", description: "agent relecteur — toujours différent de l'exécutant" },
+        iteration: { type: "integer", description: "numéro d'itération de revue (1 = première)" },
+        commitMessage: { type: "string", description: "message de commit proposé (Conventional Commits)" },
+        readyToCommit: { type: "boolean", description: "marquer la tâche prête à commiter" },
       },
       required: ["change", "task", "status"],
       additionalProperties: false,
@@ -66,6 +71,9 @@ export function defineTrack(deps: Deps): ToolDef {
         const ids = target.tasks.map((item) => item.id).join(", ") || "aucune"
         return text(`${target.file} : tâche ${task} introuvable. Identifiants : ${ids}`)
       }
+      const executor = optionalString(input, "executor")
+      const reviewer = optionalString(input, "reviewer")
+      let reviewerWarning: string | undefined
 
       if (status === "doing" && deps.config.blockNextTask) {
         const decision = canStartTask(target.tasks, task, {
@@ -90,15 +98,26 @@ export function defineTrack(deps: Deps): ToolDef {
               `(source : ${evidence.source}).`,
           )
         }
+        const effectiveReviewer = reviewer ?? known.reviewer
+        const effectiveExecutor = executor ?? known.executor
+        if (!effectiveReviewer) {
+          reviewerWarning = `${task} : relecteur requis pour clore — assigner reviewer: "<agent>" (différent de l'exécutant).`
+        } else if (effectiveExecutor && effectiveReviewer === effectiveExecutor) {
+          reviewerWarning = `${task} : le relecteur ne peut pas être l'exécutant (${effectiveExecutor}) — le script refusera.`
+        }
       }
 
-      const script =
-        target.kind === "mono"
-          ? scriptPath(deps.config, "track.py")
-          : scriptPath(deps.config, "track_multi.py")
-      const args = ["--file", target.file]
-      if (target.kind === "mono" && target.tasksFile) args.push("--tasks", target.tasksFile)
-      args.push(target.kind === "multi" ? `${target.feature}:${task}` : task, status)
+      const script = scriptPath(deps.config, "track.py")
+      const args = ["--file", target.file, "--feature", target.feature]
+      if (target.tasksFile) args.push("--tasks", target.tasksFile)
+      if (executor) args.push("--executor", executor)
+      if (reviewer) args.push("--reviewer", reviewer)
+      const iteration = (input as Record<string, unknown>)["iteration"]
+      if (typeof iteration === "number" && Number.isInteger(iteration)) args.push("--iteration", String(iteration))
+      const commitMessage = optionalString(input, "commitMessage")
+      if (commitMessage) args.push("--commit-message", commitMessage)
+      if (optionalBoolean(input, "readyToCommit") === true) args.push("--ready-to-commit")
+      args.push(task, status)
       if (note) args.push(note)
 
       const result = await deps.runScript(script, args, deps.directory)
@@ -110,6 +129,7 @@ export function defineTrack(deps: Deps): ToolDef {
       // dit au lieu de présenter un succès qui n'existe pas. Aucun verrou n'est posé —
       // les écrivains manuels (scripts de la skill) n'y participeraient pas.
       const warnings: string[] = []
+      if (reviewerWarning) warnings.push(`⚠ ${reviewerWarning}`)
       if (result.code === 0) {
         const actual = readTaskStatus(deps, target, task)
         if (actual !== status) {
@@ -139,15 +159,13 @@ export function defineTrack(deps: Deps): ToolDef {
   })
 }
 
-/** Statut réellement présent dans le suivi, après l'appel. */
+/** Statut réellement présent dans `state.json`, après l'appel. */
 export function readTaskStatus(deps: Deps, target: Target, taskId: string): string | undefined {
   try {
-    const content = deps.readFile(target.file)
-    if (target.kind === "multi") {
-      const feature = parseMultiFeatures(content).find((item) => item.key === target.feature)
-      return feature?.tasks.find((task) => task.id === taskId)?.status
-    }
-    return parseMonoTasks(content).find((task) => task.id === taskId)?.status
+    const parsed = parseStateJson(deps.readFile(target.stateFile))
+    if (!parsed.ok) return undefined
+    const feature = parsed.features.find((item) => item.id === target.feature)
+    return feature?.tasks.find((task) => task.id === taskId)?.status
   } catch {
     return undefined
   }

@@ -1,0 +1,40 @@
+{
+  "title": "Suivi multi-chantiers — <Projet>",
+  "h1": "Chantiers en cours — fichier de suivi",
+  "eyebrow": "<Projet> · <Domaine> · Suivi multi-chantiers",
+  "subtitle": "3 chantiers · N tâches. Cochez un ou plusieurs chantiers dans le rail de gauche.",
+  "storage_key": "suivi-multi-<projet>-v1",
+  "lang": "fr",
+  "sources": {
+    "features": "../docs/features.md"
+  },
+  "features": [
+    "openspec/changes/<change-a>/tasks.md",
+    {
+      "id": "bpay",
+      "tasks": "openspec/changes/add-bpay-payment-provider/tasks.md",
+      "name": "Intégration B-PAY / Bankily",
+      "change": "add-bpay-payment-provider",
+      "color": "#1379b0",
+      "objective": "Ajouter B-PAY à côté de Masrvi (markdown inline : `code`, **gras**).",
+      "updated": "2026-10-10",
+      "sources": {
+        "proposal": "../openspec/changes/add-bpay-payment-provider/proposal.md",
+        "tasks": "../openspec/changes/add-bpay-payment-provider/tasks.md"
+      },
+      "details": {
+        "0.1": {
+          "prio": "Haute",
+          "deps": "—",
+          "files": ["backend/.env.production"],
+          "acceptance": "URLs et identifiants de production reçus.",
+          "tests": "Appels sandbox manuels.",
+          "note": "En attente des identifiants opérateur.",
+          "history": [
+            {"date": "2026-10-09", "status": "doing", "note": "Demande envoyée à l'opérateur."}
+          ]
+        }
+      }
+    }
+  ]
+}

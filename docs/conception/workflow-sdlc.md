@@ -58,6 +58,8 @@ openspec/         reports/ (sorties de scripts/ci.sh, non versionné)
 
 Écrite par la skill `sdlc-init`. Seule source de vérité des rôles et des choix du projet ; toutes les skills la lisent au lieu de coder des valeurs en dur.
 
+Le schéma est **extensible** : une application qui consomme la configuration (par exemple la Console SDLC, dont le schéma propre est `apps/console/src/sdlc_console/config.schema.json`) peut ajouter ses propres clés de premier niveau, validées par son propre schéma. `sdlc.config.example.yaml` ne documente que les clés **du framework** ; les clés spécifiques à une application sont documentées dans le schéma de cette application.
+
 ```yaml
 version: 1                          # version du schéma de config
 workflow_version: "0.1.0"           # version du framework installé

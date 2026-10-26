@@ -97,6 +97,11 @@ Documentation : [`docs/installation.md`](docs/installation.md) (dont WSL2),
 Contrôles uniques : `scripts/ci.sh` (Ruff, mypy, tests Python/Vitest, couverture
 ≥ 80 %, Bandit, pip-audit, npm audit, gitleaks, build frontend et roue Python).
 
+> **Note (dogfooding)** : le `scripts/ci.sh` de ce dépôt est une adaptation concrète dédiée
+> à la Console SDLC. Le foyer générique et réutilisable reste `templates/scripts/ci.sh`
+> (§ 10 de la spécification), que `ci-setup` installe dans les projets. Les deux partagent le
+> même contrat de sortie (`reports/`) et ne divergent que sur la liste des contrôles propres à la Console.
+
 ## Documentation
 
 - Spécification : [`docs/conception/workflow-sdlc.md`](docs/conception/workflow-sdlc.md)

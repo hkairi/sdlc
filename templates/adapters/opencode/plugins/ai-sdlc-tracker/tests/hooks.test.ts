@@ -41,7 +41,7 @@ function setupFor(init: {
     if (script.includes("check_sync.py")) {
       return { code: init.checkCode ?? 0, stdout: init.checkOutput ?? "sync OK : 25 tâche(s)", stderr: "" }
     }
-    if (script.includes("generate_from_openspec.py")) {
+    if (script.includes("generate.py")) {
       return { code: init.generateCode ?? 0, stdout: init.generateOutput ?? "→ 25 tâches / 7 lots", stderr: "" }
     }
     return { code: 0, stdout: "ok", stderr: "" }
@@ -162,8 +162,8 @@ test("la validation stricte déclenche la génération, jamais --all", async () 
   const message = await generateAfterValidate(deps, event)
   assert.match(message!, /suivi créé|suivi régénéré/)
   assert.ok(
-    scripts.some((call) => call.stdout.includes("generate_from_openspec.py add-x")),
-    "le générateur one-shot est appelé",
+    scripts.some((call) => call.stdout.includes("generate.py") && call.stdout.includes("--tasks")),
+    "le générateur est appelé avec le tasks.md",
   )
   assert.ok(
     scripts.some((call) => call.stdout.includes("--eyebrow repo")),
@@ -283,5 +283,5 @@ test("un dépôt non suivi laisse passer le commit et le dit", async () => {
   const { deps } = setupFor({ directory: dir, gitOut: { staged: "docs/notes.md" } })
   const decision = await decideCommit(deps, "git commit -m 'x'")
   assert.equal(decision?.block, false)
-  assert.match(decision!.message, /aucun change OpenSpec ni suivi/)
+  assert.match(decision!.message, /aucun change OpenSpec/)
 })

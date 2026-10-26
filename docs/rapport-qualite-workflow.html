@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rapport qualité &amp; complétude — Workflow SDLC</title>
+<style>
+  :root {
+    --bg:#f6f7f9; --surface:#fff; --ink:#1c2430; --muted:#5b6572; --line:#e3e7ec;
+    --brand:#16407a; --brand-soft:#eaf1fb; --accent:#0e7a5f;
+    --critique:#b3261e; --critique-bg:#fdecea;
+    --important:#b26a00; --important-bg:#fff4e0;
+    --mineur:#8a6d00; --mineur-bg:#fdf6dc;
+    --amelioration:#16407a; --amelioration-bg:#eaf1fb;
+    --radius:12px; --shadow:0 1px 2px rgba(16,24,40,.05),0 8px 24px rgba(16,24,40,.06);
+  }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    margin:0; background:var(--bg); color:var(--ink);
+    font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a { color:var(--brand); text-decoration:none; } a:hover { text-decoration:underline; }
+  .wrap { max-width:960px; margin:0 auto; padding:0 24px 80px; }
+  header.hero {
+    background:linear-gradient(135deg,#0d2f5c 0%,#16407a 55%,#1b5a8f 100%);
+    color:#fff; padding:44px 0 40px; border-bottom:4px solid #0e7a5f;
+  }
+  header.hero .wrap { padding-bottom:0; }
+  header.hero h1 { font-size:30px; line-height:1.2; margin:0 0 12px; font-weight:800; }
+  header.hero p.lead { margin:0; max-width:760px; opacity:.93; font-size:15px; }
+  header.hero code { background:rgba(255,255,255,.14); padding:1px 6px; border-radius:5px; }
+  section { margin-top:40px; }
+  h2 { font-size:21px; margin:0 0 12px; font-weight:800; padding-top:12px; }
+  h3.title { font-size:16.5px; font-weight:700; margin:0; }
+  .sub { color:var(--muted); margin:0 0 20px; font-size:14px; }
+  nav.toc {
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px 20px; box-shadow:var(--shadow);
+  }
+  nav.toc ol { margin:0; padding-left:20px; columns:2; column-gap:32px; }
+  nav.toc li { margin:3px 0; font-size:14px; }
+  p, li { color:var(--ink); }
+  blockquote {
+    margin:16px 0; padding:12px 16px; border-left:3px solid var(--brand);
+    background:var(--brand-soft); border-radius:0 8px 8px 0; color:#25415f;
+  }
+  code {
+    font-family:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    font-size:12.8px; background:#eef1f5; border-radius:5px; padding:1px 6px; color:#234;
+  }
+  pre { background:#101826; color:#e6edf3; padding:16px; border-radius:10px; overflow:auto; }
+  pre code { background:none; color:inherit; padding:0; }
+  table { width:100%; border-collapse:collapse; font-size:13.5px; background:var(--surface); box-shadow:var(--shadow); border-radius:10px; overflow:hidden; }
+  th, td { text-align:left; padding:9px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { background:var(--brand-soft); color:var(--brand); font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:.05em; }
+  tr:last-child td { border-bottom:none; }
+  ul, ol { padding-left:22px; }
+  ol.roadmap { list-style:none; padding-left:0; counter-reset:step; }
+  ol.roadmap li {
+    counter-increment:step; position:relative; padding:12px 0 12px 46px;
+    border-bottom:1px dashed var(--line);
+  }
+  ol.roadmap li::before {
+    content:counter(step); position:absolute; left:0; top:12px; width:30px; height:30px;
+    border-radius:50%; background:var(--brand); color:#fff; font-weight:800;
+    display:flex; align-items:center; justify-content:center; font-size:14px;
+  }
+  .item {
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    margin-bottom:16px; box-shadow:var(--shadow); overflow:hidden;
+  }
+  .item .head { display:flex; align-items:flex-start; gap:14px; padding:16px 20px; border-bottom:1px solid var(--line); }
+  .item .id {
+    flex:none; font-weight:800; font-size:13px; color:#fff; border-radius:8px;
+    padding:4px 9px; margin-top:2px;
+  }
+  .id.critique { background:var(--critique); } .id.important { background:var(--important); }
+  .id.mineur { background:var(--mineur); } .id.amelioration { background:var(--amelioration); }
+  .item .body { padding:16px 20px 18px; }
+  .tag {
+    display:inline-block; font-size:11px; font-weight:700; letter-spacing:.04em;
+    text-transform:uppercase; border-radius:6px; padding:2px 8px; margin-left:8px; vertical-align:1px;
+  }
+  .tag.critique { background:var(--critique-bg); color:var(--critique); }
+  .tag.important { background:var(--important-bg); color:var(--important); }
+  .tag.mineur { background:var(--mineur-bg); color:var(--mineur); }
+  .tag.amelioration { background:var(--amelioration-bg); color:var(--amelioration); }
+  .effort {
+    display:inline-block; font-size:11px; font-weight:800; letter-spacing:.04em;
+    background:#eef1f5; color:#31435c; border-radius:999px; padding:2px 10px; margin-left:6px;
+  }
+  .kv { margin:0 0 8px; }
+  .kv .lbl {
+    font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--muted);
+  }
+  footer { margin-top:48px; padding-top:20px; border-top:1px solid var(--line); color:var(--muted); font-size:12.5px; }
+  .gen {
+    display:inline-block; background:var(--mineur-bg); color:var(--mineur); font-size:12px;
+    border-radius:6px; padding:3px 10px; font-weight:700; margin-top:12px;
+  }
+  @media (max-width:640px) { nav.toc ol { columns:1; } header.hero h1 { font-size:24px; } }
+  @media print { body { background:#fff; } .item, nav.toc, table { box-shadow:none; } .item { break-inside:avoid; } }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <h1>Rapport qualité &amp; complétude — Workflow SDLC</h1>
+    <p class="lead">Audit du framework <strong>AI-DRIVEN-SDLC</strong> (v0.1.0) au regard de sa spécification de référence <code>.sdlc/workflow-sdlc.md</code>. Ce document recense les propositions de correctifs et d'améliorations, priorisées, avec une estimation d'effort en taille de t-shirt et les fichiers concernés.</p>
+  </div>
+</header>
+<div class="wrap">
+  <nav class="toc" aria-label="Sommaire"><ol><li><a href="#1-synthèse-et-verdict">1. Synthèse et verdict</a></li><li><a href="#2-points-forts-à-préserver">2. Points forts (à préserver)</a></li><li><a href="#3-correctifs-proposés">3. Correctifs proposés</a></li><li><a href="#4-améliorations-proposées">4. Améliorations proposées</a></li><li><a href="#5-tableau-de-complétude">5. Tableau de complétude</a></li><li><a href="#6-feuille-de-route-priorisée">6. Feuille de route priorisée</a></li><li><a href="#7-récapitulatif-des-efforts">7. Récapitulatif des efforts</a></li></ol></nav>
+  <h2 id="1-synthèse-et-verdict">1. Synthèse et verdict</h2>
+<table><thead><tr><th>Dimension</th><th>Évaluation</th><th>Constat</th></tr></thead><tbody><tr><td>Qualité de conception</td><td>Élevée</td><td>Spec exhaustive, principes solides, format homogène des 18 skills.</td></tr><tr><td>Couverture fonctionnelle</td><td>≈ 90 %</td><td>Templates, adaptateurs, CI, déploiement et installateur sont présents.</td></tr><tr><td>Cohérence spec ↔ code</td><td>À corriger</td><td>Drift du schéma de config, suivi désynchronisé (section 11).</td></tr><tr><td>Maturité exploitation</td><td>Partielle</td><td>Journal, métriques, incidents et CI du framework absents.</td></tr></tbody></table>
+<p>Le framework est de <strong>très bonne facture pour un état v0.1.0</strong> et presque complet fonctionnellement. Les défauts sont des <strong>écarts de cohérence</strong> (configuration, suivi, « foyer unique » des contrôles) et une <strong>section inachevée</strong> (plugin OpenCode <code>ai-sdlc-tracker</code>). Les correctifs sont peu coûteux et localisés ; les améliorations visent surtout à verrouiller la cohérence dans le temps.</p>
+<h2 id="2-points-forts-à-préserver">2. Points forts (à préserver)</h2>
+<ul><li><strong>Spécification de référence</strong> complète et cohérente (13 étapes + 3 voies transverses, 13 sections).</li><li><strong>Principes de sécurité</strong> robustes : git réservé à l'humain, secrets interdits en lecture, « rien n'est inventé », contenu externe = données.</li><li><strong>18 skills homogènes</strong>, portables entre les 3 outils (frontmatter minimal, sections normalisées, chemins via <code>paths.*</code>).</li><li><strong>Contrainte par listes d'outils</strong> (pas par skills) : le bon levier pour restreindre les agents.</li><li><strong>Contrat de passation formel</strong> (<code>input.md</code> + <code>report.schema.json</code> strict) et Definition of Done opposable.</li><li><strong>CI générique</strong> (<code>templates/scripts/ci.sh</code>) modulaire, seuils lus en config, statut <code>not_run</code> (jamais de faux succès).</li><li><strong>Installateur non destructif</strong>, idempotent, avec manifeste sha256 et <code>--dry-run</code>/<code>--upgrade</code>/<code>--uninstall</code>.</li><li><strong>Dogfooding réel</strong> : le framework se pilote lui-même (change <code>console-sdlc</code>, 6 ADR, analyse STRIDE, recette, runbook).</li></ul>
+<h2 id="3-correctifs-proposés">3. Correctifs proposés</h2>
+<p>Les tailles d'effort suivent la légende : <strong>XS</strong> (&lt; 1 h), <strong>S</strong> (1 h – ½ j), <strong>M</strong> (½ j – 2 j), <strong>L</strong> (2 j – 1 sem), <strong>XL</strong> (&gt; 1 sem).</p>
+<div class="item"><div class="head"><span class="id critique">C1</span><div><h3 class="title">Réconcilier le schéma de configuration <span class="tag critique">Critique</span> <span class="effort" title="Effort estimé (taille de t-shirt)">Effort M</span></h3></div></div><div class="body"><p class="kv"><span class="lbl">Problème</span> <code>sdlc.config.yaml</code> (utilisé dans ce dépôt) contient 7 sections non documentées — <code>database</code>, <code>quality</code>, <code>review</code>, <code>process</code>, <code>team</code>, <code>retention</code>, <code>ui</code> — absentes du <code>§4</code> de la spec <strong>et</strong> de <code>sdlc.config.example.yaml</code>. Le schéma « figé » de la spec ne reflète plus la réalité.</p><p class="kv"><span class="lbl">Proposition</span> deux options, à trancher explicitement :</p><ul><li>Si ces clés appartiennent au framework : les documenter dans le <code>§4</code> et dans <code>sdlc.config.example.yaml</code>.</li><li>Si elles sont propres à la Console SDLC : les extraire vers une config applicative séparée, et rétablir un <code>sdlc.config.yaml</code> strictement conforme au schéma du framework.</li></ul><p class="kv"><span class="lbl">Fichiers</span> <code>.sdlc/workflow-sdlc.md</code> (§4), <code>sdlc.config.example.yaml</code>, <code>sdlc.config.yaml</code>.</p></div></div>
+<div class="item"><div class="head"><span class="id critique">C2</span><div><h3 class="title">Corriger <code>paths.spec: "openspec"</code> et compléter <code>paths.*</code> <span class="tag critique">Critique</span> <span class="effort" title="Effort estimé (taille de t-shirt)">Effort XS</span></h3></div></div><div class="body"><p class="kv"><span class="lbl">Problème</span> dans <code>sdlc.config.yaml</code>, <code>paths.spec</code> vaut <code>"openspec"</code>, alors que le <code>§13.3</code> la définit comme « le chemin de la spécification de référence » (défaut <code>.sdlc/workflow-sdlc.md</code>). Plusieurs clés <code>paths.*</code> sont par ailleurs absentes.</p><p class="kv"><span class="lbl">Proposition</span> rétablir <code>paths.spec: .sdlc/workflow-sdlc.md</code> et ajouter l'ensemble des clés <code>paths.*</code> prévues au <code>§13.3</code>. Si un autre besoin existe (référence au dossier OpenSpec), utiliser une clé dédiée distincte.</p><p class="kv"><span class="lbl">Fichiers</span> <code>sdlc.config.yaml</code> (section <code>paths</code>).</p></div></div>
+<div class="item"><div class="head"><span class="id important">C3</span><div><h3 class="title">Finaliser et resynchroniser la section 11 (plugin <code>ai-sdlc-tracker</code>) <span class="tag important">Important</span> <span class="effort" title="Effort estimé (taille de t-shirt)">Effort L</span></h3></div></div><div class="body"><p class="kv"><span class="lbl">Problème</span> <code>docs/conception/tasks.md</code> marque les tâches <code>11.1</code> à <code>11.6</code> comme non faites, alors que <code>render_adapters.py</code> contient déjà les changements correspondants (entrée <code>("plugins", ".opencode/plugins")</code> dans <code>SUB_DIRS</code>, exclusion de <code>node_modules</code>/<code>tests</code>). Le suivi ne reflète pas le code.</p><p class="kv"><span class="lbl">Proposition</span> mettre <code>tasks.md</code> à jour pour refléter l'existant, puis traiter les tâches restantes : <code>11.4</code> (adapter le plugin au modèle <code>docs/suivi/state.json</code>) et <code>11.5</code> (faire du gabarit le foyer unique : tests autonomes + CI).</p><p class="kv"><span class="lbl">Fichiers</span> <code>docs/conception/tasks.md</code>, <code>templates/adapters/opencode/plugins/ai-sdlc-tracker/**</code>, <code>.agents/skills/sdlc-init/scripts/render_adapters.py</code>.</p></div></div>
+<div class="item"><div class="head"><span class="id important">C4</span><div><h3 class="title">Retirer <code>node_modules/</code> du gabarit du plugin <span class="tag important">Important</span> <span class="effort" title="Effort estimé (taille de t-shirt)">Effort XS</span></h3></div></div><div class="body"><p class="kv"><span class="lbl">Problème</span> <code>templates/adapters/opencode/plugins/ai-sdlc-tracker/node_modules/</code> contient des milliers de fichiers, alors que la tâche 11.1 exige explicitement « sans <code>tests/</code> ni <code>node_modules/</code> ». Le <code>.gitignore</code> imbriqué le masque et <code>render_adapters.py</code> l'exclut de la distribution, mais sa présence physique est un risque de pollution du dépôt.</p><p class="kv"><span class="lbl">Proposition</span> supprimer <code>node_modules/</code> de l'arbre de travail, puis vérifier son statut git (<code>git ls-files …/node_modules</code>) pour s'assurer qu'aucun fichier n'est versionné.</p><p class="kv"><span class="lbl">Fichiers</span> <code>templates/adapters/opencode/plugins/ai-sdlc-tracker/node_modules/</code>.</p></div></div>
+<div class="item"><div class="head"><span class="id important">C5</span><div><h3 class="title">Trancher le « foyer unique » des contrôles (<code>scripts/ci.sh</code>) <span class="tag important">Important</span> <span class="effort" title="Effort estimé (taille de t-shirt)">Effort M</span></h3></div></div><div class="body"><p class="kv"><span class="lbl">Problème</span> le principe <code>§10</code> (« <code>scripts/ci.sh</code> est la seule définition des contrôles ») est contredit en pratique : le dépôt utilise une version concrète dédiée à la Console (184 lignes) distincte du gabarit générique (605 lignes).</p><p class="kv"><span class="lbl">Proposition</span> deux options :</p><ul><li>Faire du gabarit le foyer unique et dériver le <code>ci.sh</code> du repo via les variables <code>SDLC_&lt;CONTRÔLE&gt;_CMD</code> (mécanisme déjà prévu au §13.4).</li><li>Documenter explicitement la dérogation de dogfooding dans le README si le <code>ci.sh</code> spécifique est conservé.</li></ul><p class="kv"><span class="lbl">Fichiers</span> <code>scripts/ci.sh</code>, <code>templates/scripts/ci.sh</code>.</p></div></div>
+<div class="item"><div class="head"><span class="id important">C6</span><div><h3 class="title">Aligner <code>scripts/ci.sh</code> sur le contrat de sortie du §10 <span class="tag important">Important</span> <span class="effort" title="Effort estimé (taille de t-shirt)">Effort S</span></h3></div></div><div class="body"><p class="kv"><span class="lbl">Problème</span> le <code>scripts/ci.sh</code> du dépôt écrit <code>reports/junit-unittest.txt</code> et <code>reports/junit-vitest.txt</code> (texte brut), alors que le <code>§10</code> exige des rapports JUnit en <code>reports/junit/*.xml</code>. Le gabarit, lui, respecte le contrat.</p><p class="kv"><span class="lbl">Proposition</span> produire les rapports de tests au format JUnit XML (<code>--junitxml</code>, <code>vitest --reporter=junit</code>) vers <code>reports/junit/</code>, pour que le tableau de bord consomme un format unique et conforme.</p><p class="kv"><span class="lbl">Fichiers</span> <code>scripts/ci.sh</code>.</p></div></div>
+<div class="item"><div class="head"><span class="id mineur">C7</span><div><h3 class="title">Ignorer <code>sdlc.config.yaml</code> dans le dépôt <span class="tag mineur">Mineur</span> <span class="effort" title="Effort estimé (taille de t-shirt)">Effort XS</span></h3></div></div><div class="body"><p class="kv"><span class="lbl">Problème</span> <code>sdlc.config.yaml</code> est présent en untracked et n'est pas listé dans <code>.gitignore</code>. C'est une configuration locale, ce qui crée un risque de commit accidentel.</p><p class="kv"><span class="lbl">Proposition</span> ajouter <code>/sdlc.config.yaml</code> au <code>.gitignore</code> racine (en conservant <code>sdlc.config.example.yaml</code> versionné).</p><p class="kv"><span class="lbl">Fichiers</span> <code>.gitignore</code>.</p></div></div>
+<div class="item"><div class="head"><span class="id mineur">C8</span><div><h3 class="title">Matérialiser les répertoires d'exploitation <span class="tag mineur">Mineur</span> <span class="effort" title="Effort estimé (taille de t-shirt)">Effort XS</span></h3></div></div><div class="body"><p class="kv"><span class="lbl">Problème</span> l'arborescence <code>§3</code> prévoit <code>docs/journal/</code> (<code>runs.jsonl</code>, <code>deploys.jsonl</code>), <code>docs/metrics/history.jsonl</code>, <code>docs/incidents/</code>, <code>docs/retro/</code> et <code>docs/client/</code> : aucun n'existe encore. Les skills <code>metrics</code>, <code>retro</code>, <code>client-report</code> s'appuient dessus.</p><p class="kv"><span class="lbl">Proposition</span> créer les répertoires (avec un <code>.gitkeep</code>) et initialiser les journaux vides dès la première délégation/le premier déploiement réels de la Console.</p><p class="kv"><span class="lbl">Fichiers</span> <code>docs/journal/</code>, <code>docs/metrics/</code>, <code>docs/incidents/</code>, <code>docs/retro/</code>, <code>docs/client/</code>.</p></div></div>
+<h2 id="4-améliorations-proposées">4. Améliorations proposées</h2>
+<div class="item"><div class="head"><span class="id amelioration">A1</span><div><h3 class="title">Ajouter une CI au framework lui-même <span class="tag amelioration">Amélioration</span> <span class="effort" title="Effort estimé (taille de t-shirt)">Effort M</span></h3></div></div><div class="body"><p class="kv"><span class="lbl">Proposition</span> créer <code>.github/workflows/ci.yml</code> exécutant les tests <code>tests/install/</code> et <code>tests/e2e/</code>, le <code>npm test</code> + <code>typecheck</code> du plugin, et un passage de <code>scripts/ci.sh</code>. Ce dépôt pilote les autres projets : il doit être le premier couvert.</p><p class="kv"><span class="lbl">Bénéfice</span> détection automatique des régressions de l'installateur et du plugin ; crédibilité du framework « sur lui-même ».</p></div></div>
+<div class="item"><div class="head"><span class="id amelioration">A2</span><div><h3 class="title">Linter le schéma de config contre le §4 <span class="tag amelioration">Amélioration</span> <span class="effort" title="Effort estimé (taille de t-shirt)">Effort M</span></h3></div></div><div class="body"><p class="kv"><span class="lbl">Proposition</span> ajouter un contrôle qui valide <code>sdlc.config.yaml</code> contre un JSON Schema dérivé du <code>§4</code>, et qui signale toute clé non documentée (évite la réapparition du drift constaté en C1).</p><p class="kv"><span class="lbl">Bénéfice</span> cohérence permanente entre la spec et la config réelle.</p></div></div>
+<div class="item"><div class="head"><span class="id amelioration">A3</span><div><h3 class="title">Test de non-régression de la spec <span class="tag amelioration">Amélioration</span> <span class="effort" title="Effort estimé (taille de t-shirt)">Effort M</span></h3></div></div><div class="body"><p class="kv"><span class="lbl">Proposition</span> ajouter un script de vérification statique : chaque skill citée au <code>§7</code> a son <code>SKILL.md</code>, chaque gabarit cité existe, chaque profil de déploiement et chaque outil de CI référencés disposent de leurs fichiers. À intégrer à <code>scripts/ci.sh</code>.</p><p class="kv"><span class="lbl">Bénéfice</span> garantit que la spec et l'implémentation ne divergent pas silencieusement.</p></div></div>
+<div class="item"><div class="head"><span class="id amelioration">A4</span><div><h3 class="title">Clarifier le foyer de vérité des rendus HTML <span class="tag amelioration">Amélioration</span> <span class="effort" title="Effort estimé (taille de t-shirt)">Effort S</span></h3></div></div><div class="body"><p class="kv"><span class="lbl">Proposition</span> réduire la multiplicité des maquettes/suivis (<code>mockup-*.html</code>, <code>suivi-console.html</code>, <code>suivi-framework.html</code>) : désigner un fichier généré par finalité et documenter la correspondance maquette ↔ rendu réel.</p><p class="kv"><span class="lbl">Bénéfice</span> évite la confusion entre <code>suivi-projet</code> et <code>suivi-console</code>.</p></div></div>
+<div class="item"><div class="head"><span class="id amelioration">A5</span><div><h3 class="title">Documenter la dérogation de dogfooding <span class="tag amelioration">Amélioration</span> <span class="effort" title="Effort estimé (taille de t-shirt)">Effort XS</span></h3></div></div><div class="body"><p class="kv"><span class="lbl">Proposition</span> ajouter une note au README expliquant pourquoi le <code>scripts/ci.sh</code> du dépôt diffère du gabarit (cas d'usage de la Console) et comment les deux sont reliés.</p><p class="kv"><span class="lbl">Bénéfice</span> lève l'ambiguïté C5/C6 pour tout nouvel intervenant.</p></div></div>
+<div class="item"><div class="head"><span class="id amelioration">A6</span><div><h3 class="title">Renforcer la couverture de tests du framework <span class="tag amelioration">Amélioration</span> <span class="effort" title="Effort estimé (taille de t-shirt)">Effort L</span></h3></div></div><div class="body"><p class="kv"><span class="lbl">Proposition</span> étendre <code>tests/install/</code> et <code>tests/e2e/</code> : cas limites de l'installateur (conflit de skills, fichiers modifiés par l'humain, <code>--force</code>), et mesurer la couverture des scripts Python (<code>render_adapters.py</code>, <code>sdlc_install_lib.py</code>).</p><p class="kv"><span class="lbl">Bénéfice</span> fiabilité de l'installation et de la génération d'adaptateurs.</p></div></div>
+<div class="item"><div class="head"><span class="id amelioration">A7</span><div><h3 class="title">Versionner et migrer le schéma de config <span class="tag amelioration">Amélioration</span> <span class="effort" title="Effort estimé (taille de t-shirt)">Effort M</span></h3></div></div><div class="body"><p class="kv"><span class="lbl">Proposition</span> exploiter la clé <code>version</code> déjà présente : prévoir un chemin de migration de config dans <code>sdlc-init --upgrade</code> (renommage/ajout de clés) pour accompagner les évolutions futures du schéma.</p><p class="kv"><span class="lbl">Bénéfice</span> évolutions du schéma sans rupture.</p></div></div>
+<div class="item"><div class="head"><span class="id amelioration">A8</span><div><h3 class="title">Matrice de traçabilité étapes ↔ livrables <span class="tag amelioration">Amélioration</span> <span class="effort" title="Effort estimé (taille de t-shirt)">Effort M</span></h3></div></div><div class="body"><p class="kv"><span class="lbl">Proposition</span> ajouter au tableau de bord un onglet « workflow » qui matérialise les 13 étapes du <code>§5</code> avec, pour chacune, le livrable attendu, son chemin réel et son état (présent/absent), alimenté par le test de non-régression A3.</p><p class="kv"><span class="lbl">Bénéfice</span> visualisation instantanée de la complétude.</p></div></div>
+<h2 id="5-tableau-de-complétude">5. Tableau de complétude</h2>
+<table><thead><tr><th>Composant</th><th>État</th><th>Observation</th></tr></thead><tbody><tr><td>Spécification de référence</td><td>Complet</td><td>13 sections cohérentes</td></tr><tr><td>Principes (§2)</td><td>Complet</td><td>Solides et bien articulés</td></tr><tr><td>Skills (18)</td><td>Complet</td><td>Format homogène, portables</td></tr><tr><td>Gabarits documentaires (14)</td><td>Complet</td><td>Tous présents</td></tr><tr><td>Adaptateurs (3 outils)</td><td>Complet</td><td>Agents + modes par listes d'outils</td></tr><tr><td>Contrat de passation</td><td>Complet</td><td>JSON Schema strict</td></tr><tr><td>CI générique (template)</td><td>Complet</td><td>Modulaire, seuils en config</td></tr><tr><td>Pipelines CI (5) / profils déploiement (8)</td><td>Complet</td><td>Un dossier complet par profil</td></tr><tr><td>Installateur</td><td>Complet</td><td>Testé (install/e2e)</td></tr><tr><td>Schéma de configuration</td><td>Drift</td><td>7 sections non documentées (C1)</td></tr><tr><td>Plugin OpenCode</td><td>Inachevé</td><td>11.1–11.6 non finalisées (C3)</td></tr><tr><td>Journal / métriques / incidents / retro / client</td><td>Absent</td><td>Étapes 9–10 non matérialisées (C8)</td></tr><tr><td>CI du framework lui-même</td><td>Absent</td><td>Pas de <code>.github/</code> (A1)</td></tr></tbody></table>
+<h2 id="6-feuille-de-route-priorisée">6. Feuille de route priorisée</h2>
+<ol class="roadmap"><li><strong>Aligner la configuration sur la spec</strong> — C1 (schéma), C2 (<code>paths.spec</code>), C7 (<code>.gitignore</code>).</li><li><strong>Assainir le plugin OpenCode</strong> — C4 (<code>node_modules</code>) puis C3 (finaliser 11.4/11.5 et resynchroniser <code>tasks.md</code>).</li><li><strong>Restaurer le foyer unique des contrôles</strong> — C5 (<code>ci.sh</code>), C6 (JUnit XML), A5 (documenter la dérogation).</li><li><strong>Verrouiller la cohérence</strong> — A2 (lint de config), A3 (non-régression de la spec), A1 (CI du framework).</li><li><strong>Compléter l'exploitation et la traçabilité</strong> — C8 (répertoires d'exploitation), A4 (foyer de vérité HTML), A6 (tests), A7 (migrations), A8 (matrice).</li></ol>
+<h2 id="7-récapitulatif-des-efforts">7. Récapitulatif des efforts</h2>
+<table><thead><tr><th>Réf</th><th>Sévérité</th><th>Effort</th><th>Libellé</th></tr></thead><tbody><tr><td>C1</td><td>Critique</td><td>M</td><td>Réconcilier le schéma de configuration</td></tr><tr><td>C2</td><td>Critique</td><td>XS</td><td>Corriger <code>paths.spec</code> et compléter <code>paths.*</code></td></tr><tr><td>C3</td><td>Important</td><td>L</td><td>Finaliser et resynchroniser la section 11</td></tr><tr><td>C4</td><td>Important</td><td>XS</td><td>Retirer <code>node_modules/</code> du gabarit</td></tr><tr><td>C5</td><td>Important</td><td>M</td><td>Foyer unique des contrôles (<code>ci.sh</code>)</td></tr><tr><td>C6</td><td>Important</td><td>S</td><td>Aligner <code>ci.sh</code> sur le contrat JUnit (§10)</td></tr><tr><td>C7</td><td>Mineur</td><td>XS</td><td>Ignorer <code>sdlc.config.yaml</code></td></tr><tr><td>C8</td><td>Mineur</td><td>XS</td><td>Matérialiser les répertoires d'exploitation</td></tr><tr><td>A1</td><td>Amélioration</td><td>M</td><td>CI du framework lui-même</td></tr><tr><td>A2</td><td>Amélioration</td><td>M</td><td>Lint du schéma de config</td></tr><tr><td>A3</td><td>Amélioration</td><td>M</td><td>Non-régression de la spec</td></tr><tr><td>A4</td><td>Amélioration</td><td>S</td><td>Clarifier le foyer de vérité HTML</td></tr><tr><td>A5</td><td>Amélioration</td><td>XS</td><td>Documenter la dérogation de dogfooding</td></tr><tr><td>A6</td><td>Amélioration</td><td>L</td><td>Renforcer la couverture de tests</td></tr><tr><td>A7</td><td>Amélioration</td><td>M</td><td>Versionner/migrer le schéma de config</td></tr><tr><td>A8</td><td>Amélioration</td><td>M</td><td>Matrice de traçabilité étapes ↔ livrables</td></tr></tbody></table>
+<p><strong>Total indicatif</strong> : 5 × XS, 2 × S, 6 × M, 2 × L, 0 × XL — soit environ <strong>7 à 10 jours-homme</strong> cumulés, à affiner par l'humain.</p>
+  <footer>
+    <p>Rapport d'audit du workflow SDLC — constats fondés sur la lecture de la spécification
+    de référence, de la configuration, des gabarits, des skills et des scripts du dépôt.</p>
+    <span class="gen">Fichier généré — ne pas modifier. Source : docs/rapport-qualite-workflow.md (script scripts/render_rapport.py).</span>
+  </footer>
+</div>
+</body>
+</html>

@@ -65,8 +65,8 @@ export function definePhase(deps: Deps): ToolDef {
       }
       const { target } = resolved
       const phaseId = PHASE_IDS[phase] ?? phase
-      const ident = target.kind === "multi" ? `${target.feature}:${phaseId}.${item}` : `${phaseId}.${item}`
-      const args = ["--file", target.file, ident, status]
+      const ident = `${phaseId}.${item}`
+      const args = ["--file", target.file, "--feature", target.feature, ident, status]
       if (note) args.push(note)
 
       const result = await deps.runScript(scriptPath(deps.config, "track_phase.py"), args, deps.directory)
@@ -89,20 +89,19 @@ export function definePhase(deps: Deps): ToolDef {
   })
 }
 
-/** Statut réellement présent dans le bloc de phases du suivi mono (multi : non vérifié). */
+/** Statut réellement présent dans `state.json` pour un item de phase. */
 export function readPhaseItem(
   deps: Deps,
-  target: { kind: string; file: string },
+  target: { stateFile: string; feature: string },
   phaseId: string,
   itemId: string,
 ): string | undefined {
-  if (target.kind !== "mono") return undefined
   try {
-    const content = deps.readFile(target.file)
-    const raw = /<script type="application\/json" id="phase-data">([\s\S]*?)<\/script>/.exec(content)?.[1]
-    if (!raw) return undefined
-    const data = JSON.parse(raw) as { phases?: { id?: string; items?: { id?: string; status?: string }[] }[] }
-    const phase = data.phases?.find((candidate) => candidate.id === phaseId)
+    const data = JSON.parse(deps.readFile(target.stateFile)) as {
+      features?: { id?: string; phases?: { id?: string; items?: { id?: string; status?: string }[] }[] }[]
+    }
+    const feature = data.features?.find((candidate) => candidate.id === target.feature)
+    const phase = feature?.phases?.find((candidate) => candidate.id === phaseId)
     return phase?.items?.find((candidate) => candidate.id === itemId)?.status
   } catch {
     return undefined

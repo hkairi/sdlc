@@ -1,28 +1,39 @@
-name: "ai-sdlc-tracker CI"
-# Tests et typecheck du plugin de suivi (foyer : templates/adapters/opencode/plugins).
+name: ai-sdlc-tracker
+
 on:
   push:
-    branches: ["main"]
+    paths:
+      - "templates/adapters/opencode/plugins/ai-sdlc-tracker/**"
+      - ".github/workflows/ai-sdlc-tracker.yml"
   pull_request:
-    branches: ["main"]
+    paths:
+      - "templates/adapters/opencode/plugins/ai-sdlc-tracker/**"
+      - ".github/workflows/ai-sdlc-tracker.yml"
+
 jobs:
-  plugin:
-    name: "tests + typecheck (Node ${{ matrix.node-version }})"
+  test:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        node-version: ["22", "24", "26"]
+        node: [22, 24, 26]
     defaults:
       run:
         working-directory: templates/adapters/opencode/plugins/ai-sdlc-tracker
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ matrix.node }}
           cache: npm
           cache-dependency-path: templates/adapters/opencode/plugins/ai-sdlc-tracker/package-lock.json
-      - run: npm ci --no-audit --no-fund
-      - run: npm test
-      - run: npm run typecheck
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Tests
+        run: npm test
+
+      - name: Vérification des types
+        run: npm run typecheck

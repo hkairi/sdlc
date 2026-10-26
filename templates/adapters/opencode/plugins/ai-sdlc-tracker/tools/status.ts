@@ -9,7 +9,7 @@
  * outil qu'on ignore, et un gate ignoré ne protège plus rien.
  */
 import { join } from "node:path"
-import { listSuivis, noteHasEvidence, parseMonoTasks, parseMultiFeatures, type TaskState } from "../core.ts"
+import { listSuivis, noteHasEvidence, parseStateJson, type TaskState } from "../core.ts"
 import { evidenceFor, inactive, sdlcTool, text } from "./shared.ts"
 import type { Deps } from "./shared.ts"
 import type { ToolDef } from "../types.ts"
@@ -29,40 +29,22 @@ export type ChantierStatus = {
   tasks: TaskState[]
 }
 
-/** Suivis du dépôt, mono et multi, avec leurs tâches (sans doublon mono/multi). */
+/** Chantiers du `state.json`, avec leurs tâches (source de vérité). */
 export function collectChantiers(deps: Deps): ChantierStatus[] {
   const out: ChantierStatus[] = []
-  const seen = new Set<string>()
-
   for (const file of listSuivis(deps.directory)) {
-    let html: string
+    let content: string
     try {
-      html = deps.readFile(file)
+      content = deps.readFile(file)
     } catch {
       continue
     }
-    if (file.endsWith("suivi-multi.html")) continue
-    const label = file.replace(/^docs\/suivi-|\.html$/g, "")
-    seen.add(label)
-    out.push({ label, file, tasks: parseMonoTasks(html) })
-  }
-
-  const multiFile = listSuivis(deps.directory).find((file) => file.endsWith("suivi-multi.html"))
-  if (multiFile) {
-    let html = ""
-    try {
-      html = deps.readFile(multiFile)
-    } catch {
-      html = ""
-    }
-    for (const feature of parseMultiFeatures(html)) {
-      const label = feature.change ?? feature.key
-      if (seen.has(label)) continue
-      seen.add(label)
-      out.push({ label, file: multiFile, tasks: feature.tasks })
+    const parsed = parseStateJson(content)
+    if (!parsed.ok) continue
+    for (const feature of parsed.features) {
+      out.push({ label: feature.change ?? feature.id, file, tasks: feature.tasks })
     }
   }
-
   return out
 }
 
