@@ -1,0 +1,37 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Vérifier la syntaxe des scripts shell
+        run: |
+          bash -n scripts/ci.sh
+          bash -n templates/scripts/ci.sh
+
+      - name: Vérifier la complétude du framework (spec ↔ fichiers)
+        run: python3 scripts/check_completeness.py
+
+      - name: Vérifier la cohérence de sdlc.config.yaml (§ 4 / § 13.3)
+        run: python3 scripts/check_config.py sdlc.config.example.yaml
+
+      - name: Tests de l'installateur et de bout en bout
+        run: python3 -m unittest tests.install.test_sdlc_install tests.e2e.test_e2e
+
+      - name: Tests des skills
+        run: |
+          python3 .agents/skills/sdlc-init/tests/test_detect.py
+          python3 .agents/skills/sdlc-init/tests/test_render_adapters.py
+          python3 .agents/skills/suivi-taches/tests/test_suivi_taches.py
+          python3 .agents/skills/metrics/tests/test_metrics.py
+          python3 .agents/skills/suivi-projet/tests/test_suivi_projet.py
