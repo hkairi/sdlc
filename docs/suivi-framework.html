@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Suivi d&#x27;avancement — Construction du framework · AI-DRIVEN-SDLC</title>
+<title>Suivi d&#x27;avancement — Refonte de l&#x27;UI du tracker, menu Rapport et baseline rebranchée · AI-DRIVEN-SDLC</title>
 <!-- Fichier généré par la skill suivi-taches, ne pas modifier.
      L'état de référence vit dans state.json ; ce fichier HTML en embarque une copie
      en lecture seule (bloc state-data) et n'est jamais édité à la main. -->
@@ -432,7 +432,7 @@
     <main id="main" class="main" tabindex="-1">
       <div class="phead">
         <div>
-          <p class="eyebrow">AI-DRIVEN-SDLC · Framework · Suivi d&#x27;avancement</p>
+          <p class="eyebrow">AI-DRIVEN-SDLC · Suivi d&#x27;avancement</p>
           <h1>Construction du framework — fichier de suivi</h1>
           <p class="sub">Spec docs/conception/workflow-sdlc.md · 46 tâches · 11 lots · Dernière mise à jour : <span id="fileUpdated">2026-10-27</span></p>
         </div>
@@ -487,9 +487,9 @@
 <script type="application/json" id="state-data">{
   "schema": 1,
   "meta": {
-    "title": "Suivi d'avancement — Construction du framework · AI-DRIVEN-SDLC",
+    "title": "Suivi d'avancement — Refonte de l'UI du tracker, menu Rapport et baseline rebranchée · AI-DRIVEN-SDLC",
     "h1": "Construction du framework — fichier de suivi",
-    "eyebrow": "AI-DRIVEN-SDLC · Framework · Suivi d'avancement",
+    "eyebrow": "AI-DRIVEN-SDLC · Suivi d'avancement",
     "subtitle": "Spec docs/conception/workflow-sdlc.md · 46 tâches · 11 lots",
     "storage_key": null,
     "lang": "fr"
@@ -686,12 +686,12 @@
             {
               "id": "smoke",
               "label": "Smoke test post-déploiement",
-              "status": "doing",
-              "updated": "2026-10-11",
-              "note": "Pilote : étapes 0 à 3 faites (spec gelée le 2026-10-11 : 19 exigences, 52 scénarios, 24 tâches) ; étape 4 en cours : suivi du pilote généré (manifeste, phases cadrage 6/6, planification 2/3), en attente du gate « priorités du sprint ». Constats pilote : 14 (dont runs.jsonl sans rédacteur désigné, décisions perdues et attributions non planifiables par generate.py, sous-titre HTML échappé)."
+              "status": "done",
+              "updated": "2026-10-27",
+              "note": "Pilote validé : 28 install + 26 e2e + 87 skills + 81 plugin verts."
             }
           ],
-          "status": "doing"
+          "status": "done"
         },
         {
           "id": "cloture",
@@ -702,47 +702,61 @@
             {
               "id": "archive",
               "label": "Change archivé (openspec archive)",
-              "status": "todo",
-              "updated": "",
-              "note": ""
+              "status": "done",
+              "updated": "2026-10-27",
+              "note": "console-sdlc archivé (5 specs ajoutées) ; 0 change ouvert."
             },
             {
               "id": "docs_features",
               "label": "features.md à jour",
-              "status": "todo",
-              "updated": "",
-              "note": ""
+              "status": "done",
+              "updated": "2026-10-27",
+              "note": "docs/features.md créé."
             },
             {
               "id": "docs_architecture",
               "label": "architecture.md à jour si archi / infra",
-              "status": "todo",
-              "updated": "",
-              "note": ""
+              "status": "done",
+              "updated": "2026-10-27",
+              "note": "docs/architecture/architecture.md créé."
             },
             {
               "id": "docs_runbook",
               "label": "runbook.md à jour si setup / env / procédure",
-              "status": "todo",
-              "updated": "",
-              "note": ""
+              "status": "done",
+              "updated": "2026-10-27",
+              "note": "docs/ops/runbook.md à jour (8 fiches + contacts)."
             },
             {
               "id": "monitoring",
               "label": "Suivi post-déploiement (logs, métriques, incidents)",
-              "status": "todo",
-              "updated": "",
-              "note": ""
+              "status": "done",
+              "updated": "2026-10-27",
+              "note": "Supervision en place ; journaux vides → non mesuré."
             },
             {
               "id": "retro",
               "label": "Écarts et retour consignés",
-              "status": "todo",
-              "updated": "",
-              "note": ""
+              "status": "done",
+              "updated": "2026-10-27",
+              "note": "docs/retro/2026-10-27.md."
+            },
+            {
+              "id": "metrics",
+              "label": "Indicateurs calculés (runs, déploys, history)",
+              "status": "done",
+              "updated": "2026-10-27",
+              "note": "docs/metrics/indicateurs.md (avancement/qualité mesurés ; coûts/délais non mesurés)."
+            },
+            {
+              "id": "client_report",
+              "label": "Rapport client rédigé",
+              "status": "done",
+              "updated": "2026-10-27",
+              "note": "docs/client/2026-10-27.md."
             }
           ],
-          "status": "todo"
+          "status": "done"
         }
       ],
       "lots": [
