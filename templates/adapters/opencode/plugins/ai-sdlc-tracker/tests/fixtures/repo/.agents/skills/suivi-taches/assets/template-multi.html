@@ -241,7 +241,6 @@
     border-radius:9px;background:var(--panel);cursor:pointer;opacity:.85}
   .ph-step:hover{border-color:var(--brand2);opacity:1}
   .ph-step.current{background:var(--brandbg);opacity:1}
-  .ph-step.active{border-color:var(--brand);box-shadow:0 0 0 2px var(--brandbg) inset}
   .ph-step .ph-dot{width:18px;height:18px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
     font-size:10px;font-weight:800;color:#fff;background:#b7c2d0}
   .ph-step.st-done .ph-dot{background:var(--done)}
@@ -250,6 +249,8 @@
   .ph-step.st-done{border-color:var(--done);background:var(--donebg)}
   .ph-step.st-doing{border-color:var(--doing);background:var(--doingbg)}
   .ph-step.st-blocked{border-color:var(--bad);background:var(--badbg)}
+  /* Sélection (panneau ouvert) : anneau net, quel que soit le statut de la phase. */
+  .ph-step.active{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand);opacity:1}
   .ph-step .ph-nm{font-size:12px;font-weight:700;line-height:1.15;display:block}
   .ph-step .ph-mt{font-size:10px;color:var(--muted);margin-top:1px}
   .ph-panel{margin-top:9px;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden}

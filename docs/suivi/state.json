@@ -193,9 +193,9 @@
             {
               "id": "prod",
               "label": "Déployé en production",
-              "status": "todo",
-              "updated": "2026-10-11",
-              "note": "Publication = commit et push par l'utilisateur (git réservé à l'humain)."
+              "status": "done",
+              "updated": "2026-10-27",
+              "note": "Publication : commit et push par l'utilisateur (2026-10-27)."
             },
             {
               "id": "smoke",
