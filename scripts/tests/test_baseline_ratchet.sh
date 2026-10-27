@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Tests du ratchet de baseline (`scripts/suivi/baseline.py`).
+# Tests du ratchet de baseline (`.agents/skills/suivi-taches/scripts/baseline.py`).
 #
 # Le calcul est une fonction pure (`ratchet_problems`) : on l'exerce sur des
 # états construits, sans toucher au dépôt ni exécuter `check_sync.py`.
@@ -18,7 +18,7 @@ import os
 import sys
 
 root = sys.argv[1]
-path = os.path.join(root, "scripts", "suivi", "baseline.py")
+path = os.path.join(root, ".agents", "skills", "suivi-taches", "scripts", "baseline.py")
 spec = importlib.util.spec_from_file_location("baseline", path)
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)

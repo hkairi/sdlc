@@ -511,12 +511,31 @@ class Rendering(Base):
         for needle in needles:
             self.assertIn(needle, html, needle)
 
-    def test_mono_header_wrap_has_no_extra_padding(self):
-        """Régression : l'en-tête mono ne doit plus hériter du padding bas de .wrap."""
+    def test_mono_shell_sidebar_topbar_phead(self):
+        """La coquille mono expose la barre latérale, la barre supérieure et l'en-tête de vue."""
         self.generate()
         html = open(os.path.join(self.root, "docs", "suivi-auth-sso.html"),
                     encoding="utf-8").read()
-        self.assertIn("header.top .wrap{max-width:1120px;margin:0 auto;padding:0}", html)
+        for needle in ('class="app"', 'class="side"', 'class="topbar"', 'class="phead"',
+                       'id="theme"', 'data-nav="lots"', 'id="globalPct"', 'id="globalBar"'):
+            self.assertIn(needle, html, needle)
+
+    def test_mono_rapport_link_conditional(self):
+        """Le lien « Rapport de clôture » n'apparaît que si docs/rapport-<change>.html existe."""
+        self.generate()
+        html = open(os.path.join(self.root, "docs", "suivi-auth-sso.html"),
+                    encoding="utf-8").read()
+        self.assertNotIn('id="rapport"', html)
+        self.assertNotIn('href="#rapport"', html)
+
+        with open(os.path.join(self.root, "docs", "rapport-auth-sso.html"), "w", encoding="utf-8") as fh:
+            fh.write("<html><body>rapport</body></html>")
+        render.main(["--out", "docs/suivi-auth-sso.html", "--root", "."])
+        html = open(os.path.join(self.root, "docs", "suivi-auth-sso.html"),
+                    encoding="utf-8").read()
+        self.assertIn('href="#rapport"', html)          # ouvre le rapport dans le tracker
+        self.assertIn('id="rapport"', html)             # panneau du rapport
+        self.assertIn('src="rapport-auth-sso.html"', html)  # iframe du rapport
 
     def test_render_multi(self):
         os.makedirs(os.path.join(self.root, "openspec", "changes", "notifications"))

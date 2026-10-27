@@ -116,7 +116,41 @@ def compute_meta(state, out):
     return {
         "title": title, "h1": h1, "eyebrow": eyebrow, "subtitle": subtitle,
         "storage_key": storage_key, "lang": meta.get("lang") or "fr",
+        "name": name if len(features) <= 1 else None,
     }
+
+
+def compute_shell(state, meta):
+    """Projet, marque et change affichés dans la coquille (barre latérale)."""
+    features = state.get("features") or []
+    eyebrow = meta.get("eyebrow") or ""
+    project = eyebrow.split("·")[0].strip() if eyebrow else ""
+    if not project:
+        project = (features[0].get("name") if features else None) or "Suivi"
+    if len(features) == 1:
+        change = features[0].get("change") or features[0].get("id") or project
+    else:
+        change = "%d chantiers" % len(features)
+    mark = (project[0] if project else "S").upper()
+    return {"project": project, "mark": mark, "change": change}
+
+
+def compute_rapports(state, root, out_dir):
+    """Rapports de clôture existants, par `change` : `{change: href relatif}`.
+
+    Convention du plugin `ai-sdlc-tracker` : `sdlc_report` écrit
+    `docs/rapport-<change>.html`. On ne référence que les rapports réellement
+    présents (le rapport est généré à la demande).
+    """
+    rapports = {}
+    for feature in state.get("features") or []:
+        change = feature.get("change") or feature.get("id")
+        if not change:
+            continue
+        report_abs = os.path.join(root, "docs", "rapport-%s.html" % change)
+        if os.path.isfile(report_abs):
+            rapports[str(change)] = os.path.relpath(report_abs, out_dir)
+    return rapports
 
 
 def render(state=None, out=None, state_path=None, template=None, root="."):
@@ -140,6 +174,27 @@ def render(state=None, out=None, state_path=None, template=None, root="."):
 
     meta = compute_meta(state, out)
     docs = collect_docs(state, root)
+    shell = compute_shell(state, meta)
+    rapports = compute_rapports(state, root, out_dir)
+
+    rapport_nav = ""
+    rapport_btn = ""
+    rapport_section = ""
+    mono_change = None
+    if len(state.get("features") or []) == 1:
+        mono_change = (state["features"][0].get("change") or state["features"][0].get("id"))
+    if mono_change and mono_change in rapports:
+        href = html.escape(rapports[mono_change])
+        rapport_nav = ('<a href="#rapport" data-nav="rapport">'
+                       '<svg class="icon"><use href="#i-doc"/></svg>Rapport de clôture</a>')
+        rapport_btn = '<a class="btn" href="#rapport">Rapport de clôture</a>'
+        rapport_section = (
+            '<section class="report" id="rapport" aria-label="Rapport de clôture">'
+            '<div class="report-head"><h2>Rapport de clôture</h2>'
+            '<a class="btn small" href="%s" target="_blank" rel="noopener">Ouvrir dans un onglet ↗</a></div>'
+            '<iframe class="report-frame" src="%s" title="Rapport de clôture" loading="lazy"></iframe>'
+            '</section>' % (href, href))
+
     mention = ("Fichier généré par la skill suivi-taches, ne pas modifier — "
                "l'état de référence vit dans %s." % (state_path or sio.DEFAULT_STATE_PATH))
     footer = ("<b>%s</b> · brouillon local et préférences mémorisés (clé <code>%s</code>)."
@@ -151,6 +206,13 @@ def render(state=None, out=None, state_path=None, template=None, root="."):
         "H1": html.escape(meta["h1"]),
         "EYEBROW": html.escape(meta["eyebrow"]),
         "SUBTITLE_HTML": html.escape(meta["subtitle"]),
+        "PROJECT": html.escape(shell["project"]),
+        "MARK": html.escape(shell["mark"]),
+        "CHANGE": html.escape(shell["change"]),
+        "RAPPORT_NAV": rapport_nav,
+        "RAPPORT_BTN": rapport_btn,
+        "RAPPORT_SECTION": rapport_section,
+        "RAPPORTS_JSON": embed(rapports),
         "FILE_UPDATED": html.escape(state.get("file_updated") or ""),
         "STORAGE_KEY": html.escape(meta["storage_key"]),
         "STATE_JSON": embed(state),

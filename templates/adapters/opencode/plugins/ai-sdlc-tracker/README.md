@@ -1,6 +1,6 @@
 # ai-sdlc-tracker — plugin OpenCode
 
-Applique la règle de suivi d'avancement **dans la session** : six outils typés et quatre points de
+Applique la règle de suivi d'avancement **dans la session** : sept outils typés et quatre points de
 contrôle. La méthode (phases, critères d'acceptation, pédagogie) reste dans la skill `suivi-taches` ;
 ce plugin ne fait que l'exécuter et la contrôler.
 
@@ -30,8 +30,8 @@ l'utilisateur s'il veut l'ouvrir (`open docs/suivi-<id>.html`), et n'ouvrir qu'a
 
 Le code se développe **uniquement** dans
 `AI-DRIVEN-SDLC/templates/adapters/opencode/plugins/ai-sdlc-tracker/` : c'est là que vivent
-les tests, le typecheck et la CI. Une installation (par exemple
-`engagements/.opencode/plugins/ai-sdlc-tracker/`) est une **copie non éditée** : elle se met à
+les tests, le typecheck et la CI. Une installation (dans un projet, par exemple
+`.opencode/plugins/ai-sdlc-tracker/`) est une **copie non éditée** : elle se met à
 jour par copie, jamais par modification sur place.
 
 ```bash
@@ -69,7 +69,7 @@ Une seule source : les options passées au plugin dans `opencode.json(c)` du dé
 | `strict` | `false` | Dépôt non reconnu = erreur au lieu de l'inactivité. |
 | `projectName` | nom du dépôt | Titre et en-tête des suivis générés (déduit de `basename` s'il n'est pas fourni). |
 | `checkScript` | `scripts/check_sync.py` | Script de contrôle (chemin relatif au dépôt). |
-| `scriptsDir` | `scripts/suivi` | Racine de la vendorisation : `<scriptsDir>/scripts/*.py`, `<scriptsDir>/assets/*`. |
+| `scriptsDir` | `.agents/skills/suivi-taches` | Racine de la skill : `<scriptsDir>/scripts/*.py`, `<scriptsDir>/assets/*`. |
 | `pythonBin` | `python3` (`python` sous Windows) | Binaire Python utilisé pour les scripts. |
 | `commandTimeoutMs` | `10000` | Délai maximal d'une commande (`python3`, `git`) ; au-delà : code 124 et message explicite. |
 
@@ -78,8 +78,8 @@ désactive tous les blocages, sans retirer le plugin ni modifier la configuratio
 
 ## Où vivent les règles
 
-Le plugin n'invente aucune règle : il appelle les scripts du dépôt (copie vendorisée de la skill
-`suivi-taches`, `scripts/suivi/`). Le motif de preuve (`EVIDENCE_RE`) est **extrait** de
+Le plugin n'invente aucune règle : il appelle les scripts de la skill `suivi-taches`
+(`.agents/skills/suivi-taches/scripts/`). Le motif de preuve (`EVIDENCE_RE`) est **extrait** de
 `scripts/check_sync.py`, et un test échoue si les deux règles divergent.
 
 ## Dépannage
@@ -87,10 +87,10 @@ Le plugin n'invente aucune règle : il appelle les scripts du dépôt (copie ven
 | Symptôme | Cause probable / action |
 |---|---|
 | Aucun outil `sdlc_*` | Le plugin n'a pas chargé. Chercher `loading plugin` / `failed to load plugin` dans `~/.local/share/opencode/log/opencode.log`. |
-| « outil inactif : aucun change OpenSpec ni suivi » | Dépôt hors périmètre : comportement fail-open voulu. `strict: true` pour en faire une erreur. |
+| « outil inactif : aucun change OpenSpec ni docs/suivi/state.json » | Dépôt hors périmètre : comportement fail-open voulu. `strict: true` pour en faire une erreur. |
 | Commit refusé à tort | Lire le détail : il nomme la tâche et les deux fichiers. Corriger avec `sdlc_track`, ou `AI_SDLC_TRACKER=off` en urgence. |
-| `scripts/suivi/… introuvable` | Vendorisation absente : `python3 scripts/suivi/sync_from_skill.py --write`. |
-| Scripts modifiés à la main | `python3 scripts/suivi/sync_from_skill.py --check` : compare à la skill (local) ou au manifeste (CI). |
+| `.agents/skills/suivi-taches/… introuvable` | Skill `suivi-taches` absente : l'installer dans le projet (`.agents/skills/`). |
+| Scripts modifiés à la main | `bin/plugin-sync-check --target …` compare une installation au gabarit. |
 
 ## Tests
 
@@ -121,6 +121,6 @@ de production, pas comme un détail.
 
 ## Dette historique
 
-`scripts/suivi/baseline.json` (généré par `python3 scripts/suivi/baseline.py --write`) fige les
-problèmes connus à une date. `sdlc_status` les distingue du neuf. On régénère la baseline **après**
-avoir résorbé la dette, jamais pour faire taire un problème nouveau.
+`.agents/skills/suivi-taches/baseline.json` fige les problèmes connus à une date. `sdlc_status`
+les distingue du neuf. On régénère la baseline **après** avoir résorbé la dette, jamais pour faire
+taire un problème nouveau.

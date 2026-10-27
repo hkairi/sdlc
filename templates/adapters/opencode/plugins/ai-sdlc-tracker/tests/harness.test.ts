@@ -51,11 +51,11 @@ test("les abonnements d'événements s'arrêtent à l'abandon", async () => {
 
 test("l'exécuteur simulé capture les appels de scripts", async () => {
   const h = createHarness({ respond: () => ({ code: 1, stdout: "dérive", stderr: "" }) })
-  const result = await h.runScript("scripts/suivi/scripts/track.py", ["--file", "x.html"], h.ctx.location.directory)
+  const result = await h.runScript(".agents/skills/suivi-taches/scripts/track.py", ["--file", "x.html"], h.ctx.location.directory)
 
   assert.equal(result.code, 1)
   assert.equal(result.stdout, "dérive")
   assert.deepEqual(h.calls, [
-    { script: "scripts/suivi/scripts/track.py", args: ["--file", "x.html"], cwd: h.ctx.location.directory },
+    { script: ".agents/skills/suivi-taches/scripts/track.py", args: ["--file", "x.html"], cwd: h.ctx.location.directory },
   ])
 })

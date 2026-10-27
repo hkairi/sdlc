@@ -9,7 +9,7 @@ vers `.opencode/plugins/ai-sdlc-tracker/` du projet cible. Une installation est 
 ## Ce qu'il fait
 
 Six outils typés (`sdlc_check`, `sdlc_track`, `sdlc_phase`, `sdlc_generate`, `sdlc_status`,
-`sdlc_report`) et quatre points de contrôle (commit refusé en cas de dérive, génération après
+`sdlc_report`, `sdlc_doctor`) et quatre points de contrôle (commit refusé en cas de dérive, génération après
 `openspec validate <id> --strict`, signalement des écritures directes, alerte de fin de tour
 désactivée par défaut).
 

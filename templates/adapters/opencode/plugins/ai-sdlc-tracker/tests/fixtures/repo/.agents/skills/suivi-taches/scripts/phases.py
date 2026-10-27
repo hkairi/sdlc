@@ -1,10 +1,4 @@
 #!/usr/bin/env python3
-# ---------------------------------------------------------------------------
-# Copie vendorisée — source : skill suivi-taches (/Users/hkairi/.claude/skills/suivi-taches/scripts/phases.py)
-# Copiée le 2026-10-19. Ne pas éditer ici : éditer la source, puis re-générer la copie
-# avec `python3 scripts/suivi/sync_from_skill.py --write`.
-# Contrôle de dérive : `python3 scripts/suivi/sync_from_skill.py --check`.
-# ---------------------------------------------------------------------------
 """Modèle de phases partagé par les gabarits et scripts de la skill suivi-taches.
 
 Un chantier (un change OpenSpec) traverse six phases :
@@ -175,3 +169,23 @@ def current_phase(phases, stats=None):
         if phase_status(phase, stats) != "done":
             return phase
     return phases[-1] if phases else None
+
+
+def task_stats(tasks):
+    """Compteurs de tâches dérivés : {"todo", "doing", "blocked", "done", "total"}."""
+    counts = {"todo": 0, "doing": 0, "blocked": 0, "done": 0, "total": 0}
+    for task in tasks or []:
+        status = task.get("status", "todo")
+        if status not in ("todo", "doing", "blocked", "done"):
+            status = "todo"
+        counts[status] += 1
+        counts["total"] += 1
+    return counts
+
+
+def refresh_statuses(phases, tasks=None):
+    """Recalcule et pose `status` sur chaque phase (dérivé des items et des tâches)."""
+    stats = task_stats(tasks)
+    for phase in phases or []:
+        phase["status"] = phase_status(phase, stats)
+    return phases

@@ -6,28 +6,27 @@
   "storage_key": "suivi-multi-<projet>-v1",
   "lang": "fr",
   "sources": {
-    "features": "../docs/features.md"
+    "features": "docs/features.md"
   },
   "features": [
     "openspec/changes/<change-a>/tasks.md",
     {
-      "id": "bpay",
-      "tasks": "openspec/changes/add-bpay-payment-provider/tasks.md",
-      "name": "Intégration B-PAY / Bankily",
-      "change": "add-bpay-payment-provider",
+      "id": "paiement",
+      "tasks": "openspec/changes/<change-b>/tasks.md",
+      "name": "Nouveau moyen de paiement",
+      "change": "<change-b>",
       "color": "#1379b0",
-      "objective": "Ajouter B-PAY à côté de Masrvi (markdown inline : `code`, **gras**).",
+      "objective": "Ajouter un moyen de paiement (markdown inline : `code`, **gras**).",
       "updated": "2026-10-10",
       "sources": {
-        "proposal": "../openspec/changes/add-bpay-payment-provider/proposal.md",
-        "tasks": "../openspec/changes/add-bpay-payment-provider/tasks.md"
+        "proposal": "openspec/changes/<change-b>/proposal.md",
+        "design": "openspec/changes/<change-b>/design.md",
+        "tasks": "openspec/changes/<change-b>/tasks.md"
       },
       "details": {
         "0.1": {
-          "prio": "Haute",
-          "deps": "—",
-          "files": ["backend/.env.production"],
-          "acceptance": "URLs et identifiants de production reçus.",
+          "files": ["backend/config/paiement.yaml"],
+          "acceptance": "Identifiants de production reçus.",
           "tests": "Appels sandbox manuels.",
           "note": "En attente des identifiants opérateur.",
           "history": [

@@ -247,7 +247,9 @@ test("sdlc_report écrit un HTML autonome et refuse d'écraser sans accord", asy
   assert.match(report, /<title>Rapport de clôture — add-x/)
   assert.match(report, /Démonstration/)
   assert.match(report, /Fait ; vérifié : 3 tests\./)
-  assert.doesNotMatch(report, /<script/i, "rapport sans script")
+  // Autonome : aucun script externe ni ressource distante (un script en ligne
+  // minimal assure la bascule de thème clair/sombre, comme les suivis).
+  assert.doesNotMatch(report, /<script[^>]*src=/i, "rapport sans script externe")
   assert.doesNotMatch(report, /https?:\/\//, "rapport sans ressource externe")
 
   const again = await tool.execute!({ change: "add-x" })

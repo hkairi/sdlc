@@ -79,7 +79,7 @@ test("un répertoire sans change ni suivi est classé inactif, sans exception", 
   assert.match(scope.message, /inactif/)
 })
 
-test("le dépôt engagements est reconnu comme dépôt suivi", () => {
+test("le dépôt de test est reconnu comme dépôt suivi", () => {
   const scope = detectScope(REPO)
   assert.equal(scope.scope, "tracked")
   assert.match(scope.message, /\d+ change\(s\) OpenSpec/)

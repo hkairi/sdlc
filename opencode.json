@@ -8,7 +8,8 @@
       "*.env.*": "deny",
       "*.env.example": "allow",
       "*.pem": "deny",
-      "*.key": "deny"
+      "*.key": "deny",
+      "**/secrets/**": "deny"
     },
     "bash": {
       "*": "allow",
@@ -21,7 +22,8 @@
       "rm -rf /*": "deny",
       "rm -rf ~*": "deny",
       "curl * | sh*": "deny",
-      "curl * | bash*": "deny"
+      "curl * | bash*": "deny",
+      "git branch --show-current*": "allow"
     },
     "external_directory": "deny",
     "webfetch": "allow"

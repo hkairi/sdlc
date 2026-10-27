@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rapport de clôture — conception · AI-DRIVEN-SDLC</title>
+<!-- Fichier généré par le plugin ai-sdlc-tracker (outil sdlc_report). Ne pas modifier à la main. -->
+<meta name="color-scheme" content="light dark">
+<style>
+  :root{
+    color-scheme: light;
+    --bg:#eef1f6; --panel:#fff; --ink:#1b2430; --muted:#5c6b7a; --line:#e2e8f0; --line2:#eef2f8; --soft:#f7f9fc;
+    --brand:#0f4c81; --brand2:#1379b0; --brandbg:#e8f1fb; --brandline:#c7dcf3;
+    --done:#1f9d55; --donebg:#e6f6ec; --doing:#2b6cb0; --doingbg:#e6effa;
+    --warn:#b7791f; --warnbg:#fdf3e0; --bad:#c0392b; --badbg:#fdecea;
+    --review:#6b4fbb; --reviewbg:#f0ecfb; --todo:#5c6b7a; --turn:#eef2f8;
+    --nav:#0f4c81; --nav2:#0a2c4d;
+    --shadow:0 1px 3px rgba(16,24,40,.08),0 8px 24px rgba(16,24,40,.05);
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --bg:#121417; --panel:#1a1d21; --ink:#e8ebef; --muted:#a3adb8; --line:#2c3138; --line2:#24282e; --soft:#20242a;
+      --brand:#3b82c4; --brand2:#4b9ad6; --brandbg:#1d2a38; --brandline:#2f4a63;
+      --done:#3cc479; --donebg:#16281e; --doing:#5b9be0; --doingbg:#182636;
+      --warn:#e0b25c; --warnbg:#2b2414; --bad:#e66767; --badbg:#2e1b19;
+      --review:#a48be8; --reviewbg:#241d3a; --todo:#a3adb8; --turn:#24282e;
+      --nav:#12293f; --nav2:#0d1a26;
+      --shadow:0 1px 3px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#121417; --panel:#1a1d21; --ink:#e8ebef; --muted:#a3adb8; --line:#2c3138; --line2:#24282e; --soft:#20242a;
+    --brand:#3b82c4; --brand2:#4b9ad6; --brandbg:#1d2a38; --brandline:#2f4a63;
+    --done:#3cc479; --donebg:#16281e; --doing:#5b9be0; --doingbg:#182636;
+    --warn:#e0b25c; --warnbg:#2b2414; --bad:#e66767; --badbg:#2e1b19;
+    --review:#a48be8; --reviewbg:#241d3a; --todo:#a3adb8; --turn:#24282e;
+    --nav:#12293f; --nav2:#0d1a26;
+    --shadow:0 1px 3px rgba(0,0,0,.4);
+  }
+  :root[data-theme="light"]{color-scheme: light}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.55;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  code{font-family:var(--mono);font-size:.9em;background:var(--soft);border:1px solid var(--line2);padding:0 5px;border-radius:5px}
+  .wrap{max-width:1000px;margin:0 auto;padding:28px 22px 60px}
+
+  header.brand{background:linear-gradient(135deg,var(--nav),var(--nav2));color:#fff;border-radius:16px;padding:24px 26px;
+    box-shadow:var(--shadow);position:relative}
+  .theme{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:9px;
+    border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;
+    display:grid;place-items:center;cursor:pointer}
+  .theme:hover{background:rgba(255,255,255,.22)}
+  .theme svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9dc2e4;font-weight:800}
+  h1{margin:8px 0 10px;font-size:24px;letter-spacing:-.01em}
+  .meta{color:#dce9f7;font-size:13px}
+  .meta code{background:rgba(255,255,255,.14);border:0;color:#fff}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px 16px;box-shadow:var(--shadow)}
+  .kpi .l{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:800}
+  .kpi .v{font-size:23px;font-weight:800;line-height:1.15;margin:4px 0 0;font-variant-numeric:tabular-nums}
+
+  .bar{height:8px;border-radius:999px;background:var(--line2);overflow:hidden;margin:16px 0 2px}
+  .bar i{display:block;height:100%;width:87%;background:var(--done);border-radius:999px}
+  .bar-cap{font-size:11.5px;color:var(--muted)}
+
+  section{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-top:16px;
+    padding:18px 20px;box-shadow:var(--shadow)}
+  h2{font-size:15.5px;margin:0 0 10px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line2);vertical-align:top}
+  thead th{background:var(--soft);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);
+    border-bottom:1px solid var(--line);white-space:nowrap}
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:hover td{background:var(--soft)}
+  td.id{font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+  td.date{white-space:nowrap;color:var(--muted)}
+  td.note{color:var(--muted)}
+
+  .badge{display:inline-block;font-size:10.5px;font-weight:800;border-radius:999px;padding:2px 9px;border:1px solid;white-space:nowrap}
+  .badge.done{background:var(--donebg);color:var(--done);border-color:var(--done)}
+  .badge.doing{background:var(--doingbg);color:var(--doing);border-color:var(--doing)}
+  .badge.blocked{background:var(--badbg);color:var(--bad);border-color:var(--bad)}
+  .badge.todo{background:var(--turn);color:var(--todo);border-color:var(--line)}
+
+  .ecarts{margin:0;padding-left:20px;font-size:13px}
+  .ok{color:var(--done);margin:0;font-weight:600}
+  footer{color:var(--muted);font-size:12px;margin-top:18px}
+  @media(max-width:640px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media print{body{background:#fff}section,header,.kpi{box-shadow:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/></symbol>
+</svg>
+<div class="wrap">
+  <header class="brand">
+    <button class="theme" id="theme" aria-pressed="false" aria-label="Basculer le thème clair/sombre"><svg><use href="#i-moon"/></svg></button>
+    <div class="eyebrow">AI-DRIVEN-SDLC · Rapport de clôture</div>
+    <h1>conception</h1>
+    <div class="meta">Change <code>conception</code> · rapport généré le 2026-10-27
+      · suivi <code>docs/suivi-framework.html</code> · tâches <code>docs/conception/tasks.md</code></div>
+    <div class="kpis">
+      <div class="kpi"><div class="l">Terminées</div><div class="v" style="color:var(--done)">40<small style="font-size:12px;color:var(--muted)">/46</small></div></div>
+      <div class="kpi"><div class="l">Avancement</div><div class="v" style="color:var(--brand)">87<small style="font-size:12px;color:var(--muted)">%</small></div></div>
+      <div class="kpi"><div class="l">Écarts</div><div class="v" style="color:var(--done)">0</div></div>
+      <div class="kpi"><div class="l">Reste</div><div class="v" style="color:var(--muted)">6<small style="font-size:12px;color:var(--muted)"> +0 bloquées</small></div></div>
+    </div>
+    <div class="bar"><i></i></div>
+    <div class="bar-cap">40/46 tâches terminées · 87 %</div>
+  </header>
+
+  <section>
+    <h2>Écarts ouverts</h2>
+    <p class="ok">Aucun écart ouvert : aucune tâche bloquée, aucune tâche en cours sans note.</p>
+  </section>
+
+  <section>
+    <h2>Tâches (46)</h2>
+    <table>
+      <thead><tr><th>Id</th><th>Tâche</th><th>Statut</th><th>Date</th><th>Note (fait / écart / vérifié)</th></tr></thead>
+      <tbody>
+      <tr class="st-done">
+        <td class="id">1.1</td>
+        <td>AGENTS.md : principes du § 2, règle de premier lancement (sdlc-init si sdlc.config.yaml…</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Fait par OpenCode (kimi). La session Kimi a continué après son arrêt et a réécrit AGENTS.md à 13:25 ; corrections de relecture réappliquées par Claude Code (interdits propres au framework retirés, revérification par l'orchestrateur).</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">1.2</td>
+        <td>CLAUDE.md : @AGENTS.md + spécificités Claude Code (listes d'outils comme levier fiable,…</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Fait par OpenCode (kimi-k2.7-code) ; relu par Claude Code le 2026-10-11 : 5 corrections (interdits propres au framework retirés d'AGENTS.md, règle de revérification par l'orchestrateur ajoutée, sévérité « basse », limite embed_max_kb totale, sens de génération des adaptateurs dans le README).</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">1.3</td>
+        <td>README.md : objet, installation dans un projet, premier lancement, arborescence, liens…</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Fait par OpenCode (kimi-k2.7-code) ; relu par Claude Code le 2026-10-11 : 5 corrections (interdits propres au framework retirés d'AGENTS.md, règle de revérification par l'orchestrateur ajoutée, sévérité « basse », limite embed_max_kb totale, sens de génération des adaptateurs dans le README).</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">1.4</td>
+        <td>sdlc.config.example.yaml</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Fait par OpenCode (kimi-k2.7-code) ; relu par Claude Code le 2026-10-11 : 5 corrections (interdits propres au framework retirés d'AGENTS.md, règle de revérification par l'orchestrateur ajoutée, sévérité « basse », limite embed_max_kb totale, sens de génération des adaptateurs dans le README).</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">1.5</td>
+        <td>Lien symbolique .claude/skills -&gt; ../.agents/skills et arborescence templates/ vide prête</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Fait par OpenCode (kimi-k2.7-code) ; relu par Claude Code le 2026-10-11 : 5 corrections (interdits propres au framework retirés d'AGENTS.md, règle de revérification par l'orchestrateur ajoutée, sévérité « basse », limite embed_max_kb totale, sens de génération des adaptateurs dans le README).</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">2.1</td>
+        <td>brief.md, exigences-nf.md, etat-des-lieux.md</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">14 gabarits écrits par OpenCode (kimi) avant son arrêt, vérifiés par DeepSeek puis relus par Claude Code : consignes &amp;lt;!-- --&amp;gt; et marqueurs présents, aucun commentaire imbriqué.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">2.2</td>
+        <td>adr.md (format avec statut, contexte, décision, conséquences, alternatives) et adr-index.md</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">14 gabarits écrits par OpenCode (kimi) avant son arrêt, vérifiés par DeepSeek puis relus par Claude Code : consignes &amp;lt;!-- --&amp;gt; et marqueurs présents, aucun commentaire imbriqué.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">2.3</td>
+        <td>menaces.md (analyse STRIDE légère)</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">14 gabarits écrits par OpenCode (kimi) avant son arrêt, vérifiés par DeepSeek puis relus par Claude Code : consignes &amp;lt;!-- --&amp;gt; et marqueurs présents, aucun commentaire imbriqué.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">2.4</td>
+        <td>runbook.md et runbook-fiche.md</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">14 gabarits écrits par OpenCode (kimi) avant son arrêt, vérifiés par DeepSeek puis relus par Claude Code : consignes &amp;lt;!-- --&amp;gt; et marqueurs présents, aucun commentaire imbriqué.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">2.5</td>
+        <td>recette.md (matrice scénario → test → résultat)</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">14 gabarits écrits par OpenCode (kimi) avant son arrêt, vérifiés par DeepSeek puis relus par Claude Code : consignes &amp;lt;!-- --&amp;gt; et marqueurs présents, aucun commentaire imbriqué.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">2.6</td>
+        <td>change-request.md, incident-post-mortem.md, retro.md, client-report.md, release-notes.md</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">14 gabarits écrits par OpenCode (kimi) avant son arrêt, vérifiés par DeepSeek puis relus par Claude Code : consignes &amp;lt;!-- --&amp;gt; et marqueurs présents, aucun commentaire imbriqué.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">3.1</td>
+        <td>templates/scripts/ci.sh</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Relu et vérifié par Claude Code : bash -n OK, 22 tests unitaires de check_thresholds.py OK, reports/summary.json conforme.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">3.2</td>
+        <td>templates/ci/{github-actions,gitlab-ci,forgejo-actions,jenkins,none}/</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">5 pipelines (GitHub, GitLab, Forgejo, Jenkins, none) ; YAML validé par l'exécutant ; non exécutés sur un vrai serveur de CI.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">3.3</td>
+        <td>templates/deploy// pour les 8 profils</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">8 profils × 3 fichiers ; commentaire HTML imbriqué corrigé par Claude Code dans vps-compose/deploy.md.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">4.1</td>
+        <td>templates/adapters/claude/</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Relu : deny git en écriture et secrets, agents avec listes d'outils. JSON validé par Claude Code.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">4.2</td>
+        <td>templates/adapters/opencode/</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Relu : &quot;*&quot; d'abord puis règles spécifiques (dernière gagnante), external_directory refusé. JSON validé.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">4.3</td>
+        <td>templates/adapters/codex/</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Relu : sandbox_mode par agent, règles forbidden pour git en écriture. TOML validé (5/5) par Claude Code.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">4.4</td>
+        <td>templates/handoff/input.md et report.schema.json</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Schéma draft 2020-12 et exemple : JSON valide ; validation par jsonschema impossible (module absent).</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">5.1</td>
+        <td>sdlc-init</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Vérifié par Claude Code sur un projet de test : detect.sh renvoie un JSON valide ; render_adapters.py génère 15 fichiers (Claude + Codex, sans OpenCode désactivé), aucun marqueur restant, autorisations limitées aux CLI activées. Pas de tests unitaires automatisés.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">5.2</td>
+        <td>etat-des-lieux, cadrage, adr, spec-review, tdd</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">5 skills relues (frontmatter name + description) ; new_adr.py testé : ADR-001 créé et index mis à jour.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">6.1</td>
+        <td>ci-setup, recette, deploy-procedure, runbook, changelog</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Relu par Claude Code : 5 skills, frontmatter conforme, tous les gabarits cités existent.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">6.2</td>
+        <td>change-request, hotfix, retro, metrics, client-report</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Relu : 5 skills ; metrics.py : 11 tests OK relancés par Claude Code. Champs optionnels spec_freeze_ts / feature ajoutés au § 12 de la spec.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">7.1</td>
+        <td>collect.py : normalisation des sources du § 11, avec jeux d'essai dans tests/fixtures/</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Corrigé par OpenCode (deepseek) puis vérifié par Claude Code : 29 tests OK ; premier lancement sur la fixture → couverture 85 %, 3 vulnérabilités (2 bloquantes), historique à 1 point sans doublon, schéma découvert ; rendu contrôlé en capture.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">7.2</td>
+        <td>generate.py + gabarit dérivé de la maquette</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Corrigé par OpenCode (deepseek) puis vérifié par Claude Code : 29 tests OK ; premier lancement sur la fixture → couverture 85 %, 3 vulnérabilités (2 bloquantes), historique à 1 point sans doublon, schéma découvert ; rendu contrôlé en capture.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">7.3</td>
+        <td>Tests automatisés</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Corrigé par OpenCode (deepseek) puis vérifié par Claude Code : 29 tests OK ; premier lancement sur la fixture → couverture 85 %, 3 vulnérabilités (2 bloquantes), historique à 1 point sans doublon, schéma découvert ; rendu contrôlé en capture.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">8.1</td>
+        <td>État de référence dans docs/suivi/state.json</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Corrigé par OpenCode puis vérifié par Claude Code : état dans docs/suivi/state.json (schéma commun avec suivi-projet) ; 31 tests suivi-taches et 33 suivi-projet OK.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">8.2</td>
+        <td>Scripts track*.py qui écrivent l'état JSON puis régénèrent le HTML ; migration depuis un…</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Migration du vrai suivi : 30 tâches (25 terminées, 5 en cours), objectif, 3 sources et textes complets conservés ; écriture atomique.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">8.3</td>
+        <td>Rôles par tâche</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Rôles, itération, escalade et « prêt à commiter » enregistrés et affichés ; relecteur = exécutant refusé (testé).</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">8.4</td>
+        <td>Lecteur Markdown dans le suivi</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Lecteur Markdown embarqué (markdown-it, HTML brut désactivé, rendu OpenSpec).</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">8.5</td>
+        <td>Portabilité : chemins .agents/skills/, vérifications lues dans sdlc.config.yaml et…</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">SKILL.md portable ; régression corrigée (focus, URL partageable, cartes, export/import) ; vérifié en capture.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">9.1</td>
+        <td>Installateur bin/sdlc-install</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Vérifié par Claude Code sur un faux projet Django : 168 fichiers sous .sdlc/ et .agents/skills/, 2ᵉ passage sans écriture, --dry-run sans écriture ; 20 tests OK.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">9.2</td>
+        <td>Fusion non destructive</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Bloc délimité en tête d'AGENTS.md (règles maison conservées), @AGENTS.md ajouté à CLAUDE.md, bloc .gitignore ; README, templates/ du projet et CI intacts.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">9.3</td>
+        <td>--upgrade (fichiers non modifiés seulement) et --uninstall</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">--uninstall : les 6 fichiers d'origine restaurés à l'identique (empreintes comparées). --upgrade couvert par les tests.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">9.4</td>
+        <td>Section paths et liens .sdlc/ dans le dépôt du framework ; plus aucune référence en dur à…</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Vérifié par Claude Code : liens .sdlc/templates et .sdlc/workflow-sdlc.md, plus aucune référence en dur à templates/ ni docs/conception/ ; scripts lisent paths.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">9.5</td>
+        <td>sdlc-init et etat-des-lieux</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">detect.sh sort les commandes test/lint/couverture et SDLC_*_CMD (3 tests) ; sdlc-init et etat-des-lieux : parcours projet existant.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">9.6</td>
+        <td>ci-setup : ci.mode integrate | replace | none et réutilisation des commandes existantes</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">ci.mode integrate | replace | none ; extrait integrate.md par outil de CI.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">9.7</td>
+        <td>Tests de bout en bout sur projets existants simulés</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">24 tests de bout en bout (Django et Node : dry-run, installation, detect, config, adaptateurs, ADR dans paths.adr, ci.sh, suivis, réinstallation, upgrade, désinstallation). Suites relancées par Claude Code : 147 tests, 0 échec, 0 ignoré. Limites : CLAUDE.md existant sans les spécificités Claude ; adaptateurs non retirés par --uninstall.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">10.1</td>
+        <td>CLAUDE.md existant</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Vérifié par Claude Code : bloc sdlc-claude inséré après @AGENTS.md, contenu maison conservé, 2ᵉ passage : 0 écriture.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">10.2</td>
+        <td>Adaptateurs générés inscrits dans .sdlc/manifest.json</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">Section adapters du manifeste : fichiers créés (sha256) et entrées ajoutées aux fichiers fusionnés ; permissions maison conservées dans settings.json.</td>
+      </tr>
+      <tr class="st-done">
+        <td class="id">10.3</td>
+        <td>--uninstall retire aussi les adaptateurs non modifiés, les entrées ajoutées, le bloc…</td>
+        <td><span class="badge done">Terminé</span></td>
+        <td class="date">2026-10-11</td>
+        <td class="note">--uninstall : CLAUDE.md et settings.json maison restaurés à l'identique (empreintes comparées), plus aucun fichier du framework. 162 tests OK sur 7 suites, 0 ignoré. Limite : fichier fusionné restauré au format JSON canonique (indentation 2).</td>
+      </tr>
+      <tr class="st-doing">
+        <td class="id">11.1</td>
+        <td>Copier le plugin dans l'adaptateur OpenCode</td>
+        <td><span class="badge doing">En cours</span></td>
+        <td class="date">2026-10-20</td>
+        <td class="note">Copie rafraîchie le 2026-10-20 : version 0.2.1 (25 fichiers) avec garde d'isolation, timeouts, sdlc_doctor, baseline et CHANGELOG ; package-lock inclus pour que npm ci fonctionne chez le projet cible ; GUIDE.md conservé. En attente de relecture indépendante.</td>
+      </tr>
+      <tr class="st-doing">
+        <td class="id">11.2</td>
+        <td>Distribuer le plugin</td>
+        <td><span class="badge doing">En cours</span></td>
+        <td class="date">2026-10-19</td>
+        <td class="note">Exercice réel : projet vide + sdlc.config.yaml avec opencode activé → render_adapters.py crée les 19 fichiers du plugin et les inscrit dans .sdlc/manifest.json ; 28 tests d'installation passent (dont le nouveau) ; en attente de relecture indépendante.</td>
+      </tr>
+      <tr class="st-doing">
+        <td class="id">11.3</td>
+        <td>Documenter l'adaptateur et la limite du plugin</td>
+        <td><span class="badge doing">En cours</span></td>
+        <td class="date">2026-10-19</td>
+        <td class="note">README de l'adaptateur : ligne de destination plugins/ai-sdlc-tracker/** ajoutée + encadré « limite connue » renvoyant au GUIDE (plugin inerte dans un projet du framework tant que l'adaptation state.json n'est pas faite) ; relecture indépendante à faire.</td>
+      </tr>
+      <tr class="st-todo">
+        <td class="id">11.4</td>
+        <td>Adapter le plugin au modèle d'état du framework</td>
+        <td><span class="badge todo">À faire</span></td>
+        <td class="date">—</td>
+        <td class="note">—</td>
+      </tr>
+      <tr class="st-doing">
+        <td class="id">11.5</td>
+        <td>Faire du gabarit le foyer unique</td>
+        <td><span class="badge doing">En cours</span></td>
+        <td class="date">2026-10-20</td>
+        <td class="note">Fait : tests (77) et typecheck déplacés dans le gabarit avec fixtures autonomes ; CI dans le framework ; render_adapters exclut tests/ ; engagement : doctor lit son propre package.json. En attente de relecture indépendante.</td>
+      </tr>
+      <tr class="st-doing">
+        <td class="id">11.6</td>
+        <td>Contrôler la dérive gabarit → installation</td>
+        <td><span class="badge doing">En cours</span></td>
+        <td class="date">2026-10-20</td>
+        <td class="note">Fait : bin/plugin-sync-check (24 fichiers, ignore node_modules/tests/README/GUIDE) ; a détecté doctor.ts divergent avant resynchronisation ; installation d'engagements allégée (sans tests/ ni CI). En attente de relecture indépendante.</td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <footer>Fichier généré par le plugin <code>ai-sdlc-tracker</code> — l'état de référence reste
+    <code>docs/suivi-framework.html</code> et <code>docs/conception/tasks.md</code>.</footer>
+</div>
+<script>
+(function(){
+  "use strict";
+  var root = document.documentElement;
+  var btn = document.getElementById("theme");
+  var use = btn ? btn.querySelector("use") : null;
+  function apply(t){
+    root.setAttribute("data-theme", t);
+    if(btn) btn.setAttribute("aria-pressed", t === "dark" ? "true" : "false");
+    if(use) use.setAttribute("href", t === "dark" ? "#i-sun" : "#i-moon");
+  }
+  var saved = null;
+  try { saved = localStorage.getItem("sdlc-theme"); } catch(e) {}
+  apply(saved || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+  if(btn){
+    btn.addEventListener("click", function(){
+      var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      apply(next);
+      try { localStorage.setItem("sdlc-theme", next); } catch(e) {}
+    });
+  }
+})();
+</script>
+</body>
+</html>

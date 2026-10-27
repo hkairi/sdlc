@@ -42,6 +42,8 @@ chantiers). `render.py` choisit automatiquement : mono si une seule feature, mul
   scripts/state_io.py             # lecture/écriture atomique de l'état
   scripts/phases.py               # modèle des six phases (statut dérivé)
   scripts/tracking.py             # logique commune (rôles, escalade, tâches.md, rendu)
+  scripts/check_sync.py           # contrôle de synchronisation state.json ↔ tasks.md
+  scripts/baseline.py             # fige la dette connue (baseline.json) pour le plugin
   assets/template.html            # gabarit mono
   assets/template-multi.html      # gabarit multi
   assets/reader.js                # lecteur Markdown (embarqué dans le rendu)
@@ -204,6 +206,25 @@ python3 -m http.server 8000   # puis ouvrir http://localhost:8000/docs/suivi-<id
 
 `render.py` embarque le contenu des `.md` liés : les sources de chaque feature (proposal, design,
 tasks) **et** les deltas de spec du change (`openspec/changes/<change>/specs/**/*.md`).
+
+## Figer la dette connue (baseline)
+
+Quand un dépôt porte déjà des tâches closes sans preuve ou des dérives historiques, les
+signaler à chaque lecture finit par les faire ignorer. `baseline.py` fige cette dette à une
+date, dans `baseline.json` à la **racine de la skill** (là où le plugin `sdlc_status` /
+`sdlc_doctor` la lit) :
+
+```bash
+python3 .agents/skills/suivi-taches/scripts/baseline.py --write       # photographier la dette
+python3 .agents/skills/suivi-taches/scripts/baseline.py --dry-run     # prévisualiser sans écrire
+python3 .agents/skills/suivi-taches/scripts/baseline.py --check-ratchet  # audit : la dette doit décroître
+```
+
+- Les **dérives** viennent de `check_sync.py --all --json` ; les **tâches sans preuve** sont
+  relues depuis la source de vérité `docs/suivi/state.json` (jamais depuis le HTML).
+- On régénère la baseline **après** avoir résorbé la dette, jamais pour faire taire un problème
+  nouveau : `--check-ratchet` échoue si une dette résorbée y traîne encore, et la baseline est
+  réputée périmée au-delà de 30 jours.
 
 ## Lien avec `suivi-projet`
 

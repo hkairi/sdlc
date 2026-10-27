@@ -9,13 +9,16 @@
 - [`architecture/menaces.md`](architecture/menaces.md) — analyse STRIDE et menaces agentiques.
 - [`conception/workflow-sdlc.md`](conception/workflow-sdlc.md) — spécification de référence du framework.
 - [`conception/tasks.md`](conception/tasks.md) — découpage de la construction en 11 lots.
+- [`conception/workflow-sequence.md`](conception/workflow-sequence.md) — fonctionnement du SDLC et diagrammes de séquence (Markdown = source).
 - [`suivi-framework.html`](suivi-framework.html) — fichier de suivi de la construction (46 tâches, 11 lots), **généré** : l'état de référence est [`suivi/state.json`](suivi/state.json), mis à jour avec `.agents/skills/suivi-taches/scripts/track.py --state docs/suivi/state.json …`.
 - [`suivi-console.html`](suivi-console.html) — suivi généré par la Console SDLC (rendu, état en base SQLite), **généré**.
 - [`workflow-sdlc.html`](workflow-sdlc.html) / [`workflow-sdlc.png`](workflow-sdlc.png) — schéma du workflow.
+- [`workflow-sequence.html`](workflow-sequence.html) — diagrammes de séquence du workflow (flux nominal + voies transverses), **généré** depuis `conception/workflow-sequence.md`.
 - [`mockup-suivi-projet.html`](mockup-suivi-projet.html) — maquette validée du tableau de bord projet (données fictives).
 - [`mockup-framework.html`](mockup-framework.html) — maquette complète du tableau de bord : vue d'ensemble, features, gates, revue indépendante, déploiements, **équipe** (répartition déduite de l'historique) et **processus** (git flow détecté), données fictives.
 - [`mockup-dashboard-sdlc.html`](mockup-dashboard-sdlc.html) — maquette de la console produit « My AI powered SDLC » (données fictives) : organisation (équipes, projets, membres et rôles), travail (features, tickets, changes OpenSpec) et pilotage (avancement, runs d'agents, qualité, coûts, incidents).
 - [`rapport-qualite-workflow.md`](rapport-qualite-workflow.md) / [`rapport-qualite-workflow.html`](rapport-qualite-workflow.html) — audit qualité/complétude du framework (Markdown = source, HTML = rendu généré par `scripts/render_rapport.py`).
+- [`rapport-audit-sdlc.md`](rapport-audit-sdlc.md) — audit de l'état courant du framework (santé des tests, specs, dérive, conformité aux principes), réalisé le 2026-10-27.
 
 - [`installation.md`](installation.md) — installation `uv`/`pipx`, build frontend embarqué, WSL2.
 - [`ops/runbook.md`](ops/runbook.md) — runbook d'exploitation et escalades.

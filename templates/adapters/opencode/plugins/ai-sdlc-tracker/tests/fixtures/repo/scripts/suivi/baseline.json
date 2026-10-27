@@ -1,6 +1,0 @@
-{
-  "schema": 1,
-  "generated": "2026-10-19",
-  "drifts": ["connue : tasks.md présent mais suivi manquant"],
-  "unproven": {"add-x": ["1.2"]}
-}

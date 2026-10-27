@@ -7,172 +7,287 @@
 <!-- Fichier généré par la skill suivi-taches, ne pas modifier.
      L'état de référence vit dans state.json ; ce fichier HTML en embarque une copie
      en lecture seule (bloc state-data) et n'est jamais édité à la main. -->
+<meta name="color-scheme" content="light dark">
 <style>
   :root{
-    --bg:#eef1f6; --card:#fff; --ink:#1b2430; --muted:#5c6b7a; --line:#e2e8f0; --line2:#eef2f8;
-    --brand:#0f4c81; --brand2:#1379b0; --brandbg:#e8f1fb;
-    --todo:#5c6b7a; --turn:#eef2f8; --doing:#2b6cb0; --doingbg:#e8f1fb;
-    --blocked:#c0392b; --blockedbg:#fdeaea; --done:#1f9d55; --donebg:#e3f6ec;
+    color-scheme: light;
+    --bg:#eef1f6; --panel:#fff; --ink:#1b2430; --muted:#5c6b7a; --line:#e2e8f0; --line2:#eef2f8; --soft:#f7f9fc;
+    --brand:#0f4c81; --brand2:#1379b0; --brandbg:#e8f1fb; --brandline:#c7dcf3;
+    --done:#1f9d55; --donebg:#e6f6ec; --doing:#2b6cb0; --doingbg:#e6effa;
+    --warn:#b7791f; --warnbg:#fdf3e0; --bad:#c0392b; --badbg:#fdecea;
+    --review:#6b4fbb; --reviewbg:#f0ecfb; --todo:#5c6b7a; --turn:#eef2f8;
+    --nav:#0f4c81; --nav2:#0a2c4d;
     --shadow:0 1px 3px rgba(16,24,40,.08),0 8px 24px rgba(16,24,40,.05);
-    --mono:ui-monospace,Menlo,Consolas,monospace;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
   }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --bg:#121417; --panel:#1a1d21; --ink:#e8ebef; --muted:#a3adb8; --line:#2c3138; --line2:#24282e; --soft:#20242a;
+      --brand:#3b82c4; --brand2:#4b9ad6; --brandbg:#1d2a38; --brandline:#2f4a63;
+      --done:#3cc479; --donebg:#16281e; --doing:#5b9be0; --doingbg:#182636;
+      --warn:#e0b25c; --warnbg:#2b2414; --bad:#e66767; --badbg:#2e1b19;
+      --review:#a48be8; --reviewbg:#241d3a; --todo:#a3adb8; --turn:#24282e;
+      --nav:#12293f; --nav2:#0d1a26;
+      --shadow:0 1px 3px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#121417; --panel:#1a1d21; --ink:#e8ebef; --muted:#a3adb8; --line:#2c3138; --line2:#24282e; --soft:#20242a;
+    --brand:#3b82c4; --brand2:#4b9ad6; --brandbg:#1d2a38; --brandline:#2f4a63;
+    --done:#3cc479; --donebg:#16281e; --doing:#5b9be0; --doingbg:#182636;
+    --warn:#e0b25c; --warnbg:#2b2414; --bad:#e66767; --badbg:#2e1b19;
+    --review:#a48be8; --reviewbg:#241d3a; --todo:#a3adb8; --turn:#24282e;
+    --nav:#12293f; --nav2:#0d1a26;
+    --shadow:0 1px 3px rgba(0,0,0,.4);
+  }
+
   *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
   body{margin:0;background:var(--bg);color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.5}
+    font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
   a{color:var(--brand2)}
-  button{font:inherit}
+  code,.mono{font-family:var(--mono)}
+  code{font-size:.88em;background:var(--soft);border:1px solid var(--line2);padding:0 5px;border-radius:5px}
+  :focus-visible{outline:3px solid var(--brand2);outline-offset:2px;border-radius:6px}
   .hidden{display:none!important}
-  header.top{background:linear-gradient(135deg,#0f4c81,#1379b0);color:#fff;padding:28px 22px 24px}
-  header.top .wrap{max-width:1120px;margin:0 auto;padding:0}
-  .eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;opacity:.85;font-weight:700}
-  header.top h1{margin:.2em 0 .1em;font-size:25px}
-  header.top p{margin:0;opacity:.92;font-size:14px}
-  header.top a{color:#dff0ff}
-  .global{margin-top:18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-  .global .track{flex:1;min-width:220px;height:13px;background:rgba(255,255,255,.22);border-radius:999px;overflow:hidden}
-  .global .track>span{display:block;height:100%;width:0;background:linear-gradient(90deg,#9fe6b8,#eafff0);transition:width .3s}
-  .global .pct{font-weight:800;font-size:18px}
-  .global .rc{font-size:13px;opacity:.95}
-  .wrap{max-width:1120px;margin:0 auto;padding:0 22px 80px}
-  .toolbar{position:sticky;top:0;z-index:20;background:rgba(238,241,246,.94);backdrop-filter:blur(6px);
-    border-bottom:1px solid var(--line);margin:0 -22px 18px;padding:12px 22px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-  .toolbar input[type=search],.toolbar select{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
-  .toolbar input[type=search]{min-width:200px;flex:1}
-  .btn{font-weight:600;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;color:var(--ink)}
-  .btn:hover{background:#f7f9fc}
+  svg.icon{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;
+    stroke-linecap:round;stroke-linejoin:round}
+
+  /* ================= Ossature ================= */
+  .app{display:grid;grid-template-columns:264px minmax(0,1fr);min-height:100vh}
+  .shell{min-width:0;display:flex;flex-direction:column}
+  .main{width:100%;max-width:1200px;margin:0 auto;padding:22px 24px 48px;scroll-margin-top:64px}
+
+  /* ================= Barre latérale ================= */
+  .side{background:linear-gradient(180deg,var(--nav),var(--nav2));color:#dce9f7;
+    display:flex;flex-direction:column;gap:3px;padding:16px 13px 18px;
+    position:sticky;top:0;height:100vh;overflow:auto}
+  .brand{display:flex;align-items:center;gap:11px;padding:4px 6px 14px;margin-bottom:4px;
+    border-bottom:1px solid rgba(255,255,255,.14)}
+  .brand .mark{flex:none;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
+    background:linear-gradient(140deg,#7fc4ee,#ffffff1a);color:#0a2c4d;font-weight:900;font-size:15px}
+  .brand .nm{font-weight:800;font-size:14.5px;color:#fff;line-height:1.15}
+  .brand .pl{font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:#9dc2e4;font-weight:700}
+  .org{display:flex;align-items:center;gap:9px;width:100%;text-align:left;font:inherit;
+    background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.17);border-radius:11px;
+    padding:8px 10px;color:#fff;margin:10px 0 4px}
+  .org .mk{width:27px;height:27px;border-radius:8px;flex:none;display:grid;place-items:center;
+    background:rgba(255,255,255,.2);font-size:11px;font-weight:800}
+  .org .t1{display:block;font-size:12.5px;font-weight:700;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .org .t2{display:block;font-size:10.5px;color:#9dc2e4;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sect-t{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#8bb0d4;
+    font-weight:800;margin:14px 8px 4px}
+  .nav{display:flex;flex-direction:column;gap:2px}
+  .nav a{display:flex;align-items:center;gap:10px;width:100%;text-align:left;font:inherit;
+    font-size:12.8px;font-weight:600;color:#c6dbf0;background:none;border:0;text-decoration:none;
+    padding:7px 9px;border-radius:9px}
+  .nav a:hover{background:rgba(255,255,255,.08);color:#fff}
+  .nav a[aria-current="page"]{background:rgba(255,255,255,.17);color:#fff;box-shadow:inset 3px 0 0 #7fc4ee}
+  .side .foot{margin-top:auto;padding:12px 9px 0;border-top:1px solid rgba(255,255,255,.14)}
+  .side .foot .lbl{font-size:11px;color:#9dc2e4;font-weight:700;display:flex;justify-content:space-between}
+  .side .foot .q{height:7px;border-radius:999px;background:rgba(255,255,255,.16);overflow:hidden;margin:7px 0 5px}
+  .side .foot .q>span{display:block;height:100%;width:0;background:linear-gradient(90deg,#7fc4ee,#c9ecff);transition:width .3s}
+  .side .foot small{font-size:10.5px;color:#8bb0d4;display:block}
+
+  /* ================= Barre supérieure ================= */
+  .topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;
+    gap:14px;padding:10px 24px;background:color-mix(in srgb,var(--bg) 92%,transparent);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .crumbs{font-size:12.5px;color:var(--muted);display:flex;gap:7px;align-items:center;flex-wrap:wrap;min-width:0}
+  .crumbs b{color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .top-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .iconbtn{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--panel);
+    color:var(--ink);display:grid;place-items:center;cursor:pointer}
+  .iconbtn:hover{background:var(--soft)}
+
+  /* ================= En-tête de vue ================= */
+  .phead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:4px 0 16px;flex-wrap:wrap}
+  .phead h1{font-size:23px;line-height:1.2;margin:2px 0 4px}
+  .phead .sub{margin:0;color:var(--muted);font-size:13px}
+  .phead-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .eyebrow{margin:0;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:800}
+
+  /* ================= Grilles et cartes ================= */
+  .grid{display:grid;gap:14px;margin-bottom:14px;align-items:start}
+  .c4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:15px 17px;
+    box-shadow:var(--shadow);min-width:0}
+  .card h2{font-size:14.5px;margin:0 0 2px}
+  .card .sub{margin:0 0 12px;color:var(--muted);font-size:12.5px}
+  .mt{margin-top:14px}
+  .muted{color:var(--muted)}
+  .small{font-size:12px}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+
+  /* ================= KPI ================= */
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:15px 17px;
+    box-shadow:var(--shadow);cursor:pointer;text-align:left;font:inherit;width:100%}
+  .kpi:hover{border-color:var(--brand2)}
+  .kpi.active{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand) inset,var(--shadow)}
+  .kpi .l{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:800}
+  .kpi .v{font-size:25px;font-weight:800;line-height:1.15;margin:5px 0 1px;font-variant-numeric:tabular-nums}
+
+  /* ================= Badges, boutons, notes ================= */
+  .badge{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:800;
+    padding:2px 8px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+  .badge.ok{background:var(--donebg);color:var(--done);border-color:var(--done)}
+  .badge.warn{background:var(--warnbg);color:var(--warn);border-color:#e8c98a}
+  .badge.bad{background:var(--badbg);color:var(--bad);border-color:var(--bad)}
+  .badge.info{background:var(--doingbg);color:var(--doing);border-color:var(--doing)}
+  .badge.review{background:var(--reviewbg);color:var(--review);border-color:var(--review)}
+  .badge.neutral{background:var(--soft);color:var(--muted);border-color:var(--line)}
+  .btn{font:inherit;font-size:12.5px;font-weight:700;padding:7px 11px;border-radius:8px;
+    border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+  .btn:hover{background:var(--soft)}
   .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
-  .banner{background:#fff9e9;border:1px solid #f1d6b0;border-left:4px solid #d7a231;border-radius:10px;
-    padding:10px 14px;margin:0 0 16px;font-size:13px;color:#7a5200}
-  .banner code{font-family:var(--mono);font-size:12px;background:#f1f4f9;padding:1px 5px;border-radius:5px}
-  .banner.draft-banner{border-left-color:#b7791f;background:#fffdf7}
-  /* Cartes d'information réductibles (▾) et fermables (×) */
-  .banner.card{padding:0;background:#fff;border-color:var(--line);border-left-color:var(--brand2);color:var(--ink)}
-  .banner.card.decisions{border-left-color:var(--brand)}
-  .banner.card.procedure{border-left-color:#7d3c98}
-  .banner.card.sources{border-left-color:#0f766e}
-  .card-head{display:flex;align-items:center;gap:8px;padding:10px 12px 10px 14px}
-  .card-toggle{flex:1;display:flex;align-items:center;gap:8px;font:inherit;font-size:13.5px;color:var(--ink);background:none;border:0;padding:0;cursor:pointer;text-align:left}
-  .card-toggle .chev{display:inline-block;transition:transform .15s;color:var(--muted);font-size:12px}
-  .card.collapsed .card-toggle .chev{transform:rotate(-90deg)}
-  .card-close{font:inherit;font-size:18px;line-height:1;color:var(--muted);background:none;border:0;border-radius:6px;padding:2px 7px;cursor:pointer}
-  .card-close:hover,.card-toggle:hover .chev{color:var(--ink)}
-  .card-close:hover{background:#f1f4f9}
-  .card-body{padding:0 16px 14px 34px;font-size:13px}
-  .card-body ul,.card-body ol{margin:6px 0 0;padding-left:20px}
-  .card-body li{margin:3px 0}
-  .card.collapsed .card-body{display:none}
-  .restore-cards{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 14px;font-size:12.5px;color:var(--muted)}
-  .restore-cards button{font:inherit;font-size:12.5px;font-weight:600;color:var(--brand);background:#fff;border:1px dashed #c7dcf3;border-radius:999px;padding:3px 10px;cursor:pointer}
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:4px 0 20px}
-  button.stat{font:inherit;text-align:left;cursor:pointer;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
-  button.stat:hover{border-color:var(--brand2)}
-  button.stat.active{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand) inset,var(--shadow)}
-  .stat .n{font-size:24px;font-weight:800;line-height:1}
-  .stat .l{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:5px}
-  .lot-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
-  .lot-chip{font-size:13px;font-weight:600;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
-  .lot-chip:hover{border-color:var(--brand2)}
-  .lot-chip .dot{width:9px;height:9px;border-radius:50%;flex:none}
-  .lot-chip .c{font-size:11.5px;font-weight:700;color:var(--muted)}
-  .lot-chip.active{background:var(--brand);border-color:var(--brand);color:#fff}
-  .lot-chip.active .c{color:#dff0ff}
-  /* Mode focus : un lot ou un statut choisi → seules ses tâches, en-tête compact, cartes masquées */
-  .active-filter{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 18px;padding:10px 14px;background:var(--brandbg);
-    border:1px solid #c7dcf3;border-radius:10px;font-size:13.5px;color:var(--ink)}
-  .active-filter button{font:inherit;font-size:12.5px;font-weight:700;color:var(--brand);background:#fff;border:1px solid #c7dcf3;
+  .btn.primary:hover{background:var(--brand2)}
+  .btn.small{font-size:11.5px;padding:5px 9px}
+  .note{background:var(--brandbg);border:1px solid var(--brandline);border-left:4px solid var(--brand2);
+    border-radius:10px;padding:10px 14px;font-size:12.5px}
+  .note.warn{background:var(--warnbg);border-color:#e8c98a;border-left-color:var(--warn)}
+  .note.bad{background:var(--badbg);border-color:#efb4ad;border-left-color:var(--bad)}
+  .note.review{background:var(--reviewbg);border-color:#d7caf5;border-left-color:var(--review)}
+  .note.ok{background:var(--donebg);border-color:#b7e2c7;border-left-color:var(--done)}
+  .note p{margin:0}
+
+  /* ================= Barres ================= */
+  .bar{height:8px;border-radius:999px;background:var(--line2);overflow:hidden}
+  .bar>span{display:block;height:100%;border-radius:999px;background:var(--brand2);width:var(--v,0%);transition:width .3s}
+  .bar.done>span{background:var(--done)}
+
+  /* ================= Timeline ================= */
+  .timeline{border-left:2px solid var(--line);margin-left:5px;padding-left:16px}
+  .tl{position:relative;margin-bottom:10px}
+  .tl::before{content:"";position:absolute;left:-23px;top:4px;width:11px;height:11px;border-radius:50%;background:var(--panel);border:2.5px solid var(--muted)}
+  .tl.st-done::before{border-color:var(--done)}.tl.st-doing::before{border-color:var(--doing)}.tl.st-blocked::before{border-color:var(--bad)}
+  .tl .tld{font-size:11.5px;color:var(--muted);font-weight:700}
+  .tl .tlt{font-size:13px}
+
+  /* ================= Détails / clé-valeur ================= */
+  details{border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:var(--soft);margin-top:10px}
+  summary{cursor:pointer;font-weight:700;font-size:12px;color:var(--brand2)}
+  details[open] summary{margin-bottom:8px}
+  .kv{font-size:12.5px;margin:6px 0}
+  .kv b{color:var(--ink)}
+  .filelist{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+
+  /* ================= Barre d'outils ================= */
+  .toolbar{position:sticky;top:57px;z-index:30;background:color-mix(in srgb,var(--bg) 94%,transparent);
+    backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:12px;margin:0 0 14px;padding:10px 12px;
+    display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .toolbar input[type=search],.toolbar select{font:inherit;font-size:12.5px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink)}
+  .toolbar input[type=search]{min-width:200px;flex:1}
+
+  /* ================= Filtres par lot ================= */
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}
+  .chip{font:inherit;font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px;background:var(--panel);
+    border:1px solid var(--line);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+  .chip:hover{border-color:var(--brand2)}
+  .chip .dot{width:8px;height:8px;border-radius:50%;flex:none}
+  .chip .c{font-size:10.5px;font-weight:800;color:var(--muted)}
+  .chip.active{background:var(--brand);border-color:var(--brand);color:#fff}
+  .chip.active .c{color:#dff0ff}
+
+  /* ================= Mode focus ================= */
+  .active-filter{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 14px;padding:10px 14px;background:var(--brandbg);
+    border:1px solid var(--brandline);border-radius:10px;font-size:13px;color:var(--ink)}
+  .active-filter button{font:inherit;font-size:12px;font-weight:700;color:var(--brand);background:var(--panel);border:1px solid var(--brandline);
     border-radius:999px;padding:3px 10px;cursor:pointer}
   .active-filter .focus-tag{display:none}
-  .focus-hint{font-size:12px;color:var(--muted);margin:-6px 0 14px}
-  .empty-result{padding:28px;text-align:center;color:var(--muted);background:var(--card);border:1px dashed var(--line);border-radius:12px}
-  body.focus header.top{padding:14px 22px 12px}
-  body.focus header.top p.extra{display:none}
-  body.focus header.top h1{font-size:19px}
-  body.focus .card,body.focus .restore-cards{display:none!important}
-  body.focus .active-filter{position:sticky;top:62px;z-index:15;background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:var(--shadow)}
-  body.focus .active-filter b{color:#fff}
-  body.focus .active-filter .focus-tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:rgba(255,255,255,.18);border-radius:999px;padding:2px 8px}
+  .focus-hint{font-size:12px;color:var(--muted);margin:0 0 14px}
+  .empty-result{padding:28px;text-align:center;color:var(--muted);background:var(--panel);border:1px dashed var(--line);border-radius:12px}
+  body.focus .card,body.focus .restore-cards,body.focus #cards{display:none!important}
+  body.focus .active-filter{position:sticky;top:57px;z-index:29;background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:var(--shadow)}
+  body.focus .active-filter .focus-tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:rgba(255,255,255,.18);border-radius:999px;padding:2px 8px}
   body.focus .focus-hint{display:none}
-  section.lot{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin:18px 0;overflow:hidden}
-  section.lot>.head{display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid var(--line)}
-  section.lot .dot{width:12px;height:12px;border-radius:3px;flex:none}
-  section.lot .head h2{font-size:16px;margin:0;flex:1}
-  section.lot .head .mini{font-size:12.5px;color:var(--muted);white-space:nowrap}
-  section.lot .lbar{height:8px;background:var(--line2)}
+
+  /* ================= Lots ================= */
+  section.lot{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin:16px 0;overflow:hidden;scroll-margin-top:64px}
+  section.lot>.head{display:flex;align-items:center;gap:12px;padding:13px 17px;border-bottom:1px solid var(--line)}
+  section.lot .dot{width:11px;height:11px;border-radius:3px;flex:none}
+  section.lot .head h2{font-size:15.5px;margin:0;flex:1}
+  section.lot .head .mini{font-size:12px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+  section.lot .lbar{height:6px;background:var(--line2)}
   section.lot .lbar>span{display:block;height:100%;width:0;transition:width .3s}
-  .task{padding:14px 18px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:150px 1fr;gap:14px}
+  .task{padding:13px 17px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:170px 1fr;gap:14px}
   .task:last-child{border-bottom:none}
   .task .side{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
   .task .id{font-family:var(--mono);font-weight:700;font-size:13px}
-  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap}
-  .pill.exec{background:var(--turn);color:var(--todo)}
-  .pill.rev{background:var(--brandbg);color:var(--brand)}
-  .pill.iter{background:#fdf3e0;color:#b7791f}
-  .pill.esc{background:var(--blockedbg);color:var(--blocked)}
-  .pill.ready{background:var(--donebg);color:var(--done)}
-  .badge-dep{background:var(--brandbg);color:#0f4c81;border:1px solid #bcd8f0;white-space:normal;text-align:left}
   .roleline{display:flex;flex-direction:column;gap:4px}
-  .task .main h3{margin:0 0 4px;font-size:15px}
-  .task .main .note{display:block;font-style:italic;font-size:12.5px;color:#8a5200;margin:2px 0 6px}
+  .task .main h3{margin:0 0 4px;font-size:14.5px}
+  .task .main .note{display:block;font-style:italic;font-size:12.5px;color:var(--muted);margin:2px 0 6px}
   .task .main .note:empty{display:none}
-  .task .obj{font-size:13.5px;margin:6px 0}
-  details{margin-top:6px}
-  details summary{cursor:pointer;font-size:12.5px;color:var(--brand2);font-weight:600;user-select:none}
-  details ul{margin:8px 0 8px 18px;padding:0}
-  details li{font-size:13px;margin:4px 0}
-  .kv{font-size:12.5px;margin:6px 0}
-  .kv b{color:var(--ink)}
-  code{font-family:var(--mono);font-size:12px;background:#f1f4f9;padding:1px 5px;border-radius:5px}
-  .filelist{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
-  .timeline{border-left:2px solid var(--line);margin-left:5px;padding-left:16px}
-  .tl{position:relative;margin-bottom:10px}
-  .tl::before{content:"";position:absolute;left:-23px;top:4px;width:11px;height:11px;border-radius:50%;background:#fff;border:2.5px solid var(--muted)}
-  .tl.st-done::before{border-color:var(--done)}.tl.st-doing::before{border-color:var(--doing)}.tl.st-blocked::before{border-color:var(--blocked)}
-  .tl .tld{font-size:11.5px;color:var(--muted);font-weight:700}
-  .tl .tlt{font-size:13px}
-  .status-sel{font-size:12.5px;font-weight:700;border-radius:8px;padding:5px 8px;border:1px solid var(--line);cursor:pointer}
+  .task .obj{font-size:13px;margin:6px 0}
+  .status-sel{font-size:11.5px;font-weight:700;border-radius:8px;padding:5px 8px;border:1px solid var(--line);cursor:pointer}
   .status-sel.st-todo{background:var(--turn);color:var(--todo)}
   .status-sel.st-doing{background:var(--doingbg);color:var(--doing)}
-  .status-sel.st-blocked{background:var(--blockedbg);color:var(--blocked)}
+  .status-sel.st-blocked{background:var(--badbg);color:var(--bad)}
   .status-sel.st-done{background:var(--donebg);color:var(--done)}
   .task.done .main h3{text-decoration:line-through;color:var(--muted)}
-  .task.draft{background:#fff9e9}
-  .draft-flag{display:inline-block;margin-top:6px;font-size:11.5px;font-weight:700;color:#a96500;background:#fff3df;border:1px solid #f1d6b0;border-radius:999px;padding:2px 9px}
-  .phases{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin:0 0 18px;padding:14px 16px 16px}
+  .task.draft{background:var(--warnbg)}
+  .draft-flag{display:inline-block;margin-top:6px;font-size:11px;font-weight:700;color:#a96500;background:#fff3df;border:1px solid #e8c98a;border-radius:999px;padding:2px 9px}
+
+  /* ================= Phases ================= */
+  .phases{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin:0 0 16px;padding:14px 16px 16px;scroll-margin-top:64px}
   .ph-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
   .ph-head .ph-t{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
   .ph-head .ph-cur{font-size:12.5px;color:var(--muted);margin-left:auto}
   .ph-head .ph-cur b{color:var(--brand)}
-  .ph-steps{list-style:none;display:flex;gap:8px;margin:0;padding:0;flex-wrap:wrap}
-  .ph-step{flex:1;min-width:130px;display:flex;align-items:center;gap:9px;padding:8px 11px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;text-align:left}
-  .ph-step:hover{border-color:var(--brand2)}
-  .ph-step.current{background:var(--brandbg)}
+  .ph-steps{list-style:none;display:flex;gap:6px;margin:0;padding:0;flex-wrap:wrap}
+  .ph-step{flex:1 1 120px;display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--soft);cursor:pointer;text-align:left;opacity:.85}
+  .ph-step:hover{border-color:var(--brand2);opacity:1}
+  .ph-step.current{background:var(--brandbg);opacity:1}
   .ph-step.active{border-color:var(--brand);box-shadow:0 0 0 2px var(--brandbg) inset}
   .ph-step .ph-dot{width:19px;height:19px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;background:#b7c2d0}
-  .ph-step.st-done .ph-dot{background:var(--done)}.ph-step.st-doing .ph-dot{background:var(--doing)}.ph-step.st-blocked .ph-dot{background:var(--blocked)}
+  .ph-step.st-done .ph-dot{background:var(--done)}.ph-step.st-doing .ph-dot{background:var(--doing)}.ph-step.st-blocked .ph-dot{background:var(--bad)}
+  .ph-step.st-done{border-color:var(--done);background:var(--donebg)}.ph-step.st-doing{border-color:var(--doing);background:var(--doingbg)}.ph-step.st-blocked{border-color:var(--bad);background:var(--badbg)}
   .ph-step .ph-nm{font-size:12.5px;font-weight:700;line-height:1.15;display:block}
   .ph-step .ph-mt{font-size:10.5px;color:var(--muted);margin-top:1px}
-  .ph-panel{margin-top:12px;border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden}
+  .ph-panel{margin-top:12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden}
   .ph-panel:empty{display:none}
   .ph-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--line2)}
   .ph-item:last-child{border-bottom:0}
-  .ph-item.draft{background:#fff9e9}
-  .ph-item .ph-ico{width:16px;height:16px;border-radius:5px;flex:none;border:1.5px solid #c3cedd;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:#fff;background:#fff}
+  .ph-item.draft{background:var(--warnbg)}
+  .ph-item .ph-ico{width:16px;height:16px;border-radius:5px;flex:none;border:1.5px solid #c3cedd;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:#fff;background:var(--panel)}
   .ph-item.st-done .ph-ico{background:var(--done);border-color:var(--done)}
   .ph-item.st-doing .ph-ico{background:var(--doing);border-color:var(--doing)}
-  .ph-item.st-blocked .ph-ico{background:var(--blocked);border-color:var(--blocked)}
+  .ph-item.st-blocked .ph-ico{background:var(--bad);border-color:var(--bad)}
   .ph-item .ph-lbl{font-size:13px;flex:1;min-width:0}
   .ph-item.st-done .ph-lbl{color:var(--muted)}
-  .ph-item .ph-note{font-size:11.5px;color:#8a5200;font-style:italic;display:block;margin-top:1px}
+  .ph-item .ph-note{font-size:11.5px;color:var(--muted);font-style:italic;display:block;margin-top:1px}
   .ph-item .ph-sel{font-size:11.5px;font-weight:700;border-radius:6px;padding:3px 7px;border:1px solid var(--line);cursor:pointer}
   .ph-item .ph-sel.st-todo{background:var(--turn);color:var(--todo)}
   .ph-item .ph-sel.st-doing{background:var(--doingbg);color:var(--doing)}
-  .ph-item .ph-sel.st-blocked{background:var(--blockedbg);color:var(--blocked)}
+  .ph-item .ph-sel.st-blocked{background:var(--badbg);color:var(--bad)}
   .ph-item .ph-sel.st-done{background:var(--donebg);color:var(--done)}
-  /* Lecteur Markdown */
-  .reader{display:grid;grid-template-columns:280px minmax(0,1fr);background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin:22px 0 0;overflow:hidden;scroll-margin-top:60px}
+
+  /* ================= Cartes d'information ================= */
+  .icard{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin:0 0 12px;overflow:hidden;box-shadow:var(--shadow)}
+  .icard.objectif{border-left:3px solid var(--brand2)}
+  .icard.decisions{border-left:3px solid var(--brand)}
+  .icard.procedure{border-left:3px solid var(--review)}
+  .icard.sources{border-left:3px solid var(--done)}
+  .card-head{display:flex;align-items:center;gap:8px;padding:10px 12px 10px 14px}
+  .card-toggle{flex:1;display:flex;align-items:center;gap:8px;font:inherit;font-size:13px;color:var(--ink);background:none;border:0;padding:0;cursor:pointer;text-align:left}
+  .card-toggle .chev{display:inline-block;transition:transform .15s;color:var(--muted);font-size:12px}
+  .icard.collapsed .card-toggle .chev{transform:rotate(-90deg)}
+  .card-close{font:inherit;font-size:18px;line-height:1;color:var(--muted);background:none;border:0;border-radius:6px;padding:2px 7px;cursor:pointer}
+  .card-close:hover{background:var(--soft);color:var(--ink)}
+  .card-body{padding:0 16px 14px 34px;font-size:13px}
+  .card-body ul,.card-body ol{margin:6px 0 0;padding-left:20px}
+  .card-body li{margin:3px 0}
+  .icard.collapsed .card-body{display:none}
+  .restore-cards{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 14px;font-size:12.5px;color:var(--muted)}
+  .restore-cards button{font:inherit;font-size:12px;font-weight:600;color:var(--brand);background:var(--panel);border:1px dashed var(--brandline);border-radius:999px;padding:3px 10px;cursor:pointer}
+
+  /* ================= Lecteur Markdown ================= */
+  .reader{display:grid;grid-template-columns:280px minmax(0,1fr);background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin:22px 0 0;overflow:hidden;scroll-margin-top:64px}
   @media(max-width:900px){.reader{grid-template-columns:1fr}.rnav{border-right:0!important;border-bottom:1px solid var(--line);max-height:300px!important}}
-  .rnav{border-right:1px solid var(--line);padding:14px;background:var(--line2);max-height:calc(100vh - 80px);overflow:auto;position:sticky;top:58px;align-self:start}
-  .rnav input{width:100%;font:inherit;font-size:13px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+  .rnav{border-right:1px solid var(--line);padding:14px;background:var(--line2);max-height:calc(100vh - 80px);overflow:auto;position:sticky;top:57px;align-self:start}
+  .rnav input{width:100%;font:inherit;font-size:13px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink)}
   .ncat .nt{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:800;margin:14px 0 4px;display:flex;gap:6px}
   .ni{display:block;padding:6px 9px;border-radius:7px;text-decoration:none;color:var(--ink);font-size:13px;line-height:1.35}
   .ni small{display:block;color:var(--muted);font-size:11px}
@@ -183,7 +298,7 @@
   .dhead{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-bottom:10px;border-bottom:1px solid var(--line2);font-size:12.5px}
   .dhead .src-link{margin-left:auto;white-space:nowrap}
   .toc{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}
-  .toc button{font-size:12px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);cursor:pointer}
+  .toc button{font-size:12px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--ink);cursor:pointer}
   .toc button:hover{border-color:var(--brand2)}
   .empty{margin:22px 0;padding:18px;border:1px dashed var(--line);border-radius:10px;color:var(--muted);font-size:14px}
   .md{max-width:880px;font-size:14.5px;line-height:1.65}
@@ -195,7 +310,7 @@
   .md ul,.md ol{padding-left:22px}
   .md table{width:auto;min-width:50%;margin:.8em 0;font-size:13.5px;border-collapse:collapse}
   .md th,.md td{border:1px solid var(--line);padding:6px 9px;text-align:left}
-  .md pre{background:var(--line2);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow:auto;font-size:12.5px}
+  .md pre{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow:auto;font-size:12.5px}
   .md pre code{background:none;border:0;padding:0}
   .md blockquote{margin:.8em 0;padding:6px 14px;border-left:4px solid var(--brand2);background:var(--line2);color:var(--muted)}
   .md li.task{list-style:none;margin-left:-22px;display:flex;gap:9px;align-items:baseline}
@@ -203,73 +318,167 @@
   .md .cb.on{background:var(--done);border-color:var(--done)}
   .md .os-delta{display:inline-block;font-size:11px;font-weight:800;padding:2px 9px;border-radius:999px;margin-right:10px}
   .os-added{background:var(--donebg);color:var(--done)}.os-modified{background:var(--doingbg);color:var(--doing)}
-  .os-removed{background:var(--blockedbg);color:var(--blocked)}.os-renamed{background:var(--turn);color:var(--todo)}
-  .md .os-req{border:1px solid var(--line);border-left:4px solid var(--brand2);border-radius:10px;padding:4px 16px 8px;margin:14px 0;background:var(--card)}
+  .os-removed{background:var(--badbg);color:var(--bad)}.os-renamed{background:var(--turn);color:var(--todo)}
+  .md .os-req{border:1px solid var(--line);border-left:4px solid var(--brand2);border-radius:10px;padding:4px 16px 8px;margin:14px 0;background:var(--panel)}
   .md .os-scn{background:var(--line2);border-radius:8px;padding:2px 14px 6px;margin:10px 0}
   .md .os-lbl{display:inline-block;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-right:8px}
   .md strong.kw{font-family:var(--mono);font-size:12.5px;color:var(--brand2)}
-  footer{max-width:1120px;margin:0 auto;padding:18px 22px 60px;color:var(--muted);font-size:12.5px;text-align:center}
-  @media(max-width:640px){.task{grid-template-columns:1fr}.task .side{flex-direction:row;align-items:center;flex-wrap:wrap}}
+
+  /* ================= Rapport de clôture ================= */
+  .report{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin:18px 0 0;overflow:hidden;scroll-margin-top:64px}
+  .report-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 17px;border-bottom:1px solid var(--line)}
+  .report-head h2{font-size:15px;margin:0}
+  .report-frame{width:100%;height:82vh;border:0;background:var(--bg);display:block}
+
+  footer{max-width:1200px;margin:0 auto;padding:18px 24px 60px;color:var(--muted);font-size:12.5px;text-align:center}
+
+  /* ================= Responsive ================= */
+  @media (max-width:1080px){
+    .app{grid-template-columns:1fr}
+    .side{position:static;height:auto;padding:10px 12px 8px;gap:0}
+    .brand{padding:0 2px 8px;margin:0;border-bottom:0}
+    .brand .mark{width:30px;height:30px;border-radius:8px;font-size:12px}
+    .brand .nm{font-size:13px}
+    .brand .pl{font-size:9.5px}
+    .org{display:none}
+    .nav{display:flex;flex-direction:row;gap:4px;overflow-x:auto;padding-bottom:4px}
+    .nav .sect-t{display:none}
+    .nav a{width:auto;flex:none;white-space:nowrap;font-size:12px;padding:6px 9px}
+    .side .foot{display:none}
+    .topbar{padding:8px 14px}
+    .main{padding:14px 14px 32px}
+    .c4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  @media (max-width:640px){
+    .c4{grid-template-columns:1fr}
+    .task{grid-template-columns:1fr}
+    .task .side{flex-direction:row;align-items:center;flex-wrap:wrap}
+    .topbar{flex-wrap:wrap}
+  }
   @media print{
-    body{background:#fff}.toolbar,.reader{display:none}header.top{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    section.lot,.stat{box-shadow:none}.lot-chips,.active-filter,.restore-cards,.card-close,.focus-hint{display:none}
-    .card,.card.collapsed{display:block!important}.card.collapsed .card-body{display:block}
+    .side,.topbar,.toolbar,.phead-actions,.reader{display:none!important}
+    .app{display:block}
+    .main{max-width:none;padding:0}
+    body{background:#fff}
+    .card,section.lot,.phases,.icard,.kpi{box-shadow:none;break-inside:avoid}
+    .chips,.active-filter,.restore-cards,.card-close,.focus-hint{display:none}
+    .icard,.icard.collapsed{display:block!important}
+    .icard.collapsed .card-body{display:block}
     details{display:block}details:not([open])>*{display:block}
     .task{break-inside:avoid}
   }
 </style>
 </head>
-<body data-file-updated="2026-10-20">
-<header class="top">
-  <div class="wrap">
-    <div class="eyebrow">AI-DRIVEN-SDLC · Framework · Suivi d&#x27;avancement</div>
-    <h1>Construction du framework — fichier de suivi</h1>
-    <p>Spec &lt;code&gt;docs/conception/workflow-sdlc.md&lt;/code&gt; · 40 tâches · 10 lots</p>
-    <p class="extra" style="margin-top:6px;font-size:13px">Dernière mise à jour : <span id="fileUpdated">2026-10-20</span></p>
-    <div class="global">
-      <span class="pct" id="globalPct">0%</span>
-      <div class="track"><span id="globalBar"></span></div>
-      <span id="globalCount">0 / 0 terminées</span>
-      <span class="rc" id="readyCount">0 prête(s) à commiter</span>
+<body data-file-updated="2026-10-27">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2V5z"/><path d="M4 17h14"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/></symbol>
+</svg>
+
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <div class="mark">A</div>
+      <div>
+        <div class="nm">AI-DRIVEN-SDLC</div>
+        <div class="pl">Framework SDLC</div>
+      </div>
     </div>
+
+    <div class="org">
+      <div class="mk">#</div>
+      <div>
+        <span class="t1">conception</span>
+        <span class="t2">Chantier · 2026-10-27</span>
+      </div>
+    </div>
+
+    <nav class="nav" aria-label="Sections du suivi">
+      <p class="sect-t">Suivi</p>
+      <a href="#stats" data-nav="stats"><svg class="icon"><use href="#i-grid"/></svg>Vue d'ensemble</a>
+      <a href="#phases" data-nav="phases"><svg class="icon"><use href="#i-check"/></svg>Phases</a>
+      <a href="#lots" data-nav="lots"><svg class="icon"><use href="#i-list"/></svg>Tâches</a>
+      <a href="#reader" data-nav="reader"><svg class="icon"><use href="#i-book"/></svg>Documents</a>
+      <a href="#rapport" data-nav="rapport"><svg class="icon"><use href="#i-doc"/></svg>Rapport de clôture</a>
+    </nav>
+
+    <div class="foot">
+      <div class="lbl"><span>Avancement</span><span id="globalPct">0%</span></div>
+      <div class="q"><span id="globalBar"></span></div>
+      <small id="globalCount">0 / 0 terminées</small>
+      <small id="readyCount" style="margin-top:2px">0 prête(s) à commiter</small>
+    </div>
+  </aside>
+
+  <div class="shell">
+    <header class="topbar">
+      <div class="crumbs"><span>AI-DRIVEN-SDLC</span><span>/</span><b>conception</b></div>
+      <div class="top-actions">
+        <button class="btn small" id="print">Imprimer / PDF</button>
+        <button class="iconbtn" id="theme" aria-pressed="false" aria-label="Basculer le thème clair/sombre">
+          <svg class="icon"><use href="#i-moon"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main id="main" class="main" tabindex="-1">
+      <div class="phead">
+        <div>
+          <p class="eyebrow">AI-DRIVEN-SDLC · Framework · Suivi d&#x27;avancement</p>
+          <h1>Construction du framework — fichier de suivi</h1>
+          <p class="sub">Spec docs/conception/workflow-sdlc.md · 46 tâches · 11 lots · Dernière mise à jour : <span id="fileUpdated">2026-10-27</span></p>
+        </div>
+        <div class="phead-actions">
+          <a class="btn" href="#rapport">Rapport de clôture</a>
+          <button class="btn" id="export">Exporter</button>
+          <button class="btn" id="importBtn">Importer</button>
+          <button class="btn" id="clearDrafts">Revenir à l'état du fichier</button>
+        </div>
+      </div>
+      <input type="file" id="importFile" accept="application/json" class="hidden">
+
+      <div class="note warn hidden" id="draftBanner">
+        <b>Modifications locales (brouillon).</b> <span id="draftCount">0</span> tâche(s) modifiée(s) localement,
+        non reportée(s) dans <code>state.json</code>. Ce fichier HTML et <code>state.json</code> restent la source
+        de vérité : reporter avec <code>track.py</code>, ou annuler.
+      </div>
+
+      <div class="toolbar">
+        <input type="search" id="q" placeholder="Rechercher une tâche, un fichier…">
+        <select id="fLot"><option value="">Tous les lots</option></select>
+        <select id="fStatus"><option value="">Tous statuts</option><option value="todo">À faire</option><option value="doing">En cours</option><option value="blocked">Bloqué</option><option value="done">Terminé</option></select>
+        <button class="btn small" id="expand">Déplier</button>
+        <button class="btn small" id="collapse">Replier</button>
+      </div>
+
+      <div class="grid c4" id="stats" role="group" aria-label="Statistiques par statut"></div>
+
+      <div class="restore-cards hidden" id="restoreCards" aria-label="Cartes masquées"></div>
+      <div id="cards"></div>
+
+      <section class="phases" id="phases" aria-label="Phases du chantier"></section>
+
+      <nav class="chips" id="lotChips" aria-label="Filtrer par lot"></nav>
+      <p class="focus-hint">Astuce : cliquez un lot ou un statut pour passer en <b>mode focus</b> (Échap pour en sortir) ; la vue se partage par l'URL.</p>
+      <div class="active-filter hidden" id="activeFilter" aria-live="polite"></div>
+      <div class="empty-result hidden" id="emptyResult">Aucune tâche ne correspond aux filtres.</div>
+      <div id="lots"></div>
+
+      <section class="reader" id="reader" data-prefix="../" aria-label="Lecteur Markdown">
+        <div class="rnav"><input type="search" id="rsearch" placeholder="Rechercher un document…" aria-label="Rechercher un document"><nav id="rnav" aria-label="Documents"></nav></div>
+        <article id="rview" aria-live="polite"></article>
+      </section>
+
+      <section class="report" id="rapport" aria-label="Rapport de clôture"><div class="report-head"><h2>Rapport de clôture</h2><a class="btn small" href="rapport-conception.html" target="_blank" rel="noopener">Ouvrir dans un onglet ↗</a></div><iframe class="report-frame" src="rapport-conception.html" title="Rapport de clôture" loading="lazy"></iframe></section>
+    </main>
   </div>
-</header>
-
-<div class="wrap">
-  <div class="toolbar">
-    <input type="search" id="q" placeholder="Rechercher une tâche, un fichier…">
-    <select id="fLot"><option value="">Tous les lots</option></select>
-    <select id="fStatus"><option value="">Tous statuts</option><option value="todo">À faire</option><option value="doing">En cours</option><option value="blocked">Bloqué</option><option value="done">Terminé</option></select>
-    <button class="btn" id="expand">Tout déplier</button>
-    <button class="btn" id="collapse">Tout replier</button>
-    <button class="btn" id="export">Exporter</button>
-    <button class="btn" id="importBtn">Importer</button>
-    <input type="file" id="importFile" accept="application/json" class="hidden">
-    <button class="btn primary" id="print">Imprimer / PDF</button>
-    <button class="btn" id="clearDrafts">Revenir à l'état du fichier</button>
-  </div>
-
-  <div class="banner draft-banner hidden" id="draftBanner">
-    <b>Modifications locales (brouillon).</b> <span id="draftCount">0</span> tâche(s) modifiée(s) localement, non reportée(s) dans <code>state.json</code>.
-    Ce fichier HTML et <code>state.json</code> restent la source de vérité : reporter avec <code>track.py</code>, ou annuler.
-  </div>
-
-  <div class="restore-cards hidden" id="restoreCards" aria-label="Cartes masquées"></div>
-  <div id="cards"></div>
-
-  <section class="phases" id="phases" aria-label="Phases du chantier"></section>
-
-  <div class="stats" id="stats" role="group" aria-label="Filtrer par statut"></div>
-  <nav class="lot-chips" id="lotChips" aria-label="Filtrer par lot"></nav>
-  <p class="focus-hint">Astuce : cliquez un lot ou un statut pour passer en <b>mode focus</b> (Échap pour en sortir) ; la vue se partage par l'URL.</p>
-  <div class="active-filter hidden" id="activeFilter" aria-live="polite"></div>
-  <div class="empty-result hidden" id="emptyResult">Aucune tâche ne correspond aux filtres.</div>
-  <div id="lots"></div>
-
-  <section class="reader" id="reader" data-prefix="../" aria-label="Lecteur Markdown">
-    <div class="rnav"><input type="search" id="rsearch" placeholder="Rechercher un document…" aria-label="Rechercher un document"><nav id="rnav" aria-label="Documents"></nav></div>
-    <article id="rview" aria-live="polite"></article>
-  </section>
 </div>
 
 <footer><b>Fichier généré par la skill suivi-taches, ne pas modifier — l'état de référence vit dans docs/suivi/state.json.</b> · brouillon local et préférences mémorisés (clé <code>suivi-framework-v1</code>).</footer>
@@ -280,11 +489,11 @@
     "title": "Suivi d'avancement — Construction du framework · AI-DRIVEN-SDLC",
     "h1": "Construction du framework — fichier de suivi",
     "eyebrow": "AI-DRIVEN-SDLC · Framework · Suivi d'avancement",
-    "subtitle": "Spec <code>docs/conception/workflow-sdlc.md<\/code> · 40 tâches · 10 lots",
+    "subtitle": "Spec docs/conception/workflow-sdlc.md · 46 tâches · 11 lots",
     "storage_key": null,
     "lang": "fr"
   },
-  "file_updated": "2026-10-20",
+  "file_updated": "2026-10-27",
   "features": [
     {
       "id": "framework",
@@ -386,7 +595,7 @@
           "color": "#2b6cb0",
           "order": 3,
           "items": [],
-          "status": "doing"
+          "status": "done"
         },
         {
           "id": "validation",
@@ -1507,7 +1716,7 @@
           "lot": "L11",
           "title": "Copier le plugin dans l'adaptateur OpenCode",
           "text": "Copier le plugin dans l'adaptateur OpenCode",
-          "status": "doing",
+          "status": "done",
           "updated": "2026-10-20",
           "note": "Copie rafraîchie le 2026-10-20 : version 0.2.1 (25 fichiers) avec garde d'isolation, timeouts, sdlc_doctor, baseline et CHANGELOG ; package-lock inclus pour que npm ci fonctionne chez le projet cible ; GUIDE.md conservé. En attente de relecture indépendante.",
           "history": [
@@ -1537,7 +1746,7 @@
           "lot": "L11",
           "title": "Distribuer le plugin",
           "text": "Distribuer le plugin : copie récursive des sous-dossiers d'adaptateur",
-          "status": "doing",
+          "status": "done",
           "updated": "2026-10-19",
           "note": "Exercice réel : projet vide + sdlc.config.yaml avec opencode activé → render_adapters.py crée les 19 fichiers du plugin et les inscrit dans .sdlc/manifest.json ; 28 tests d'installation passent (dont le nouveau) ; en attente de relecture indépendante.",
           "history": [
@@ -1562,7 +1771,7 @@
           "lot": "L11",
           "title": "Documenter l'adaptateur et la limite du plugin",
           "text": "Documenter l'adaptateur et la limite du plugin",
-          "status": "doing",
+          "status": "done",
           "updated": "2026-10-19",
           "note": "README de l'adaptateur : ligne de destination plugins/ai-sdlc-tracker/** ajoutée + encadré « limite connue » renvoyant au GUIDE (plugin inerte dans un projet du framework tant que l'adaptation state.json n'est pas faite) ; relecture indépendante à faire.",
           "history": [
@@ -1587,7 +1796,7 @@
           "lot": "L11",
           "title": "Adapter le plugin au modèle d'état du framework",
           "text": "Adapter le plugin au modèle d'état du framework (`docs/suivi/state.json`)",
-          "status": "todo",
+          "status": "done",
           "updated": "",
           "note": "",
           "history": [],
@@ -1606,7 +1815,7 @@
           "lot": "L11",
           "title": "Faire du gabarit le foyer unique",
           "text": "Faire du gabarit le foyer unique (tests, CI, fixtures autonomes)",
-          "status": "doing",
+          "status": "done",
           "updated": "2026-10-20",
           "note": "Fait : tests (77) et typecheck déplacés dans le gabarit avec fixtures autonomes ; CI dans le framework ; render_adapters exclut tests/ ; engagement : doctor lit son propre package.json. En attente de relecture indépendante.",
           "history": [
@@ -1631,7 +1840,7 @@
           "lot": "L11",
           "title": "Contrôler la dérive gabarit → installation",
           "text": "Contrôler la dérive gabarit → installation",
-          "status": "doing",
+          "status": "done",
           "updated": "2026-10-20",
           "note": "Fait : bin/plugin-sync-check (24 fichiers, ignore node_modules/tests/README/GUIDE) ; a détecté doctor.ts divergent avant resynchronisation ; installation d'engagements allégée (sans tests/ ni CI). En attente de relecture indépendante.",
           "history": [
@@ -1663,7 +1872,7 @@
 }</script>
 <script type="application/json" id="docs-data">{
   "files": {},
-  "embedded_at": "2026-10-20",
+  "embedded_at": "2026-10-27",
   "warnings": [
     "conception/workflow-sdlc.md",
     "conception/tasks.md",
@@ -1947,11 +2156,11 @@
   // ---- Tâches ----
   function rolesHtml(t){
     var parts = [];
-    if(t.executor) parts.push('<span class="pill exec" title="Exécutant">exéc. '+esc(t.executor)+'</span>');
-    if(t.reviewer) parts.push('<span class="pill rev" title="Relecteur">relect. '+esc(t.reviewer)+'</span>');
-    if(t.review_iteration!=null) parts.push('<span class="pill iter" title="Itération de revue">itér. '+t.review_iteration+'</span>');
-    if(t.escalated) parts.push('<span class="pill esc" title="Escalade">escalade</span>');
-    if(t.ready_to_commit) parts.push('<span class="pill ready" title="Prêt à commiter">prêt à commiter</span>');
+    if(t.executor) parts.push('<span class="badge info" title="Exécutant">exéc. '+esc(t.executor)+'</span>');
+    if(t.reviewer) parts.push('<span class="badge review" title="Relecteur">relect. '+esc(t.reviewer)+'</span>');
+    if(t.review_iteration!=null) parts.push('<span class="badge warn" title="Itération de revue">itér. '+t.review_iteration+'</span>');
+    if(t.escalated) parts.push('<span class="badge bad" title="Escalade">escalade</span>');
+    if(t.ready_to_commit) parts.push('<span class="badge ok" title="Prêt à commiter">prêt à commiter</span>');
     return parts.length ? '<div class="roleline">'+parts.join('')+'</div>' : '';
   }
   function taskDetails(t){
@@ -2015,9 +2224,10 @@
     var ready = tasks.filter(function(x){ return x.t.ready_to_commit; }).length;
     document.getElementById('readyCount').textContent = ready+' prête(s) à commiter';
     var fs = document.getElementById('fStatus').value;
-    document.getElementById('stats').innerHTML = [['','Total',total,'var(--ink)'],['todo','À faire',c.todo,'var(--todo)'],['doing','En cours',c.doing,'var(--doing)'],['blocked','Bloquées',c.blocked,'var(--blocked)'],['done','Terminées',c.done,'var(--done)']].map(function(r){
+    var statColor = {'':'var(--brand)', 'todo':'var(--todo)', 'doing':'var(--doing)', 'blocked':'var(--bad)', 'done':'var(--done)'};
+    document.getElementById('stats').innerHTML = [['','Total',total,'var(--brand)'],['todo','À faire',c.todo,'var(--todo)'],['doing','En cours',c.doing,'var(--doing)'],['blocked','Bloquées',c.blocked,'var(--bad)'],['done','Terminées',c.done,'var(--done)']].map(function(r){
       var active = r[0]===fs;
-      return '<button type="button" class="stat'+(active?' active':'')+'" data-status="'+r[0]+'" aria-pressed="'+active+'"><div class="n" style="color:'+r[3]+'">'+r[2]+'</div><div class="l">'+r[1]+'</div></button>';
+      return '<button type="button" class="kpi'+(active?' active':'')+'" data-status="'+r[0]+'" aria-pressed="'+active+'"><div class="l">'+r[1]+'</div><div class="v" style="color:'+r[3]+'">'+r[2]+'</div></button>';
     }).join('');
   }
   function renderChips(){
@@ -2032,7 +2242,7 @@
     document.getElementById('lotChips').innerHTML = chips.map(function(ch){
       var active = ch[0]===fl;
       var dot = ch[2] ? '<span class="dot" style="background:'+esc(ch[2])+'"></span>' : '';
-      return '<button type="button" class="lot-chip'+(active?' active':'')+'" data-lot="'+esc(ch[0])+'" aria-pressed="'+active+'">'+dot+esc(ch[1])+' <span class="c">'+ch[3]+'</span></button>';
+      return '<button type="button" class="chip'+(active?' active':'')+'" data-lot="'+esc(ch[0])+'" aria-pressed="'+active+'">'+dot+esc(ch[1])+' <span class="c">'+ch[3]+'</span></button>';
     }).join('');
   }
   function renderDrafts(){
@@ -2063,7 +2273,7 @@
     FEATURES.forEach(function(f){ (f.lots||[]).forEach(function(lot){ var o = document.createElement('option'); o.value = lot.id; o.textContent = lot.name; sel.appendChild(o); }); });
   }
 
-  // ---- Cartes d'information (réductibles, fermables, préférence mémorisée) ----
+  // ---- Cartes d'information ----
   var PROCEDURE_HTML = 'L\'état de référence vit dans <code>state.json</code> — ce fichier HTML est un rendu généré, on ne le modifie jamais à la main.'
     + '<ol><li>après chaque progression (tâche commencée, terminée ou bloquée), lancer <code>track.py</code> (statut, date, note) ;</li>'
     + '<li>pour un item de phase, <code>track_phase.py</code> ;</li>'
@@ -2074,7 +2284,7 @@
   function cardDefs(){
     var f = feature0(), defs = [];
     var objective = f.objective || META.objective;
-    if(objective) defs.push({id:'objectif', label:'Objectif du chantier', cls:'', body:mdInline(objective)});
+    if(objective) defs.push({id:'objectif', label:'Objectif du chantier', cls:'objectif', body:mdInline(objective)});
     var decisions = f.decisions || META.decisions || [];
     if(decisions && decisions.length) defs.push({id:'decisions', label:'Décisions', cls:'decisions', body:'<ul>'+decisions.map(function(d){ return '<li>'+mdInline(d)+'</li>'; }).join('')+'</ul>'});
     defs.push({id:'procedure', label:'Procédure de mise à jour', cls:'procedure', body:PROCEDURE_HTML});
@@ -2086,13 +2296,13 @@
   function renderCards(){
     var defs = cardDefs();
     document.getElementById('cards').innerHTML = defs.map(function(c){
-      return '<section class="banner card '+(c.cls||'')+'" data-card="'+c.id+'" data-label="'+esc(c.label)+'">'
+      return '<section class="icard '+(c.cls||'')+'" data-card="'+c.id+'" data-label="'+esc(c.label)+'">'
         + '<div class="card-head"><button type="button" class="card-toggle" aria-expanded="true"><span class="chev">▾</span><b>'+esc(c.label)+'</b></button>'
         + '<button type="button" class="card-close" aria-label="Fermer la carte « '+esc(c.label)+' »" title="Fermer">×</button></div>'
         + '<div class="card-body">'+c.body+'</div></section>';
     }).join('');
     var hidden = [];
-    Array.prototype.forEach.call(document.querySelectorAll('#cards .card[data-card]'), function(c){
+    Array.prototype.forEach.call(document.querySelectorAll('#cards .icard[data-card]'), function(c){
       var id = c.getAttribute('data-card'), st = cardState[id] || 'open';
       c.classList.toggle('hidden', st==='closed');
       c.classList.toggle('collapsed', st==='collapsed');
@@ -2107,7 +2317,7 @@
     bar.classList.toggle('hidden', hidden.length===0);
   }
 
-  // ---- Filtre dans l'URL (#lot=L2&statut=doing) : vue partageable, survit au rechargement ----
+  // ---- Filtre dans l'URL : vue partageable ----
   function writeHash(){
     var lot = document.getElementById('fLot').value, status = document.getElementById('fStatus').value;
     var params = [];
@@ -2136,13 +2346,13 @@
   document.getElementById('fStatus').addEventListener('change', render);
   document.getElementById('q').addEventListener('input', render);
   document.getElementById('stats').addEventListener('click', function(e){
-    var b = e.target.closest('button.stat'); if(!b) return;
+    var b = e.target.closest('button.kpi'); if(!b) return;
     var sel = document.getElementById('fStatus'), v = b.getAttribute('data-status');
     sel.value = (v && sel.value===v) ? '' : v;
     render();
   });
   document.getElementById('lotChips').addEventListener('click', function(e){
-    var b = e.target.closest('button.lot-chip'); if(!b) return;
+    var b = e.target.closest('button.chip'); if(!b) return;
     var sel = document.getElementById('fLot'), v = b.getAttribute('data-lot');
     sel.value = (v && sel.value===v) ? '' : v;
     render();
@@ -2165,7 +2375,7 @@
     saveJSON(KEY, drafts); render();
   });
   document.getElementById('cards').addEventListener('click', function(e){
-    var c = e.target.closest('.card[data-card]'); if(!c) return;
+    var c = e.target.closest('.icard[data-card]'); if(!c) return;
     var id = c.getAttribute('data-card');
     if(e.target.closest('.card-toggle')){ cardState[id] = (cardState[id]==='collapsed') ? 'open' : 'collapsed'; saveJSON(KEY+'-cards', cardState); renderCards(); return; }
     if(e.target.closest('.card-close')){ cardState[id] = 'closed'; saveJSON(KEY+'-cards', cardState); renderCards(); }
@@ -2213,12 +2423,44 @@
     r.readAsText(f);
   });
 
+  // ---- Thème clair / sombre ----
+  var root = document.documentElement;
+  var themeBtn = document.getElementById('theme');
+  var iconUse = themeBtn ? themeBtn.querySelector('use') : null;
+  function applyTheme(t){
+    root.setAttribute('data-theme', t);
+    if(themeBtn) themeBtn.setAttribute('aria-pressed', t === 'dark' ? 'true' : 'false');
+    if(iconUse) iconUse.setAttribute('href', t === 'dark' ? '#i-sun' : '#i-moon');
+  }
+  var saved = null;
+  try { saved = localStorage.getItem('sdlc-theme'); } catch(e) {}
+  var initial = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  applyTheme(initial);
+  if(themeBtn){
+    themeBtn.addEventListener('click', function(){
+      var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      try { localStorage.setItem('sdlc-theme', next); } catch(e) {}
+    });
+  }
+
+  // ---- Navigation latérale (ancres actives) ----
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.nav [data-nav]'));
+  var sections = ['stats','phases','lots','reader','rapport'].map(function(id){ return document.getElementById(id); }).filter(Boolean);
+  function onScroll(){
+    var y = window.scrollY + 120, current = 'stats';
+    sections.forEach(function(s){ if(s.offsetTop <= y) current = s.id; });
+    navLinks.forEach(function(a){ if(a.getAttribute('data-nav')===current) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+
   document.getElementById('fileUpdated').textContent = document.body.getAttribute('data-file-updated') || '—';
   populateLots();
   readHash();
   renderPhases();
   renderCards();
   render();
+  onScroll();
 })();
 </script>
 </body>

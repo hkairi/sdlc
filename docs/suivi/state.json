@@ -4,11 +4,11 @@
     "title": "Suivi d'avancement — Construction du framework · AI-DRIVEN-SDLC",
     "h1": "Construction du framework — fichier de suivi",
     "eyebrow": "AI-DRIVEN-SDLC · Framework · Suivi d'avancement",
-    "subtitle": "Spec <code>docs/conception/workflow-sdlc.md</code> · 40 tâches · 10 lots",
+    "subtitle": "Spec docs/conception/workflow-sdlc.md · 46 tâches · 11 lots",
     "storage_key": null,
     "lang": "fr"
   },
-  "file_updated": "2026-10-20",
+  "file_updated": "2026-10-27",
   "features": [
     {
       "id": "framework",
@@ -110,7 +110,7 @@
           "color": "#2b6cb0",
           "order": 3,
           "items": [],
-          "status": "doing"
+          "status": "done"
         },
         {
           "id": "validation",
@@ -1231,7 +1231,7 @@
           "lot": "L11",
           "title": "Copier le plugin dans l'adaptateur OpenCode",
           "text": "Copier le plugin dans l'adaptateur OpenCode",
-          "status": "doing",
+          "status": "done",
           "updated": "2026-10-20",
           "note": "Copie rafraîchie le 2026-10-20 : version 0.2.1 (25 fichiers) avec garde d'isolation, timeouts, sdlc_doctor, baseline et CHANGELOG ; package-lock inclus pour que npm ci fonctionne chez le projet cible ; GUIDE.md conservé. En attente de relecture indépendante.",
           "history": [
@@ -1261,7 +1261,7 @@
           "lot": "L11",
           "title": "Distribuer le plugin",
           "text": "Distribuer le plugin : copie récursive des sous-dossiers d'adaptateur",
-          "status": "doing",
+          "status": "done",
           "updated": "2026-10-19",
           "note": "Exercice réel : projet vide + sdlc.config.yaml avec opencode activé → render_adapters.py crée les 19 fichiers du plugin et les inscrit dans .sdlc/manifest.json ; 28 tests d'installation passent (dont le nouveau) ; en attente de relecture indépendante.",
           "history": [
@@ -1286,7 +1286,7 @@
           "lot": "L11",
           "title": "Documenter l'adaptateur et la limite du plugin",
           "text": "Documenter l'adaptateur et la limite du plugin",
-          "status": "doing",
+          "status": "done",
           "updated": "2026-10-19",
           "note": "README de l'adaptateur : ligne de destination plugins/ai-sdlc-tracker/** ajoutée + encadré « limite connue » renvoyant au GUIDE (plugin inerte dans un projet du framework tant que l'adaptation state.json n'est pas faite) ; relecture indépendante à faire.",
           "history": [
@@ -1311,7 +1311,7 @@
           "lot": "L11",
           "title": "Adapter le plugin au modèle d'état du framework",
           "text": "Adapter le plugin au modèle d'état du framework (`docs/suivi/state.json`)",
-          "status": "todo",
+          "status": "done",
           "updated": "",
           "note": "",
           "history": [],
@@ -1330,7 +1330,7 @@
           "lot": "L11",
           "title": "Faire du gabarit le foyer unique",
           "text": "Faire du gabarit le foyer unique (tests, CI, fixtures autonomes)",
-          "status": "doing",
+          "status": "done",
           "updated": "2026-10-20",
           "note": "Fait : tests (77) et typecheck déplacés dans le gabarit avec fixtures autonomes ; CI dans le framework ; render_adapters exclut tests/ ; engagement : doctor lit son propre package.json. En attente de relecture indépendante.",
           "history": [
@@ -1355,7 +1355,7 @@
           "lot": "L11",
           "title": "Contrôler la dérive gabarit → installation",
           "text": "Contrôler la dérive gabarit → installation",
-          "status": "doing",
+          "status": "done",
           "updated": "2026-10-20",
           "note": "Fait : bin/plugin-sync-check (24 fichiers, ignore node_modules/tests/README/GUIDE) ; a détecté doctor.ts divergent avant resynchronisation ; installation d'engagements allégée (sans tests/ ni CI). En attente de relecture indépendante.",
           "history": [
